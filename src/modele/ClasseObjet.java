@@ -41,11 +41,22 @@ public class ClasseObjet {
 
 	public String pran( HashMap<String , String > parametre )
 	{
+		String sRet = "" ; 
+
 		if( parametre != null)
 		{
-			return "(" + ")" ; 
+			sRet += "(" ; 
+			for ( String key : parametre.keySet())
+			{
+				sRet += key + parametre.get(key) ; 
+			}
+			sRet += ")" ; 
 		}
-		return "()" ; 
+		else 
+		{
+			sRet = "()" ; 
+		}
+		return sRet ; 
 	}
 	
 	@Override

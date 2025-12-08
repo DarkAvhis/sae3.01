@@ -24,7 +24,7 @@ public class AnalyseurUML
         
         if (classeResultat != null)
         {
-            classeResultat.toString();
+            System.out.println(classeResultat.toString()); 
         }
     }
 
