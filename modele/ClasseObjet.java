@@ -43,7 +43,7 @@ public class ClasseObjet {
 	{
 		if( !parametre.isEmpty())
 		{
-			return ""
+			return "";
 		}
 		return "()" ; 
 	}
