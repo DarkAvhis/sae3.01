@@ -1,3 +1,4 @@
+package modele;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -10,8 +11,8 @@ public class LectureFichier
 {
     private String nomDeLaClasse = ""; 
 
-    private List<Argument> listeAttributs;
-    private List<Methode>  listeMethodes;
+    private List<AttributObjet> listeAttributs;
+    private List<MethodeObjet>  listeMethodeObjets;
 
     /**
      * Nettoie un mot des symboles de ponctuation non alphanumériques.
@@ -22,11 +23,11 @@ public class LectureFichier
     }
     
     /**
-     * Analyse et convertit la chaîne de paramètres bruts en une liste d'objets Argument.
+     * Analyse et convertit la chaîne de paramètres bruts en une liste d'objets AttributObjet.
      */
-    private List<Argument> analyserParametres(String chaineParametresBruts)
+    private List<AttributObjet> analyserParametres(String chaineParametresBruts)
     {
-        List<Argument> listeParams = new ArrayList<>();
+        List<AttributObjet> listeParams = new ArrayList<>();
         if (chaineParametresBruts.isEmpty()) 
         {
             return listeParams;
@@ -45,7 +46,7 @@ public class LectureFichier
             {
                 String pType = mots[mots.length - 2];
                 String pNom = mots[mots.length - 1];
-                listeParams.add(new Argument(pNom, pType, "", "")); 
+                listeParams.add(new AttributObjet(pNom, pType, "", "")); 
             }
         }
         return listeParams;
@@ -56,8 +57,8 @@ public class LectureFichier
 
     public LectureFichier(String nomFichier) 
     {
-        this.listeAttributs  = new ArrayList<Argument>();
-        this.listeMethodes   = new ArrayList<Methode>();
+        this.listeAttributs  = new ArrayList<AttributObjet>();
+        this.listeMethodeObjets   = new ArrayList<MethodeObjet>();
 
         File fichier = new File(nomFichier);
         if (!fichier.exists()) 
@@ -130,7 +131,7 @@ public class LectureFichier
                         String nomAttribut = nettoyerMot(nomEtSymbole.replace(";", ""));
                         if (!nomAttribut.isEmpty())
                         {
-                            Argument nouvelAttribut = new Argument(nomAttribut, typeDeRetour, visibilite, portee);
+                            AttributObjet nouvelAttribut = new AttributObjet(nomAttribut, typeDeRetour, visibilite, portee);
                             this.listeAttributs.add(nouvelAttribut);
                         }
                     }
@@ -138,11 +139,11 @@ public class LectureFichier
                     // --- Cas B : Méthode ou Constructeur ---
                     else if (nomEtSymbole.contains("("))
                     {
-                        String nomMethode = nettoyerMot(nomEtSymbole.substring(0, nomEtSymbole.indexOf("(")));
+                        String nomMethodeObjet = nettoyerMot(nomEtSymbole.substring(0, nomEtSymbole.indexOf("(")));
                         
                         // Si le nom de la méthode est vide, le nom est le type de retour capturé précédemment (cas rare)
-                        if (nomMethode.isEmpty() && !typeDeRetour.isEmpty()) {
-                            nomMethode = typeDeRetour;
+                        if (nomMethodeObjet.isEmpty() && !typeDeRetour.isEmpty()) {
+                            nomMethodeObjet = typeDeRetour;
                             // Pour les setters (void), le vrai type est le mot capturé avant, mais on garde "void" pour l'affichage.
                         }
                         
@@ -161,12 +162,12 @@ public class LectureFichier
                         }
                         
                         // Analyse des paramètres par la méthode privée
-                        List<Argument> listeParams = analyserParametres(paramsBruts);
+                        List<AttributObjet> listeParams = analyserParametres(paramsBruts);
 
-                        // Création de l'objet Methode
-                        String typeRetourMethode = nomMethode.equals(nomDeLaClasse) ? "Constructeur" : typeDeRetour;
-                        Methode nouvelleMethode = new Methode(nomMethode, typeRetourMethode, visibilite, listeParams);
-                        this.listeMethodes.add(nouvelleMethode);
+                        // Création de l'objet MethodeObjet
+                        String typeRetourMethodeObjet = nomMethodeObjet.equals(nomDeLaClasse) ? "Constructeur" : typeDeRetour;
+                        MethodeObjet nouvelleMethodeObjet = new MethodeObjet(nomMethodeObjet, typeRetourMethodeObjet, visibilite, listeParams);
+                        this.listeMethodeObjets.add(nouvelleMethodeObjet);
                     }
                     
                     // Réinitialisation des variables
@@ -193,7 +194,7 @@ public class LectureFichier
         // --- 1. AFFICHAGE DES ATTRIBUTS ---
         int compteurAttr = 1;
         
-        for (Argument attr : this.listeAttributs)
+        for (AttributObjet attr : this.listeAttributs)
         {
             String porteeAffichee = attr.getPortee().equals("classe (static)") ? "statique" : "instance";
             String visibiliteAffichee = attr.getVisibilite().equals("private") ? "privée" : attr.getVisibilite();
@@ -207,7 +208,7 @@ public class LectureFichier
 
         // --- 2. AFFICHAGE DES MÉTHODES ET CONSTRUCTEURS ---
         
-        for (Methode methode : this.listeMethodes)
+        for (MethodeObjet methode : this.listeMethodeObjets)
         {
             String nomAffiche = methode.getTypeRetour().equals("Constructeur") ? "Constructeur" : methode.getNom();
             String typeRetourAffichee;
@@ -236,7 +237,7 @@ public class LectureFichier
                         typeRetourAffichee + "\n";
             
             // Lignes des paramètres
-            List<Argument> params = methode.getListeArguments();
+            List<AttributObjet> params = methode.getListeAttributObjets();
             if (params.isEmpty())
             {
                 resultat += "paramètres : aucun\n";
@@ -245,7 +246,7 @@ public class LectureFichier
             {
                 for (int i = 0; i < params.size(); i++)
                 {
-                    Argument param = params.get(i);
+                    AttributObjet param = params.get(i);
                     // Ligne de paramètre
                     resultat += "paramètres : p" + (i + 1) + 
                                 " : " + param.getNom() + 

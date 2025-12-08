@@ -1,4 +1,9 @@
+package test;
 import java.util.ArrayList;
+
+import modele.AttributObjet;
+import modele.ClasseObjet;
+import modele.MethodeObjet;
 
 public class Test 
 {
