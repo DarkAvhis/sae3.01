@@ -7,14 +7,14 @@ public class Methode
 	private String typeRetour;
 	private String visibilite;
 
-	private List<Argument> listeArguments;
+	private List<AttributObjet> listeAttributObjets;
 
-	public Methode(String nom, String typeRetour, String visibilite, List<Argument> listeArguments) 
+	public Methode(String nom, String typeRetour, String visibilite, List<AttributObjet> listeAttributObjets) 
 	{
 		this.nom        = nom;
 		this.typeRetour = typeRetour;
 		this.visibilite = visibilite;
-		this.listeArguments = new ArrayList<Argument>();
+		this.listeAttributObjets = new ArrayList<AttributObjet>();
 	}
 
 	public String getNom() 
@@ -47,9 +47,9 @@ public class Methode
 		this.visibilite = visibilite;
 	}
 	
-	public List<Argument> getListeArguments() 
+	public List<AttributObjet> getListeAttributObjets() 
 	{
-		return this.listeArguments;
+		return this.listeAttributObjets;
 	}
 
 	public String toString() 
@@ -57,6 +57,6 @@ public class Methode
 		return "Methode    : " + String.format("%10s", nom       ) + ", " + 
 		       "Visibilite : " + String.format("%10s", visibilite) + ", " +
 		       "TypeRetour : " + String.format("%10s", typeRetour) + ", " +
-			   "Parametres : " + this.listeArguments.toString();
+			   "Parametres : " + this.listeAttributObjets.toString();
 	}
 }
