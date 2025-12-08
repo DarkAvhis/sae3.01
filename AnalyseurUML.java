@@ -1,10 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.regex.*;
 
 public class AnalyseurUML 
 {
@@ -14,7 +10,7 @@ public class AnalyseurUML
     }
 
 
-
+    //Méthode pour lire tous les fichiers d'un répertoire
     public List<File> ClassesDuDossier(String cheminDossier)
     {
         File dossier = new File(cheminDossier);
