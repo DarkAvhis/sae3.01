@@ -1,8 +1,11 @@
 3 grandes étapes dans l'exéc de l'application :
 A - Lecture & analyse des fichiers .java donnés (via Scanner)
 B - Transformation de ces données en Objets (voir classes "Objet")
-C - Affichage visuel des Objets (via IHM dans le futur)
+C - Affichage visuel des Objets (via IHM dans le futur) sous forme de graphe UML
 
 ClasseObjet contient 1 arrayList de chaque :
 - AttributObjet ( stocke les données relatives aux attributs : nom, type, visibilité...)
 - MethodeObjet ( stocke les données relatives aux méthodes : nom, type du retour, paramètres, visibilité...)
+
+Sur le diagramme, 2 classes peuvent être liées par une Association (voir cours https://diw.iut.univ-lehavre.fr/pedago/info1/R1_01_Init_Dev/cours/pdf/Cours%20Livre%20Algo%20partie%207.pdf)
+Les associations ont 2 multiplicités. -> MultipliciteObjet.
