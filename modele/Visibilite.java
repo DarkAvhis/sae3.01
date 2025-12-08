@@ -1,12 +1,12 @@
 package modele;
 public  enum Visibilite 
 {
-    PRIVATE   ( '-'  ),
-    PUBLIC    ( '+'  ),
+    PRIVATE   ( "-"  ),
+    PUBLIC    ( "+"  ),
     //PACKAGE   ( '~'  ),
-    PROTECTED ( '#'  );
+    PROTECTED ( "#"  );
 
-    private char libelle ; 
-    Visibilite( char libelle ) { this.libelle = libelle ;  }
-    public char getLibelle() { return this.libelle ;  }
+    private String libelle ; 
+    Visibilite( String libelle ) { this.libelle = libelle ;  }
+    public String getLibelle() { return this.libelle ;  }
 }

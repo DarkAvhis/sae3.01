@@ -1,6 +1,7 @@
 package modele;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ClasseObjet {
 
@@ -30,17 +31,26 @@ public class ClasseObjet {
 		this.attributs = attributs;
 	}
 
-	public ArrayList<MethodeObjet> getmethodes() {
+	public ArrayList<MethodeObjet> getMethodes() {
 		return methodes;
 	}
 
 	public void setmethodes(ArrayList<MethodeObjet> methodes) {
 		this.methodes = methodes;
 	}
+
+	public String pran( HashMap<String , String > parametre )
+	{
+		if( !parametre.isEmpty())
+		{
+			return ""
+		}
+		return "()" ; 
+	}
 	
 	@Override
-	public String toString() {
-
+	public String toString() 
+	{
 		String sRet = "";
 
 		sRet += "------------------------------------------------\n";
@@ -48,24 +58,22 @@ public class ClasseObjet {
 		sRet += "------------------------------------------------\n";
 
 		for (AttributObjet att : attributs) {
-			sRet += Visiblite(att.getVisibilite()) + " "  + att.getNom() + " " + ":" + att.getType() + "\n" ; 
+			sRet += att.getVisibilite().getLibelle() + " " + att.getNom() + " " + ":" + att.getType() + "\n" ; 
 		}
 
 		sRet += "------------------------------------------------\n";
 
 		for( MethodeObjet met : methodes )
 		{
-			sRet += String.format( "%-2c", changementVisibilite(met.getVisibilite()))  +
-			        String.format( "%-10s" ,  met.getNom()) + 
+			sRet += String.format( "%-2s", met.getVisibilite().getLibelle())  +
+					String.format( "%-10s" ,  met.getNom()) + 
 					String.format( "%-20s" , met.getParametres()) + 
 					String.format( "%-10s",met.getRetourType()) + "\n" ; 
 		}
 		sRet += "------------------------------------------------\n";
 
-
 		return sRet ; 
 	}
-
 	
 	
 }

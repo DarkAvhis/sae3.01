@@ -1,23 +1,20 @@
 package modele;
 public class AttributObjet {
 
-	private String visibilite;
 	private String portee;
 	private String type;
 	private String nom;
+	private Visibilite visibilite;
 
-	public AttributObjet(String nom, String portee, String type, String visibilite) {
+	public AttributObjet(String nom, String portee, String type, Visibilite visibilite) {
 		this.nom = nom;
 		this.portee = portee;
 		this.type = type;
 		this.visibilite = visibilite;
 	}
 
-	public String getVisibilite() {
-		return visibilite;
-	}
-
-	public void setVisibilite(String visibilite) {
+	
+	public void setVisibilite(Visibilite visibilite) {
 		this.visibilite = visibilite;
 	}
 
@@ -45,15 +42,11 @@ public class AttributObjet {
 		this.nom = nom;
 	}
 
-	public String changementVisibilite() 
-	{
-		switch (visibilite) {
-			case "private":   return "-";
-			case "public":    return "+";
-			case "protected": return "#";
-			default:          return "~";
-		}
-	}
+	
+
+	public Visibilite getVisibilite() { return visibilite; }
+
+
 
 
 
