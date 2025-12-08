@@ -10,7 +10,7 @@ public class BarreMenus extends JMenuBar {
 
     public BarreMenus() {
         add(creerMenuFichier());
-        add(creerMenuEdition());
+        //add(creerMenuEdition());
         add(creerMenuAffichage());
         add(creerMenuAide());
     }
@@ -33,11 +33,11 @@ public class BarreMenus extends JMenuBar {
         JMenuItem quitterItem = new JMenuItem("Quitter");
         quitterItem.addActionListener(e -> System.exit(0));
 
-        menu.add(nouvelleItem);
-        menu.add(ouvrirItem);
-        menu.addSeparator();
+        //menu.add(nouvelleItem);
+        //menu.add(ouvrirItem);
+        //menu.addSeparator();
         menu.add(exporterItem);
-        menu.add(sauvegarderItem);
+        //menu.add(sauvegarderItem);
         menu.addSeparator();
         menu.add(quitterItem);
 
@@ -144,8 +144,7 @@ public class BarreMenus extends JMenuBar {
     private void actionAPropos() {
         JOptionPane.showMessageDialog(null,
             "Modélisation UML - Générateur de Diagrammes\n" +
-            "Version 1.0\n" +
-            "Génération de diagrammes UML à partir de classes Java",
+            "par Quentin MORVAN,\n" + "Valentin LEROY,\n" + "Celim CHAOU,\n" + "Enzo DUMONT,\n" + "Ariunbayar BUYANBADRAKH,\n" + "Jules BOUQUET",
             "À propos",
             JOptionPane.INFORMATION_MESSAGE);
     }
