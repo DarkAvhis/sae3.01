@@ -1,3 +1,5 @@
+package modele;
+
 public class LiaisonObjet {
 
     protected String nomAttribut; //Non utilisé en affichage

@@ -1,3 +1,4 @@
+package modele;
 
 import java.util.HashMap;
 
@@ -6,10 +7,10 @@ import java.util.HashMap;
 public class MethodeObjet 
 {
 
-    private String nom;
-    private String visibilite;
-    private String retourType;
-    private HashMap<String, String> parametres; // Nom et Type
+	private String nom;
+	private String visibilite;
+	private String retourType;
+	private HashMap<String, String> parametres; // Nom et Type
 
     public MethodeObjet(String nom, HashMap<String, String> parametres, String retourType, String visibilite) 
     {

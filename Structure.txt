@@ -9,7 +9,3 @@ ClasseObjet contient 1 arrayList de chaque :
 
 Sur le diagramme, 2 classes peuvent être liées par une Association (voir cours https://diw.iut.univ-lehavre.fr/pedago/info1/R1_01_Init_Dev/cours/pdf/Cours%20Livre%20Algo%20partie%207.pdf)
 Les associations ont 2 multiplicités. -> MultipliciteObjet.
-
-
-
-
