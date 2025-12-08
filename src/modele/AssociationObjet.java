@@ -36,5 +36,17 @@ public class AssociationObjet extends LiaisonObjet {
     public void setMultDest(MultipliciteObjet multDest) {
         this.multDest = multDest;
     }
+    
+    @Override
+    public String toString() {
+        String sens = (this.unidirectionnel) ? "unidirectionnelle" : "bidirectionnelle";
+        String origine = (this.classeOrig != null) ? this.classeOrig.getNom() : "?";
+        String dest = (this.classeDest != null) ? this.classeDest.getNom() : "?";
+        String multO = (this.multOrig != null) ? this.multOrig.toString() : "?";
+        String multD = (this.multDest != null) ? this.multDest.toString() : "?";
+
+        return String.format("Association %d : %s de %s(%s) vers %s(%s)",
+                this.getNum(), sens, origine, multO, dest, multD);
+    }
      
 }
