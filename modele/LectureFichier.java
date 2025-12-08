@@ -139,11 +139,11 @@ public class LectureFichier
                     // --- Cas B : Méthode ou Constructeur ---
                     else if (nomEtSymbole.contains("("))
                     {
-                        String nomMethodeObjet = nettoyerMot(nomEtSymbole.substring(0, nomEtSymbole.indexOf("(")));
+                        String nomMethode = nettoyerMot(nomEtSymbole.substring(0, nomEtSymbole.indexOf("(")));
                         
                         // Si le nom de la méthode est vide, le nom est le type de retour capturé précédemment (cas rare)
-                        if (nomMethodeObjet.isEmpty() && !typeDeRetour.isEmpty()) {
-                            nomMethodeObjet = typeDeRetour;
+                        if (nomMethode.isEmpty() && !typeDeRetour.isEmpty()) {
+                            nomMethode = typeDeRetour;
                             // Pour les setters (void), le vrai type est le mot capturé avant, mais on garde "void" pour l'affichage.
                         }
                         
@@ -165,8 +165,8 @@ public class LectureFichier
                         List<AttributObjet> listeParams = analyserParametres(paramsBruts);
 
                         // Création de l'objet MethodeObjet
-                        String typeRetourMethodeObjet = nomMethodeObjet.equals(nomDeLaClasse) ? "Constructeur" : typeDeRetour;
-                        MethodeObjet nouvelleMethodeObjet = new MethodeObjet(nomMethodeObjet, typeRetourMethodeObjet, visibilite, listeParams);
+                        String typeRetourMethode = nomMethode.equals(nomDeLaClasse) ? "Constructeur" : typeDeRetour;
+                        MethodeObjet nouvelleMethodeObjet = new MethodeObjet(nomMethode, listeParams, typeRetourMethode, visibilite );
                         this.listeMethodeObjets.add(nouvelleMethodeObjet);
                     }
                     
