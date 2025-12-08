@@ -12,7 +12,7 @@ public class BlocClasse {
     private boolean estInterface;
     private boolean estSelectionne;
 
-    // Constantes de style
+    // Constantes 
     private static final int PADDING = 10;
     private static final int HAUTEUR_ENTETE = 30;
     private static final int HAUTEUR_LIGNE = 20;
@@ -31,16 +31,16 @@ public class BlocClasse {
     }
 
     public void dessiner(Graphics2D g) {
-        // Fond du bloc
+        // Fond
         g.setColor(COULEUR_FOND);
         g.fillRect(x, y, largeur, hauteur);
 
-        // Bordure
+        // Bord
         g.setColor(estSelectionne ? Color.BLUE : COULEUR_BORDURE);
         g.setStroke(new BasicStroke(estSelectionne ? 2 : 1));
         g.drawRect(x, y, largeur, hauteur);
 
-        // En-tête (nom de la classe)
+        //Nom de la classe
         g.setColor(COULEUR_ENTETE);
         g.fillRect(x, y, largeur, HAUTEUR_ENTETE);
 
@@ -51,7 +51,7 @@ public class BlocClasse {
         int textY = y + HAUTEUR_ENTETE - (HAUTEUR_ENTETE - fm.getAscent()) / 2;
         g.drawString(nom, textX, textY);
 
-        // Texte "<<interface>>" si c'est une interface
+        // <<interface>>
         if (estInterface) {
             g.setColor(Color.BLACK);
             g.setFont(new Font("Arial", Font.ITALIC, 10));
@@ -73,16 +73,15 @@ public class BlocClasse {
         g.drawString("Méthodes", x + PADDING, ligneY + 20);
     }
 
-    /**
-     * Vérifie si le point donné est dans le bloc.
-     */
+    // Vérifie si le point donné est dans le bloc.
     public boolean contient(int px, int py) {
-        return px >= x && px <= x + largeur && py >= y && py <= y + hauteur;
+        return px >= x 
+        && px <= x + largeur 
+        && py >= y 
+        && py <= y + hauteur;
     }
 
-    /**
-     * Déplace le bloc à une nouvelle position.
-     */
+    // Déplace le bloc à une nouvelle position.
     public void deplacer(int dx, int dy) {
         this.x += dx;
         this.y += dy;

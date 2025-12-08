@@ -98,31 +98,31 @@ public class BarreMenus extends JMenuBar {
 
     // Méthodes d'action (à implémenter)
     private void actionNouveauProjet() {
-        JOptionPane.showMessageDialog(null, "Fonctionnalité à implémenter : Nouveau projet");
+        JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
     private void actionOuvrirProjet() {
-        JOptionPane.showMessageDialog(null, "Fonctionnalité à implémenter : Ouvrir projet");
+        JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
     private void actionExporter() {
-        JOptionPane.showMessageDialog(null, "Fonctionnalité à implémenter : Exporter en image");
+        JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
     private void actionSauvegarder() {
-        JOptionPane.showMessageDialog(null, "Fonctionnalité à implémenter : Sauvegarder positions");
+        JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
     private void actionAnnuler() {
-        JOptionPane.showMessageDialog(null, "Fonctionnalité à implémenter : Annuler");
+        JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
     private void actionRetablir() {
-        JOptionPane.showMessageDialog(null, "Fonctionnalité à implémenter : Rétablir");
+        JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
     private void actionSupprimer() {
-        JOptionPane.showMessageDialog(null, "Fonctionnalité à implémenter : Supprimer");
+        JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
     private void actionAffichageAttributs() {
@@ -134,11 +134,11 @@ public class BarreMenus extends JMenuBar {
     }
 
     private void actionAligner() {
-        JOptionPane.showMessageDialog(null, "Fonctionnalité à implémenter : Aligner les symboles");
+        JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
     private void actionOptimiser() {
-        JOptionPane.showMessageDialog(null, "Fonctionnalité à implémenter : Optimiser les positions");
+        JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
     private void actionAPropos() {

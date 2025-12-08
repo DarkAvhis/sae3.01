@@ -4,10 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-/**
- * Panneau de gauche affichant la liste des projets disponibles.
- * Chaque projet (dossier) dispose d'un bouton pour le charger.
- */
 public class PanneauProjets extends JPanel {
 
     private FenetrePrincipale fenetrePrincipale;
@@ -16,7 +12,6 @@ public class PanneauProjets extends JPanel {
     public PanneauProjets(FenetrePrincipale fenetrePrincipale) {
         this.fenetrePrincipale = fenetrePrincipale;
         
-        // Chemin par défaut vers les projets
         this.cheminDossiers = "sauvegardes/dossiers";
 
         setLayout(new BorderLayout());
@@ -29,7 +24,7 @@ public class PanneauProjets extends JPanel {
         titreLabel.setHorizontalAlignment(JLabel.CENTER);
         add(titreLabel, BorderLayout.NORTH);
 
-        // Panel scrollable pour les boutons des projets
+        // Panel scrollable
         JPanel panelProjets = new JPanel();
         panelProjets.setLayout(new BoxLayout(panelProjets, BoxLayout.Y_AXIS));
         panelProjets.setBackground(new Color(245, 245, 245));
@@ -41,7 +36,7 @@ public class PanneauProjets extends JPanel {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Bouton pour actualiser la liste
+        //actualiser la liste
         JButton boutonActualiser = new JButton("Actualiser");
         boutonActualiser.addActionListener(e -> {
             panelProjets.removeAll();
@@ -52,9 +47,6 @@ public class PanneauProjets extends JPanel {
         add(boutonActualiser, BorderLayout.SOUTH);
     }
 
-    /**
-     * Charge les projets disponibles depuis le dossier sauvegardes/dossiers/.
-     */
     private void chargerProjets(JPanel panelProjets) {
         File dossier = new File(cheminDossiers);
 
@@ -81,9 +73,6 @@ public class PanneauProjets extends JPanel {
         }
     }
 
-    /**
-     * Crée un bouton pour un projet donné.
-     */
     private JButton creerBoutonProjet(File projet) {
         JButton bouton = new JButton(projet.getName());
         bouton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));

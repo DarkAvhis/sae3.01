@@ -1,4 +1,3 @@
-package sauvegardes.dossiers.projet1;
 //classe test
 public class Point 
 {
@@ -10,6 +9,7 @@ public class Point
     {
         this.nom = nom;
         this.x = x;
+        
         this.y = y;
     }
 
