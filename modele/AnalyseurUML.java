@@ -1,10 +1,7 @@
+package modele;
 import java.io.*;
-<<<<<<< HEAD
-import java.util.*;
-=======
 import java.util.ArrayList;
 import java.util.List;
->>>>>>> d55418bb8806f4e29ae4b8b2903d65b2ecdbfd89
 
 public class AnalyseurUML
 {
