@@ -65,7 +65,7 @@ public class ClasseObjet {
 
 		for( MethodeObjet met : methodes )
 		{
-			sRet += String.format( "%-2s", met.getVisibilite().getLibelle())  +
+			sRet += String.format( "%-2s", met.getVisibilite().getLibelle()) +
 					String.format( "%-10s" ,  met.getNom()) + 
 					String.format( "%-20s" , pran(met.getParametres())) + 
 					String.format( "%-10s",met.getRetourType()) + "\n" ; 
