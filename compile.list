@@ -9,3 +9,9 @@ src/modele/MultipliciteObjet.java
 src/modele/Visibilite.java
 
 src/test/Test.java
+
+src/vue/BarreMenus.java
+src/vue/BlocClasse.java
+src/vue/FenetrePrincipale.java
+src/vue/PanneauDiagramme.java
+src/vue/PanneauProjets.java
