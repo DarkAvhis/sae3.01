@@ -24,8 +24,7 @@ public class AnalyseurUML
         
         if (classeResultat != null)
         {
-            analyseur.afficherEtape1(classeResultat);
-            analyseur.afficherEtape2(classeResultat);
+            classeResultat.toString();
         }
     }
 
@@ -50,7 +49,7 @@ public class AnalyseurUML
                     {
                         String type = parts[1];
                         String nom = parts[2].replace(";", "");
-                        attributs.add(new AttributObjet(nom, "instance", type, "private"));
+                        attributs.add(new AttributObjet(nom, "instance", type, Visibilite.PRIVATE));
                     }
                 }
 
@@ -64,7 +63,7 @@ public class AnalyseurUML
                         String nomMethode = parts[parts.length - 1];
                         String typeRetour = parts[parts.length - 2];
 
-                        methodes.add(new MethodeObjet(nomMethode, new HashMap<>(), typeRetour, "public"));
+                        methodes.add(new MethodeObjet(nomMethode, new HashMap<>(), typeRetour, Visibilite.PUBLIC));
                     }
                 }
             }
@@ -76,48 +75,7 @@ public class AnalyseurUML
         }
 
         return new ClasseObjet(attributs, methodes, nomClasse);
-    }    /**
-     * ETAPE 1 : Affichage descriptif brut
-     */
-    public void afficherEtape1(ClasseObjet co)
-    {
-        System.out.println("### ETAPE 1 ###");
-        int i = 1;
-        for (AttributObjet a : co.getattributs())
-        {
-            System.out.println("attribut : " + (i++) + " nom : " + a.getNom() +
-                               " type : " + a.getType() + " visibilité : " + a.getVisibilite() +
-                               " portée : " + a.getPortee());
-        }
-        for (MethodeObjet m : co.getmethodes())
-        {
-            System.out.println("méthode : " + m.getNom() + " visibilité : " + m.getVisibilite() +
-                               " type de retour : " + m.getRetourType());
-        }
-    }
-
-    /**
-     * ETAPE 2 : Affichage formalisme UML
-     */
-    public void afficherEtape2(ClasseObjet co)
-    {
-        System.out.println("\n### ETAPE 2 (UML) ###");
-        System.out.println("------------------------------------------------");
-        System.out.println(co.getNom());
-        System.out.println("------------------------------------------------");
-        for (AttributObjet a : co.getattributs())
-        {
-            String sym = a.getVisibilite().equals("private") ? "-" : "+";
-            System.out.println(sym + " " + a.getNom() + " : " + a.getType());
-        }
-        System.out.println("------------------------------------------------");
-        for (MethodeObjet m : co.getmethodes())
-        {
-            String sym = m.getVisibilite().equals("public") ? "+" : "-";
-            System.out.println(sym + " " + m.getNom() + "() : " + m.getRetourType());
-        }
-        System.out.println("------------------------------------------------");
-    }
+    }    
 
     public List<File> ClassesDuDossier(String cheminDossier)
     {

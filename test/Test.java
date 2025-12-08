@@ -13,7 +13,7 @@ public class Test
         AttributObjet att1 = new AttributObjet( "y", "instance", "String", Visibilite.PRIVATE) ; 
         AttributObjet att2 = new AttributObjet( "x", "instance", "String", Visibilite.PUBLIC) ; 
 
-        MethodeObjet met1 =  new MethodeObjet("getY", null, "String", Visibilite.PUBLIC) ; 
+        MethodeObjet met1 =  new MethodeObjet("getY", null , "String", Visibilite.PUBLIC) ; 
         MethodeObjet met2 =  new MethodeObjet("getX", null , "String", Visibilite.PUBLIC) ; 
 
         ArrayList<AttributObjet> attribts = new ArrayList<>() ; 

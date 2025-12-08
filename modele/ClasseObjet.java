@@ -41,9 +41,9 @@ public class ClasseObjet {
 
 	public String pran( HashMap<String , String > parametre )
 	{
-		if( !parametre.isEmpty())
+		if( parametre != null)
 		{
-			return ""
+			return "(" + ")" ; 
 		}
 		return "()" ; 
 	}
@@ -67,7 +67,7 @@ public class ClasseObjet {
 		{
 			sRet += String.format( "%-2s", met.getVisibilite().getLibelle())  +
 					String.format( "%-10s" ,  met.getNom()) + 
-					String.format( "%-20s" , met.getParametres()) + 
+					String.format( "%-20s" , pran(met.getParametres())) + 
 					String.format( "%-10s",met.getRetourType()) + "\n" ; 
 		}
 		sRet += "------------------------------------------------\n";
