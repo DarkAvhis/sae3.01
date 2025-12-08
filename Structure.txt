@@ -1,7 +1,7 @@
-3 grandes étapes de l'application :
-A - Lecture & analyse des fichiers .java donnés
-B - Transformation de ces données en Objets
-C - Affichage visuel des Objets via IHM 
+3 grandes étapes dans l'exéc de l'application :
+A - Lecture & analyse des fichiers .java donnés (via Scanner)
+B - Transformation de ces données en Objets (voir classes "Objet")
+C - Affichage visuel des Objets (via IHM dans le futur)
 
 ClasseObjet contient 1 arrayList de chaque :
 - AttributObjet ( stocke les données relatives aux attributs : nom, type, visibilité...)
