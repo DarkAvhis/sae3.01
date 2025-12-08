@@ -42,7 +42,7 @@ public class LireFichier
                         String typeRetour = scannerLigne.next();
                         String visibilite = "public";
 
-                        List<Argument> argsMethode = new ArrayList<Argument>();
+                        List<AttributObjet> argsMethode = new ArrayList<AttributObjet>();
                         Methode methode = new Methode(nom, typeRetour, visibilite, argsMethode);
                         this.listeMethodes.add(methode);
 
