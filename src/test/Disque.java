@@ -33,4 +33,9 @@ public class Disque
 	{
 		return Math.PI * Math.pow(this.rayon, 2);
 	}
+
+	public double calculerPerimetre() 
+	{
+		return 2 * Math.PI * this.rayon;
+	}
 }
