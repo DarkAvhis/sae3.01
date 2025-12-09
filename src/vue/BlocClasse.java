@@ -113,6 +113,14 @@ public class BlocClasse
         }
     }
 
+    public boolean contient(int px, int py) 
+    {
+        return px >= x 
+        && px <= x + largeur 
+        && py >= y 
+        && py <= y + hauteur;
+    }
+
     // Getters et Setters
     public String getNom() 
     {

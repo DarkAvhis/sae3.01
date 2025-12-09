@@ -12,13 +12,16 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import src.Controleur;
+
 public class PanneauDiagramme extends JPanel 
 {
 
     private List<BlocClasse> blocsClasses;
     private String cheminProjetCourant;
 
-    public PanneauDiagramme() {
+    public PanneauDiagramme(Controleur controleur)
+    {
         this.blocsClasses = new ArrayList<>();
         this.cheminProjetCourant = null;
 

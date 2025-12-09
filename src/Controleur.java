@@ -1,3 +1,5 @@
+package src;
+
 import modele.AnalyseurUML;
 import modele.AssociationObjet;
 import modele.AttributObjet;
@@ -98,41 +100,14 @@ public class Controleur
         }
     }
     
-    // Nouvelle méthode de conversion : AttributObjet -> String UML
-    private List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe)
+    public List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe)
     {
-        List<String> liste = new ArrayList<>();
-        for (AttributObjet att : attributs)
-        {
-            String staticFlag = att.isStatique() ? " {static}" : "";
-            // Utiliser la méthode de ClasseObjet pour la visibilité
-            char visibilite = classe.changementVisibilite(att.getVisibilite());
-            
-            String s = visibilite + " " + att.getNom() + " : " + att.getType() + staticFlag; 
-            liste.add(s);
-        }
-        return liste;
+        return this.modeleAnalyseur.convertirAttributs(attributs, classe);
     }
 
-    // Nouvelle méthode de conversion : MethodeObjet -> String UML
-    private List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe)
+    public List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe)
     {
-        List<String> liste = new ArrayList<>();
-        for (MethodeObjet met : methodes)
-        {
-            String staticFlag = met.isStatique() ? "{static} " : "";
-            char visibilite = classe.changementVisibilite(met.getVisibilite());
-            
-            // Utiliser la méthode de ClasseObjet pour les paramètres
-            String params = classe.affichageParametre(met.getParametres());
-            
-            // Utiliser la méthode de ClasseObjet pour le type de retour
-            String retour = classe.retourType(met.getRetourType());
-            
-            String s = visibilite + staticFlag + met.getNom() + params + retour;
-            liste.add(s);
-        }
-        return liste;
+        return this.modeleAnalyseur.convertirMethodes(methodes, classe);
     }
 
     // Ancienne logique de main, simplifiée

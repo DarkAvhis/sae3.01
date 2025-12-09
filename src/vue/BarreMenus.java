@@ -6,7 +6,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import Controleur;
+import src.Controleur;
 
 public class BarreMenus extends JMenuBar 
 {

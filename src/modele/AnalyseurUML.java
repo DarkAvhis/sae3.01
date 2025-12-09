@@ -108,7 +108,7 @@ public class AnalyseurUML
         return nouvelleClasse;
     }
 
-    private void extraireAttribut(String ligne, boolean estStatique, ArrayList<AttributObjet> attributs)
+    public void extraireAttribut(String ligne, boolean estStatique, ArrayList<AttributObjet> attributs)
     {
         if (ligne.contains("="))
         {
@@ -134,7 +134,7 @@ public class AnalyseurUML
         }
     }
     
-    private void extraireMethode(String ligne, boolean estStatique, String nomClasse, ArrayList<MethodeObjet> methodes)
+    public void extraireMethode(String ligne, boolean estStatique, String nomClasse, ArrayList<MethodeObjet> methodes)
     {
         int indexParenthese = ligne.indexOf('(');
         String avantParenthese = ligne.substring(0, indexParenthese).trim();
@@ -193,6 +193,43 @@ public class AnalyseurUML
         }
 
         methodes.add(new MethodeObjet(nomMethode, params, typeRetour, visibilite, estStatique));
+    }
+
+    // Nouvelle méthode de conversion : AttributObjet -> String UML
+    public List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe)
+    {
+        List<String> liste = new ArrayList<>();
+        for (AttributObjet att : attributs)
+        {
+            String staticFlag = att.getStatique() ? " {static}" : "";
+            // Utiliser la méthode de ClasseObjet pour la visibilité
+            char visibilite = classe.changementVisibilite(att.getVisibilite());
+            
+            String s = visibilite + " " + att.getNom() + " : " + att.getType() + staticFlag; 
+            liste.add(s);
+        }
+        return liste;
+    }
+
+    // Nouvelle méthode de conversion : MethodeObjet -> String UML
+    public List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe)
+    {
+        List<String> liste = new ArrayList<>();
+        for (MethodeObjet met : methodes)
+        {
+            String staticFlag = met.isStatique() ? "{static} " : "";
+            char visibilite = classe.changementVisibilite(met.getVisibilite());
+            
+            // Utiliser la méthode de ClasseObjet pour les paramètres
+            String params = classe.affichageParametre(met.getParametres());
+            
+            // Utiliser la méthode de ClasseObjet pour le type de retour
+            String retour = classe.retourType(met.getRetourType());
+            
+            String s = visibilite + staticFlag + met.getNom() + params + retour;
+            liste.add(s);
+        }
+        return liste;
     }
 
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses)

@@ -1,4 +1,5 @@
 src/modele/AnalyseurUML.java
+src/modele/AnalyseIHMControleur.java
 src/modele/AssociationObjet.java
 src/modele/AttributObjet.java
 src/modele/ClasseObjet.java
@@ -6,9 +7,15 @@ src/modele/HeritageObjet.java
 src/modele/LiaisonObjet.java
 src/modele/MethodeObjet.java
 src/modele/MultipliciteObjet.java
-src/modele/AnalyseIHMControleur.java
 src/modele/InterfaceObjet.java
 
 src/test/Disque.java
 src/test/Point.java
 
+src/vue/BarreMenus.java
+src/vue/BlocClasse.java
+src/vue/FenetrePrincipale.java
+src/vue/PanneauDiagramme.java
+src/vue/PanneauProjets.java
+
+src/Controleur.java

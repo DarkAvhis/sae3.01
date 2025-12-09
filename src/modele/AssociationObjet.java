@@ -3,76 +3,57 @@ package modele;
 
 /**
  * Représente une association entre deux classes dans un diagramme UML.
- * 
- * Une association peut être unidirectionnelle ou bidirectionnelle, 
- * et possède des multiplicité pour l'origine et la destination.
  */
 public class AssociationObjet extends LiaisonObjet 
 {
-    /**
-     * Indique si l'association est unidirectionnelle (true) ou bidirectionnelle (false).
-     */
+    
+    // Suppression des attributs masqués (classeDest, classeOrig)
+    
 	private boolean estUnidirectionnel;
+    private MultipliciteObjet multiDest;
+	private MultipliciteObjet multiOrig;
 
-    /*-------------------------------------- */
-	/* Attributs                             */
-	/*-------------------------------------- */
-	private boolean unidirectionnel;
-	private MultipliciteObjet multOrig;
-	private MultipliciteObjet multDest;
 
 	/*-------------------------------------- */
 	/* Constructeur                          */
 	/*-------------------------------------- */
-    /**
-     * Multiplicité de l'origine de l'association.
-     * Multiplicité de la destination de l'association.
-     */
-    private MultipliciteObjet multiDest;
-	private MultipliciteObjet multiOrig;
-
-	/**
-     * Constructeur de l'association.
-     * 
-     * @param classeDest Classe cible de l'association
-     * @param classeOrig Classe origine de l'association
-     * @param multiDest Multiplicité de la classe cible
-     * @param multiOrig Multiplicité de la classe origine
-     * @param nomAttribut Nom de l'attribut représentant l'association
-     * @param unidirectionnel Vrai si l'association est unidirectionnelle
-     */
-    public AssociationObjet(ClasseObjet classeDest, ClasseObjet classeOrig, MultipliciteObjet multDest, MultipliciteObjet multOrig, String nomAttribut, boolean unidirectionnel) 
+    
+    // Le constructeur reçoit classeDest et classeOrig (qui deviennent classeMere et classeFille dans LiaisonObjet)
+    public AssociationObjet(ClasseObjet classeMere, ClasseObjet classeFille, MultipliciteObjet multiDest, MultipliciteObjet multiOrig, String nomAttribut, boolean unidirectionnel) 
     {
-        super(nomAttribut, classeDest, classeOrig);
-        this.multiDest          = multDest;
-        this.multiOrig          = multOrig;
-        this.estUnidirectionnel = unidirectionnel;
+        // Appel au constructeur de LiaisonObjet (important)
+        super(nomAttribut, classeMere, classeFille);
+        this.multiDest          = multiDest;
+        this.multiOrig          = multiOrig;
+        this.estUnidirectionnel = unidirectionnel;         
     }
 
     /*-------------------------------------- */
 	/* Les Accesseurs                        */
 	/*-------------------------------------- */
-    public MultipliciteObjet getMultOrig       () {    return multOrig        ;   }
-    public MultipliciteObjet getMultDest       () {    return multDest        ;   }
-    public boolean           getUnidirectionnel() {    return unidirectionnel ;   }
+    
+    // Note: Les accesseurs getMultOrig/Dest et setMultOrig/Dest sont inchangés.
+    public MultipliciteObjet getMultOrig       () {    return multiOrig        ;   }
+    public MultipliciteObjet getMultDest       () {    return multiDest        ;   }
+    public boolean           getUnidirectionnel() {    return estUnidirectionnel ;   } // Correction: doit utiliser estUnidirectionnel si c'est la variable utilisée dans le constructeur.
+
+    public void setMultOrig       (MultipliciteObjet multOrig) {    this.multiOrig        = multOrig        ;   }
+    public void setMultDest       (MultipliciteObjet multDest) {    this.multiDest        = multDest        ;   }
+    public void setUnidirectionnel(boolean unidirectionnel   ) {    this.estUnidirectionnel = unidirectionnel ;   } // Correction: doit modifier estUnidirectionnel
 
     /*-------------------------------------- */
-	/* Modificateurs                         */
-	/*-------------------------------------- */
-    public void setMultOrig       (MultipliciteObjet multOrig) {    this.multOrig        = multOrig        ;   }
-    public void setMultDest       (MultipliciteObjet multDest) {    this.multDest        = multDest        ;   }
-    public void setUnidirectionnel(boolean unidirectionnel   ) {    this.unidirectionnel = unidirectionnel ;   }
-
-    /*-------------------------------------- */
-	/* toString                              */
+	/* toString (Correction)                 */
 	/*-------------------------------------- */
    
     @Override
     public String toString() 
     {
         String sens    = (this.estUnidirectionnel) ? "unidirectionnelle"       : "bidirectionnelle";
-        String origine = (this.classeOrig != null) ? this.classeOrig.getNom()  : "?";
-        String dest    = (this.classeDest != null) ? this.classeDest.getNom()  : "?";
+        
+        // CORRECTION MAJEURE: Utilisation des accesseurs de LiaisonObjet (getClasseFille/Mere)
+        String origine = (this.getClasseFille() != null) ? this.getClasseFille().getNom()  : "?"; // Classe FILLE = Origine de l'association (classe qui possède l'attribut)
+        String dest    = (this.getClasseMere() != null) ? this.getClasseMere().getNom()  : "?";   // Classe MERE  = Destination de l'association (type de l'attribut)
+        
         String multO   = (this.multiOrig  != null) ? this.multiOrig.toString() : "?";
         String multD   = (this.multiDest  != null) ? this.multiDest.toString() : "?";
 

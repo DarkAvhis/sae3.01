@@ -47,7 +47,7 @@ public class AttributObjet
 	public String  getPortee    () {	return portee       ;	}
 	public String  getNom       () {	return nom          ;	}
 	public String  getType      () {	return type         ;	}
-    public boolean getStatique  () {    return statique     ;	}
+    public boolean estStatique  () {    return statique     ;	}
 
 	/*-------------------------------------- */
 	/* Modificateurs                         */
