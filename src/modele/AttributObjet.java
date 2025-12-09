@@ -4,14 +4,18 @@ import java.util.ArrayList;
 
 public class AttributObjet
 {
-	
+	/*-------------------------------------- */
+	/* Attributs                             */
+	/*-------------------------------------- */
 	private String  portee; 
 	private String  type;
 	private String  nom;
 	private String  visibilite;
 	private boolean statique;
 
-	
+	/*-------------------------------------- */
+	/* Constructeur                          */
+	/*-------------------------------------- */
 	public AttributObjet(String nom, String portee, String type, String visibilite, boolean estStatique) 
 	{
 		this.nom = nom;
@@ -26,14 +30,18 @@ public class AttributObjet
 		this(nom, portee, type, visibilite, false);
 	}
 
-	
+	/*-------------------------------------- */
+	/* Les Accesseurs                        */
+	/*-------------------------------------- */
 	public String  getVisibilite() {    return visibilite   ;	}
 	public String  getPortee    () {	return portee       ;	}
 	public String  getNom       () {	return nom          ;	}
 	public String  getType      () {	return type         ;	}
     public boolean getStatique  () {    return statique     ;	}
 
-
+	/*-------------------------------------- */
+	/* Modificateurs                         */
+	/*-------------------------------------- */
 	public void setPortee     (String portee     ) {	this.portee     = portee     ;	}
 	public void setVisibilite (String visibilite ) {	this.visibilite = visibilite ;	}
 	public void setType       (String type       ) {	this.type       = type       ;	}

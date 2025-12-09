@@ -3,11 +3,16 @@ package modele;
 public class AssociationObjet extends LiaisonObjet 
 {
 
+    /*-------------------------------------- */
+	/* Attributs                             */
+	/*-------------------------------------- */
 	private boolean unidirectionnel;
 	private MultipliciteObjet multOrig;
 	private MultipliciteObjet multDest;
 
-	 
+	/*-------------------------------------- */
+	/* Constructeur                          */
+	/*-------------------------------------- */
     public AssociationObjet(ClasseObjet classeDest, ClasseObjet classeOrig, MultipliciteObjet multDest, MultipliciteObjet multOrig, String nomAttribut, boolean unidirectionnel) 
     {
         super(nomAttribut, classeDest, classeOrig);
@@ -16,16 +21,23 @@ public class AssociationObjet extends LiaisonObjet
         this.unidirectionnel = unidirectionnel;
     }
 
+    /*-------------------------------------- */
+	/* Les Accesseurs                        */
+	/*-------------------------------------- */
     public MultipliciteObjet getMultOrig       () {    return multOrig        ;   }
     public MultipliciteObjet getMultDest       () {    return multDest        ;   }
     public boolean           getUnidirectionnel() {    return unidirectionnel ;   }
 
-
+    /*-------------------------------------- */
+	/* Modificateurs                         */
+	/*-------------------------------------- */
     public void setMultOrig       (MultipliciteObjet multOrig) {    this.multOrig        = multOrig        ;   }
     public void setMultDest       (MultipliciteObjet multDest) {    this.multDest        = multDest        ;   }
     public void setUnidirectionnel(boolean unidirectionnel   ) {    this.unidirectionnel = unidirectionnel ;   }
 
-    
+    /*-------------------------------------- */
+	/* toString                              */
+	/*-------------------------------------- */
     @Override
     public String toString() 
     {

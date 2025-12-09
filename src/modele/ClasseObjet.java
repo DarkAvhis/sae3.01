@@ -5,11 +5,16 @@ import java.util.HashMap;
 
 public class ClasseObjet 
 {
-
+	/*-------------------------------------- */
+	/* Attributs                             */
+	/*-------------------------------------- */
 	private String nom;
 	private ArrayList<AttributObjet> attributs;
 	private ArrayList<MethodeObjet>  methodes;
 
+	/*-------------------------------------- */
+	/* Constructeur                          */
+	/*-------------------------------------- */
 	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom) 
 	{
 		this.attributs = attributs;
@@ -17,15 +22,24 @@ public class ClasseObjet
 		this.nom       = nom;
 	}
 
+	/*-------------------------------------- */
+	/* Les Accesseurs                        */
+	/*-------------------------------------- */
 	public String                   getNom      () {	return nom       ;	}
 	public ArrayList<AttributObjet> getattributs() {	return attributs ;	}
 	public ArrayList<MethodeObjet>  getMethodes () {	return methodes  ;	}
 
+	/*-------------------------------------- */
+	/* Modificateurs                         */
+	/*-------------------------------------- */
 	public void setNom      (String nom                        ) {	this.nom       = nom       ;	}
 	public void setattributs(ArrayList<AttributObjet> attributs) {	this.attributs = attributs ;	}
 	public void setmethodes (ArrayList<MethodeObjet>  methodes ) {	this.methodes  = methodes  ;	}
 	
 
+	/*-------------------------------------- */
+	/* Methode autre                         */
+	/*-------------------------------------- */
 	public char changementVisibilite( String visibilite ) 
 	{
 		switch (visibilite) 
@@ -69,7 +83,9 @@ public class ClasseObjet
 		return " : " + type;
 	}
 
-	
+	/*-------------------------------------- */
+	/* toString                              */
+	/*-------------------------------------- */
 	@Override
 	public String toString() 
 	{
