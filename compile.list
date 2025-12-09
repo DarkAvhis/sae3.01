@@ -9,8 +9,4 @@ src/modele/MultipliciteObjet.java
 
 src/test/Point.java
 src/test/Test.java
-<<<<<<< HEAD
-src/test/Point.java
-=======
->>>>>>> 21f9e53c82b74454e754b8405ddaf873a7b33e94
 src/test/Disque.java
