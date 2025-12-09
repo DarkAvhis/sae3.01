@@ -3,12 +3,20 @@ package modele;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ClasseObjet {
+public class ClasseObjet
+{
+    private String nom;
+    private ArrayList<AttributObjet> attributs;
+    private ArrayList<MethodeObjet> methodes;
 
-	private String nom;
-	private ArrayList<AttributObjet> attributs;
-	private ArrayList<MethodeObjet> methodes;
+    public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom)
+    {
+        this.attributs = attributs;
+        this.methodes = methodes;
+        this.nom = nom;
+    }
 
+<<<<<<< HEAD
 	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom) {
 		this.attributs = attributs;
 		this.methodes = methodes;
@@ -32,51 +40,63 @@ public class ClasseObjet {
 			default:          return '~';
 		}
 	}
+=======
+    public String getNom() { return nom;}
+    public ArrayList<AttributObjet> getattributs(){ return attributs;}
+    public ArrayList<MethodeObjet> getMethodes() {return methodes;}
+>>>>>>> 6273b33 (allman modele et test)
 
 
-	public String affichageParametre(HashMap<String, String> parametre) 
-	{
-		String sRet = "";
+    public void setNom(String nom){ this.nom = nom;}
+    public void setattributs(ArrayList<AttributObjet> attributs){ this.attributs = attributs;}
+    public void setmethodes(ArrayList<MethodeObjet> methodes) { this.methodes = methodes;}
 
-		if (parametre != null && !parametre.isEmpty()) 
-		{
-			sRet += "("; 
-			for (String key : parametre.keySet()) 
-			{
-				sRet += key + ": " + parametre.get(key) + ", ";
-			}
-			sRet = sRet.substring(0, sRet.length() - 2);
-			sRet += ")";
-		} 
-		else 
-		{
-			sRet = "()"; 
-		}
-		return sRet; 
-	}
+    public char changementVisibilite(String visibilite)
+    {
+        switch (visibilite)
+        {
+            case "private":
+                return '-';
+            case "public":
+                return '+';
+            case "protected":
+                return '#';
+            default:
+                return '~';
+        }
+    }
 
-	public String retourType(String type) 
-	{
-		if (type.equals("public") || type.equals("void")) {
-			return " ";
-		}
-		return " : " + type;
-	}
+    public String affichageParametre(HashMap<String, String> parametre)
+    {
+        String sRet = "";
 
-	
-	@Override
-	public String toString() 
-	{
-		String sRet = "";
+        if (parametre != null && !parametre.isEmpty())
+        {
+            sRet += "(";
+            for (String key : parametre.keySet())
+            {
+                sRet += key + ": " + parametre.get(key) + ", ";
+            }
+            sRet = sRet.substring(0, sRet.length() - 2);
+            sRet += ")";
+        }
+        else
+        {
+            sRet = "()";
+        }
+        return sRet;
+    }
 
 		sRet += "-------------------------------------------------------------------------------------------\n";
 		sRet += String.format( "%50s" ,  this.nom ) +              "\n";
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
-		for (AttributObjet att : attributs) {
-			sRet += changementVisibilite(att.getVisibilite())  + " " + att.getNom() + " " + " : " + att.getType() + "\n" ; 
-		}
+    @Override
+    public String toString()
+    {
+        String sRet = "";
 
+<<<<<<< HEAD
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
 		for( MethodeObjet met : methodes )
@@ -87,8 +107,17 @@ public class ClasseObjet {
 					String.format( "%-15s",   retourType(met.getRetourType()) ) + "\n" ; 
 		}
 		sRet += "-------------------------------------------------------------------------------------------\n";
+        sRet += "----------------------------------------------------------\n";
+        sRet += String.format("%30s", this.nom) + "\n";
+        sRet += "----------------------------------------------------------\n";
 
-		return sRet ; 
-	}
-	
+        for (AttributObjet att : attributs)
+        {
+            sRet += changementVisibilite(att.getVisibilite()) + " " + att.getNom() + " " + " : " + att.getType() + "\n";
+        }
+>>>>>>> 6273b33 (allman modele et test)
+
+
+        return sRet;
+    }
 }

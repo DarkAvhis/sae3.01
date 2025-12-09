@@ -6,7 +6,8 @@ public class AttributObjet {
 	private String nom;
 	private String visibilite;
 
-	public AttributObjet(String nom, String portee, String type, String visibilite) {
+	public AttributObjet(String nom, String portee, String type, String visibilite) 
+	{
 		this.nom = nom;
 		this.portee = portee;
 		this.type = type;

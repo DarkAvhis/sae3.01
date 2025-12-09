@@ -18,34 +18,21 @@ public class Disque
 		compteur++;
 	}
 
-	public double getRayon() 
-	{
-		return this.rayon;
-	}
+	public double getRayon() { return this.rayon; }
+	public Point getCentre() { return this.centre;}
 
-	public void setRayon(double rayon) 
-	{
-		this.rayon = rayon;
-	}
-
-	public Point getCentre() 
-	{
-		return this.centre;
-	}
-
-	public void setCentre(Point centre) 
-	{
-		this.centre = centre;
-	}
+	public void setRayon(double rayon)  { this.rayon  = rayon ;}
+	public void setCentre(Point centre) { this.centre = centre;}
 	
-	public double calculerAire() 
-	{
+
+	public double calculerAire()      
+	{ 
 		return Math.PI * Math.pow(this.rayon, 2);
 	}
 
 	public double calculerPerimetre() 
-	{
-		return 2 * Math.PI * this.rayon;
+	{ 
+		return 2 * Math.PI * this.rayon;           
 	}
 
 	// Méthodes supplémentaires avec différents types

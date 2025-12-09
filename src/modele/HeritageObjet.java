@@ -9,7 +9,8 @@ public class HeritageObjet extends LiaisonObjet
     }
 
     @Override
-    public String toString() {
+    public String toString() 
+    {
         return classeOrig.getNom() + " hérite de " + classeDest.getNom();
     }
      

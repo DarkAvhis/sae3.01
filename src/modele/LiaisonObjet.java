@@ -1,6 +1,7 @@
 package modele;
 
-public class LiaisonObjet {
+public class LiaisonObjet 
+{
 
 	protected String nomAttribut; //Non utilisé en affichage
 	protected ClasseObjet classeOrig;
