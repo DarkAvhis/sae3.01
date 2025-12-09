@@ -13,11 +13,11 @@ public class PanneauProjets extends JPanel {
     {
         this.fenetrePrincipale = fenetrePrincipale;
         
-        this.cheminDossiers = "sauvegardes/dossiers";
+        this.cheminDossiers = "src";
 
         this.setLayout(new BorderLayout());
         this.setBackground(new Color(245, 245, 245));
-        this.setBorder(BorderFactory.createTitledBorder("Projets"));
+        this.setBorder(BorderFactory.createTitledBorder("test"));
 
         // Titre
         JLabel titreLabel = new JLabel("Liste des Projets");
