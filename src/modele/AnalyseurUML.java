@@ -36,8 +36,8 @@ public class AnalyseurUML
         }
         else if (cible.isDirectory())
         {
-            List<File> fichiersJava = analyseur.ClassesDuDossier(chemin);
-            List<ClasseObjet> classes = new ArrayList<>();
+            List<File> fichiersJava                 = analyseur.ClassesDuDossier(chemin);
+            List<ClasseObjet> classes               = new ArrayList<>();
             HashMap<String, ClasseObjet> mapClasses = new HashMap<>();
 
             for (File f : fichiersJava)
@@ -72,13 +72,13 @@ public class AnalyseurUML
 
     public ClasseObjet analyserFichierUnique(String chemin)
     {
-        File f = new File(chemin);
-        String nomClasse = f.getName().replace(".java", "");
+        File file = new File(chemin);
+        String nomClasse = file.getName().replace(".java", "");
 
         ArrayList<AttributObjet> attributs = new ArrayList<>();
-        ArrayList<MethodeObjet> methodes = new ArrayList<>();
+        ArrayList<MethodeObjet>  methodes  = new ArrayList<>();
 
-        try (Scanner sc = new Scanner(f))
+        try (Scanner sc = new Scanner(file))
         {
             while (sc.hasNextLine())
             {
@@ -211,7 +211,7 @@ public class AnalyseurUML
                 String typeAttribut = attribut.getType();
                 String typeCible = typeAttribut;
                 
-                MultipliciteObjet multCible = new MultipliciteObjet(1, 1); 
+                MultipliciteObjet multCible   = new MultipliciteObjet(1, 1); 
                 MultipliciteObjet multOrigine = new MultipliciteObjet(1, 1);
 
                 boolean estCollection = false;

@@ -5,10 +5,10 @@ import java.util.ArrayList;
 public class AttributObjet
 {
 	
-	private String portee; 
-	private String type;
-	private String nom;
-	private String visibilite;
+	private String  portee; 
+	private String  type;
+	private String  nom;
+	private String  visibilite;
 	private boolean statique;
 
 	
@@ -27,11 +27,11 @@ public class AttributObjet
 	}
 
 	
-	public String getVisibilite() { return visibilite   ;	}
-	public String getPortee    () {	return portee       ;	}
-	public String getNom       () {	return nom          ;	}
-	public String getType      () {	return type         ;	}
-    public boolean isStatique () { return statique     ;	}
+	public String  getVisibilite() {    return visibilite   ;	}
+	public String  getPortee    () {	return portee       ;	}
+	public String  getNom       () {	return nom          ;	}
+	public String  getType      () {	return type         ;	}
+    public boolean getStatique  () {    return statique     ;	}
 
 
 	public void setPortee     (String portee     ) {	this.portee     = portee     ;	}

@@ -16,24 +16,14 @@ public class AssociationObjet extends LiaisonObjet
         this.unidirectionnel = unidirectionnel;
     }
 
-    public MultipliciteObjet getMultOrig() {return multOrig;}
-    public MultipliciteObjet getMultDest() {return multDest;}
+    public MultipliciteObjet getMultOrig       () {    return multOrig        ;   }
+    public MultipliciteObjet getMultDest       () {    return multDest        ;   }
+    public boolean           getUnidirectionnel() {    return unidirectionnel ;   }
 
 
-    public void setMultOrig(MultipliciteObjet multOrig) {this.multOrig = multOrig;}
-    public void setMultDest(MultipliciteObjet multDest) {this.multDest = multDest;}
-
-
-
-    public boolean isUnidirectionnel() 
-    {
-        return unidirectionnel;
-    }
-
-    public void setUnidirectionnel(boolean unidirectionnel) 
-    {
-        this.unidirectionnel = unidirectionnel;
-    }
+    public void setMultOrig       (MultipliciteObjet multOrig) {    this.multOrig        = multOrig        ;   }
+    public void setMultDest       (MultipliciteObjet multDest) {    this.multDest        = multDest        ;   }
+    public void setUnidirectionnel(boolean unidirectionnel   ) {    this.unidirectionnel = unidirectionnel ;   }
 
     
     @Override

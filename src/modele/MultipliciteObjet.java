@@ -23,6 +23,7 @@ public class MultipliciteObjet
     {
         if (this.debut == 999999999) return "*";
         if (this.fin   == 999999999) return this.debut + "..*";
+        
         return this.debut + ".." + this.fin;
     }
 }
