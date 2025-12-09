@@ -113,7 +113,7 @@ public class ClasseObjet
 
 		for( MethodeObjet met : methodes )
 		{
-			String staticFlag = met.estStatique() ? "{static} " : "";
+			String staticFlag = met.isStatique() ? "{static} " : "";
 
 			sRet += String.format( "%-2c",    changementVisibilite(met.getVisibilite())) + staticFlag +
 					String.format( "%-25s" ,  met.getNom()) + 
