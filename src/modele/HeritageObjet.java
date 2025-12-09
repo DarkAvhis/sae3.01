@@ -8,8 +8,8 @@ public class HeritageObjet extends LiaisonObjet
         super(nomAttribut, classeDest, classeOrig);
     }
 
-    @Override
-    public String toString() {
+    public String toString() 
+    {
         return classeOrig.getNom() + " hérite de " + classeDest.getNom();
     }
      

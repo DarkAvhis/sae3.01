@@ -1,6 +1,5 @@
 package vue;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class FenetrePrincipale extends JFrame 

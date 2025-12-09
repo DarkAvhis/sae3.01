@@ -1,14 +1,19 @@
 package vue;
 
+<<<<<<< HEAD
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+=======
+import java.awt.*;
+>>>>>>> ebf89f46e9ca1d2ddb42b6a5ce00d39e81e57b14
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -23,9 +28,15 @@ public class PanneauDiagramme extends JPanel
         this.blocsClasses = new ArrayList<>();
         this.cheminProjetCourant = null;
 
+<<<<<<< HEAD
         this.setLayout(null);
         this.setBackground(new Color(255, 255, 255));
         this.setBorder(BorderFactory.createTitledBorder("Diagramme UML"));
+=======
+        setLayout(null); // pour placer les blocs où on veut
+        setBackground(new Color(255, 255, 255));
+        setBorder(BorderFactory.createTitledBorder("Diagramme UML"));
+>>>>>>> ebf89f46e9ca1d2ddb42b6a5ce00d39e81e57b14
 
         // Ajouter des listeners pour les interactions
         this.ajouterListenersInteraction();

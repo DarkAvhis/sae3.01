@@ -2,196 +2,223 @@ package test;
 
 public class Disque 
 {
-	private static int compteur = 0;
+    private double rayon;
+    private Point centre;
+    private boolean actif;
+    private String couleur;
+    private static int compteur;
+    private Point[] points;
 
-	private double rayon;
-	private Point centre;
-	private boolean actif;
-	private String couleur;
+    public Disque(double rayon, Point centre) 
+    {
+        this.rayon  = rayon;
+        this.centre = centre;
+        this.actif = true;
+        this.couleur = "Noir";
+        this.points = new Point[0];
+        compteur++;
+    }
 
-	public Disque(double rayon, Point centre) 
-	{
-		this.rayon  = rayon;
-		this.centre = centre;
-		this.actif = true;
-		this.couleur = "Noir";
-		compteur++;
-	}
+    public double getRayon() { return this.rayon; }
+    public Point getCentre() { return this.centre; }
+    public Point[] getPoints() { return this.points; }
 
-	public double getRayon() 
-	{
-		return this.rayon;
-	}
+    public void setRayon(double rayon)  { this.rayon  = rayon; }
+    public void setCentre(Point centre) { this.centre = centre; }
+    public void setPoints(Point[] points) { this.points = points; }
 
-	public void setRayon(double rayon) 
-	{
-		this.rayon = rayon;
-	}
+    public void ajouterPoint(Point point)
+    {
+        Point[] nouveauTableau = new Point[this.points.length + 1];
+        for (int i = 0; i < this.points.length; i++)
+        {
+            nouveauTableau[i] = this.points[i];
+        }
+        nouveauTableau[this.points.length] = point;
+        this.points = nouveauTableau;
+    }
 
-	public Point getCentre() 
-	{
-		return this.centre;
-	}
+    public void supprimerPoint(int index)
+    {
+        if (index < 0 || index >= this.points.length) return;
+        Point[] nouveauTableau = new Point[this.points.length - 1];
+        int j = 0;
+        for (int i = 0; i < this.points.length; i++)
+        {
+            if (i != index)
+            {
+                nouveauTableau[j++] = this.points[i];
+            }
+        }
+        this.points = nouveauTableau;
+    }
 
-	public void setCentre(Point centre) 
-	{
-		this.centre = centre;
-	}
-	
-	public double calculerAire() 
-	{
-		return Math.PI * Math.pow(this.rayon, 2);
-	}
+    public int getNombrePoints()
+    {
+        return this.points.length;
+    }
 
-	public double calculerPerimetre() 
-	{
-		return 2 * Math.PI * this.rayon;
-	}
+    public Point obtenirPoint(int index)
+    {
+        if (index < 0 || index >= this.points.length) return null;
+        return this.points[index];
+    }
 
-	// Méthodes supplémentaires avec différents types
-	public synchronized void setActif(boolean actif)
-	{
-		this.actif = actif;
-	}
+    public double calculerAire()      
+    { 
+        return Math.PI * Math.pow(this.rayon, 2);
+    }
 
-	public synchronized boolean isActif()
-	{
-		return this.actif;
-	}
+    public double calculerPerimetre() 
+    { 
+        return 2 * Math.PI * this.rayon;           
+    }
 
-	public String getCouleur()
-	{
-		return this.couleur;
-	}
+    // Méthodes supplémentaires avec différents types
+    public synchronized void setActif(boolean actif)
+    {
+        this.actif = actif;
+    }
 
-	public void setCouleur(String couleur)
-	{
-		this.couleur = couleur;
-	}
+    public synchronized boolean isActif()
+    {
+        return this.actif;
+    }
 
-	public static int getCompteur()
-	{
-		return compteur;
-	}
+    public String getCouleur()
+    {
+        return this.couleur;
+    }
 
-	public static synchronized void reinitialiserCompteur()
-	{
-		compteur = 0;
-	}
+    public void setCouleur(String couleur)
+    {
+        this.couleur = couleur;
+    }
 
-	public int comparerRayon(Disque autre)
-	{
-		if (this.rayon > autre.rayon) return 1;
-		if (this.rayon < autre.rayon) return -1;
-		return 0;
-	}
+    public static int getCompteur()
+    {
+        return compteur;
+    }
 
-	public boolean estIdentique(Disque autre)
-	{
-		return this.rayon == autre.rayon && this.centre.equals(autre.centre);
-	}
+    public static synchronized void reinitialiserCompteur()
+    {
+        compteur = 0;
+    }
 
-	public Disque agrandir(double facteur)
-	{
-		return new Disque(this.rayon * facteur, this.centre);
-	}
+    public int comparerRayon(Disque autre)
+    {
+        if (this.rayon > autre.rayon) return 1;
+        if (this.rayon < autre.rayon) return -1;
+        return 0;
+    }
 
-	public Disque diminuer(double pourcentage)
-	{
-		return new Disque(this.rayon * (1 - pourcentage / 100), this.centre);
-	}
+    public boolean estIdentique(Disque autre)
+    {
+        return this.rayon == autre.rayon && this.centre.equals(autre.centre);
+    }
 
-	public static Disque creerDisqueUnitaire(Point centre)
-	{
-		return new Disque(1.0, centre);
-	}
+    public Disque agrandir(double facteur)
+    {
+        return new Disque(this.rayon * facteur, this.centre);
+    }
 
-	public static Disque creerDisqueAleatoire(Point centre)
-	{
-		return new Disque(Math.random() * 10, centre);
-	}
+    public Disque diminuer(double pourcentage)
+    {
+        return new Disque(this.rayon * (1 - pourcentage / 100), this.centre);
+    }
 
-	public char getCategorie()
-	{
-		if (this.rayon < 2) return 'P';
-		if (this.rayon < 5) return 'M';
-		return 'G';
-	}
+    public static Disque creerDisqueUnitaire(Point centre)
+    {
+        return new Disque(1.0, centre);
+    }
 
-	public byte obtenirNiveauRemplissage()
-	{
-		byte niveau = (byte) Math.min(100, (this.rayon / 10) * 100);
-		return niveau;
-	}
+    public static Disque creerDisqueAleatoire(Point centre)
+    {
+        return new Disque(Math.random() * 10, centre);
+    }
 
-	public long calculerVolumeSphere()
-	{
-		double volume = (4.0 / 3.0) * Math.PI * Math.pow(this.rayon, 3);
-		return Math.round(volume);
-	}
+    public char getCategorie()
+    {
+        if (this.rayon < 2) return 'P';
+        if (this.rayon < 5) return 'M';
+        return 'G';
+    }
 
-	public float calculerSurfaceSphere()
-	{
-		return (float) (4 * Math.PI * Math.pow(this.rayon, 2));
-	}
+    public byte obtenirNiveauRemplissage()
+    {
+        byte niveau = (byte) Math.min(100, (this.rayon / 10) * 100);
+        return niveau;
+    }
 
-	public short obtenirIdCategorie()
-	{
-		return (short) this.getCategorie();
-	}
+    public long calculerVolumeSphere()
+    {
+        double volume = (4.0 / 3.0) * Math.PI * Math.pow(this.rayon, 3);
+        return Math.round(volume);
+    }
 
-	public synchronized void afficherInfo()
-	{
-		System.out.println("Disque - Rayon: " + this.rayon + ", Centre: " + this.centre + 
-				           ", Couleur: " + this.couleur + ", Actif: " + this.actif);
-	}
+    public float calculerSurfaceSphere()
+    {
+        return (float) (4 * Math.PI * Math.pow(this.rayon, 2));
+    }
 
-	public static synchronized void afficherStatistiques()
-	{
-		System.out.println("Nombre de disques créés: " + compteur);
-	}
+    public short obtenirIdCategorie()
+    {
+        return (short) this.getCategorie();
+    }
 
-	public Object obtenirDescriptif()
-	{
-		return "Disque[rayon=" + this.rayon + ", centre=" + this.centre + "]";
-	}
+    public synchronized void afficherInfo()
+    {
+        System.out.println("Disque - Rayon: " + this.rayon + ", Centre: " + this.centre + 
+                           ", Couleur: " + this.couleur + ", Actif: " + this.actif);
+    }
 
-	public Comparable<Disque> obtenirComparable()
-	{
-		return new Comparable<Disque>()
-		{
-			@Override
-			public int compareTo(Disque autre)
-			{
-				return Double.compare(Disque.this.rayon, autre.rayon);
-			}
-		};
-	}
+    public static synchronized void afficherStatistiques()
+    {
+        System.out.println("Nombre de disques créés: " + compteur);
+    }
 
-	@Override
-	public String toString()
-	{
-		return "Disque{" +
-				"rayon=" + this.rayon +
-				", centre=" + this.centre +
-				", couleur='" + this.couleur + '\'' +
-				", actif=" + this.actif +
-				'}';
-	}
+    public Object obtenirDescriptif()
+    {
+        return "Disque[rayon=" + this.rayon + ", centre=" + this.centre + "]";
+    }
 
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Disque disque = (Disque) o;
-		return Double.compare(disque.rayon, this.rayon) == 0 && 
-		       this.centre.equals(disque.centre);
-	}
+    public Comparable<Disque> obtenirComparable()
+    {
+        return new Comparable<Disque>()
+        {
+            @Override
+            public int compareTo(Disque autre)
+            {
+                return Double.compare(Disque.this.rayon, autre.rayon);
+            }
+        };
+    }
 
-	@Override
-	public int hashCode()
-	{
-		return Double.hashCode(this.rayon) * 31 + this.centre.hashCode();
-	}
+    @Override
+    public String toString()
+    {
+        return "Disque{" +
+                "rayon=" + this.rayon +
+                ", centre=" + this.centre +
+                ", couleur='" + this.couleur + '\'' +
+                ", actif=" + this.actif +
+                ", points=" + java.util.Arrays.toString(this.points) +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Disque disque = (Disque) o;
+        return Double.compare(disque.rayon, this.rayon) == 0 && 
+               this.centre.equals(disque.centre);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Double.hashCode(this.rayon) * 31 + this.centre.hashCode();
+    }
 }

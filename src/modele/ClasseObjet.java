@@ -3,13 +3,15 @@ package modele;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ClasseObjet {
+public class ClasseObjet 
+{
 
 	private String nom;
 	private ArrayList<AttributObjet> attributs;
 	private ArrayList<MethodeObjet> methodes;
 
-	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom) {
+	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom) 
+	{
 		this.attributs = attributs;
 		this.methodes = methodes;
 		this.nom = nom;
@@ -24,8 +26,10 @@ public class ClasseObjet {
 	public void setmethodes (ArrayList<MethodeObjet>  methodes ) {	this.methodes  = methodes  ;	}
 	
 
-	public char changementVisibilite( String visibilite ) {
-		switch (visibilite) {
+	public char changementVisibilite( String visibilite ) 
+	{
+		switch (visibilite) 
+		{
 			case "private":   return '-';
 			case "public":    return '+';
 			case "protected": return '#';
@@ -33,32 +37,46 @@ public class ClasseObjet {
 		}
 	}
 
-
-	public String affichageParametre(HashMap<String, String> parametre) 
+	public String changementPortee(String portee)
 	{
-		String sRet = "";
-
-		if (parametre != null && !parametre.isEmpty()) 
+		switch (portee)
 		{
-			sRet += "("; 
-			for (String key : parametre.keySet()) 
-			{
-				sRet += key + ": " + parametre.get(key) + ", ";
-			}
-			sRet = sRet.substring(0, sRet.length() - 2);
-			sRet += ")";
-		} 
-		else 
-		{
-			sRet = "()"; 
+			case "static" : return "static";
+			default: return " ";
 		}
-		return sRet; 
 	}
+
+
+    public String affichageParametre(HashMap<String, String> parametre)
+    {
+        String sRet = "";
+
+        if (parametre != null && !parametre.isEmpty())
+        {
+            sRet += "(";
+            for (String key : parametre.keySet())
+            {
+                sRet += key + ": " + parametre.get(key) + ", ";
+            }
+            sRet = sRet.substring(0, sRet.length() - 2);
+            sRet += ")";
+        }
+        else
+        {
+            sRet = "()";
+        }
+        return sRet;
+    }
 
 	public String retourType(String type) 
 	{
-		if (type.equals("public") || type.equals("void")) {
-			return " ";
+		if (type == null) 
+		{
+			return " "; 
+		}
+		if (type.equals("public") || type.equals("void")) 
+		{
+			return " "; 
 		}
 		return " : " + type;
 	}
@@ -73,22 +91,28 @@ public class ClasseObjet {
 		sRet += String.format( "%50s" ,  this.nom ) +              "\n";
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
-		for (AttributObjet att : attributs) {
-			sRet += changementVisibilite(att.getVisibilite())  + " " + att.getNom() + " " + " : " + att.getType() + "\n" ; 
+		for (AttributObjet att : attributs) 
+		{
+			String staticFlag = att.isStatique() ? " {static}" : "";
+			sRet += changementVisibilite(att.getVisibilite())  + 
+					" " + att.getNom() + " : " + att.getType() + 
+					staticFlag + "\n" ; 
 		}
 
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
 		for( MethodeObjet met : methodes )
 		{
+			String staticFlag = met.isStatique() ? "{static} " : "";
+
 			sRet += String.format( "%-2c",    changementVisibilite(met.getVisibilite())) +
+					staticFlag +
 					String.format( "%-25s" ,  met.getNom()) + 
 					String.format( "%-35s" ,  affichageParametre(met.getParametres()))  + 
 					String.format( "%-15s",   retourType(met.getRetourType()) ) + "\n" ; 
 		}
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
-		return sRet ; 
+		return sRet;
 	}
-	
 }
