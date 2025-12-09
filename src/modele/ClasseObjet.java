@@ -5,27 +5,41 @@ import java.util.HashMap;
 
 public class ClasseObjet 
 {
-
+	/*-------------------------------------- */
+	/* Attributs                             */
+	/*-------------------------------------- */
 	private String nom;
 	private ArrayList<AttributObjet> attributs;
-	private ArrayList<MethodeObjet> methodes;
+	private ArrayList<MethodeObjet>  methodes;
 
+	/*-------------------------------------- */
+	/* Constructeur                          */
+	/*-------------------------------------- */
 	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom) 
 	{
 		this.attributs = attributs;
-		this.methodes = methodes;
-		this.nom = nom;
+		this.methodes  = methodes;
+		this.nom       = nom;
 	}
 
+	/*-------------------------------------- */
+	/* Les Accesseurs                        */
+	/*-------------------------------------- */
 	public String                   getNom      () {	return nom       ;	}
 	public ArrayList<AttributObjet> getattributs() {	return attributs ;	}
 	public ArrayList<MethodeObjet>  getMethodes () {	return methodes  ;	}
 
+	/*-------------------------------------- */
+	/* Modificateurs                         */
+	/*-------------------------------------- */
 	public void setNom      (String nom                        ) {	this.nom       = nom       ;	}
 	public void setattributs(ArrayList<AttributObjet> attributs) {	this.attributs = attributs ;	}
 	public void setmethodes (ArrayList<MethodeObjet>  methodes ) {	this.methodes  = methodes  ;	}
 	
 
+	/*-------------------------------------- */
+	/* Methode autre                         */
+	/*-------------------------------------- */
 	public char changementVisibilite( String visibilite ) 
 	{
 		switch (visibilite) 
@@ -37,43 +51,31 @@ public class ClasseObjet
 		}
 	}
 
-	public String changementPortee(String portee)
+	public String affichageParametre(HashMap<String, String> parametre)
 	{
-		switch (portee)
+		String sRet = "";
+
+		if (parametre != null && !parametre.isEmpty())
 		{
-			case "static" : return "static";
-			default: return " ";
+			sRet += "(";
+			for (String key : parametre.keySet())
+			{
+				sRet += key + ": " + parametre.get(key) + ", ";
+			}
+			sRet = sRet.substring(0, sRet.length() - 2);
+			sRet += ")";
 		}
+		else
+		{
+			sRet = "()";
+		}
+		return sRet;
 	}
-
-
-    public String affichageParametre(HashMap<String, String> parametre)
-    {
-        String sRet = "";
-
-        if (parametre != null && !parametre.isEmpty())
-        {
-            sRet += "(";
-            for (String key : parametre.keySet())
-            {
-                sRet += key + ": " + parametre.get(key) + ", ";
-            }
-            sRet = sRet.substring(0, sRet.length() - 2);
-            sRet += ")";
-        }
-        else
-        {
-            sRet = "()";
-        }
-        return sRet;
-    }
 
 	public String retourType(String type) 
 	{
-		if (type == null) 
-		{
-			return " "; 
-		}
+		if (type == null) return " "; 
+
 		if (type.equals("public") || type.equals("void")) 
 		{
 			return " "; 
@@ -81,7 +83,9 @@ public class ClasseObjet
 		return " : " + type;
 	}
 
-	
+	/*-------------------------------------- */
+	/* toString                              */
+	/*-------------------------------------- */
 	@Override
 	public String toString() 
 	{
@@ -93,10 +97,11 @@ public class ClasseObjet
 
 		for (AttributObjet att : attributs) 
 		{
-			String staticFlag = att.isStatique() ? " {static}" : "";
-			sRet += changementVisibilite(att.getVisibilite())  + 
-					" " + att.getNom() + " : " + att.getType() + 
-					staticFlag + "\n" ; 
+			String staticFlag = att.getStatique() ? " {static}" : "";
+			sRet +=  String.format( "%-2c" , changementVisibilite(att.getVisibilite()) )   + 
+					 String.format("%-15s" , att.getNom() )  + 
+					 String.format("%-15s" , retourType( att.getType() ))  + 
+					 String.format("%-10s" , staticFlag ) + "\n" ; 
 		}
 
 		sRet += "-------------------------------------------------------------------------------------------\n";

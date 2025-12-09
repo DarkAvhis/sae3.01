@@ -1,39 +1,57 @@
 package modele;
 
-import java.util.ArrayList;
-
+/**
+ * Représente un attribut dans une classe UML.
+ * Contient son nom, son type, sa visibilité, et s'il est statique ou non.
+ */
 public class AttributObjet
 {
-	
-	private String portee; 
-	private String type;
-	private String nom;
-	private String visibilite;
-	private boolean statique;
+	/*-------------------------------------- */
+	/* Attributs                             */
+	/*-------------------------------------- */
+	private String  portee; 
+	private String  type;
+	private String  nom;
+	private String  visibilite;
+	private boolean estStatique;
 
-	
+	/*-------------------------------------- */
+	/* Constructeur                          */
+	/*-------------------------------------- */
 	public AttributObjet(String nom, String portee, String type, String visibilite, boolean estStatique) 
 	{
-		this.nom = nom;
-		this.portee = portee;
-		this.type = type;
-		this.visibilite = visibilite;
-		this.statique = estStatique;
+		this.nom		 = nom;
+		this.portee      = portee;
+		this.type        = type;
+		this.visibilite  = visibilite;
+		this.estStatique = estStatique;
 	}
 
+	/**
+     * Constructeur simplifié qui crée un attribut non statique.
+     *
+     * @param nom         Nom de l'attribut
+     * @param portee      Portée (ex. : "instance")
+     * @param type        Type de l'attribut
+     * @param visibilite  Visibilité
+     */
 	public AttributObjet(String nom, String portee, String type, String visibilite) 
 	{
 		this(nom, portee, type, visibilite, false);
 	}
 
-	
-	public String getVisibilite() { return visibilite   ;	}
-	public String getPortee    () {	return portee       ;	}
-	public String getNom       () {	return nom          ;	}
-	public String getType      () {	return type         ;	}
-    public boolean isStatique () { return statique     ;	}
+	/*-------------------------------------- */
+	/* Les Accesseurs                        */
+	/*-------------------------------------- */
+	public String  getVisibilite() {    return visibilite   ;	}
+	public String  getPortee    () {	return portee       ;	}
+	public String  getNom       () {	return nom          ;	}
+	public String  getType      () {	return type         ;	}
+    public boolean getStatique  () {    return statique     ;	}
 
-
+	/*-------------------------------------- */
+	/* Modificateurs                         */
+	/*-------------------------------------- */
 	public void setPortee     (String portee     ) {	this.portee     = portee     ;	}
 	public void setVisibilite (String visibilite ) {	this.visibilite = visibilite ;	}
 	public void setType       (String type       ) {	this.type       = type       ;	}

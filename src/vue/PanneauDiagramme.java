@@ -9,7 +9,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
@@ -75,7 +74,7 @@ public class PanneauDiagramme extends JPanel
             {
                 blocSelectionne.setX(e.getX() - offsetX);
                 blocSelectionne.setY(e.getY() - offsetY);
-                
+
                 // Redessiner pour voir le déplacement
                 repaint();
             }
