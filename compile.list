@@ -9,3 +9,5 @@ src/modele/MultipliciteObjet.java
 src/modele/Visibilite.java
 
 src/test/Test.java
+src/test/Point.java
+src/test/Disque.java
