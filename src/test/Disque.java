@@ -1,5 +1,6 @@
 public class Disque 
 {
+	// 0    1        2
 	private double rayon;
 	private Point centre;
 	private static int compteur = 0;
@@ -189,7 +190,7 @@ public class Disque
 	}
 
 	@Override
-	public int hashCode()
+    public int hashCode()
 	{
 		return Double.hashCode(this.rayon) * 31 + this.centre.hashCode();
 	}

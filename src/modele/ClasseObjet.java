@@ -3,13 +3,15 @@ package modele;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ClasseObjet {
+public class ClasseObjet 
+{
 
 	private String nom;
 	private ArrayList<AttributObjet> attributs;
 	private ArrayList<MethodeObjet> methodes;
 
-	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom) {
+	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom) 
+	{
 		this.attributs = attributs;
 		this.methodes = methodes;
 		this.nom = nom;
@@ -24,12 +26,23 @@ public class ClasseObjet {
 	public void setmethodes (ArrayList<MethodeObjet>  methodes ) {	this.methodes  = methodes  ;	}
 	
 
-	public char changementVisibilite( String visibilite ) {
-		switch (visibilite) {
+	public char changementVisibilite( String visibilite ) 
+	{
+		switch (visibilite) 
+		{
 			case "private":   return '-';
 			case "public":    return '+';
 			case "protected": return '#';
 			default:          return '~';
+		}
+	}
+
+	public String changementPortee(String portee)
+	{
+		switch (portee)
+		{
+			case "static" : return "static";
+			default: return " ";
 		}
 	}
 
@@ -57,8 +70,13 @@ public class ClasseObjet {
 
 	public String retourType(String type) 
 	{
-		if (type.equals("public") || type.equals("void")) {
-			return " ";
+		if (type == null) 
+		{
+			return " "; 
+		}
+		if (type.equals("public") || type.equals("void")) 
+		{
+			return " "; 
 		}
 		return " : " + type;
 	}
@@ -73,15 +91,24 @@ public class ClasseObjet {
 		sRet += String.format( "%50s" ,  this.nom ) +              "\n";
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
-		for (AttributObjet att : attributs) {
-			sRet += changementVisibilite(att.getVisibilite())  + " " + att.getNom() + " " + " : " + att.getType() + "\n" ; 
+		// AFFICHAGE ATTRIBUTS
+		for (AttributObjet att : attributs) 
+		{
+			String staticFlag = att.isStatique() ? " {static}" : "";
+			sRet += changementVisibilite(att.getVisibilite())  + 
+					" " + att.getNom() + " : " + att.getType() + 
+					staticFlag + "\n" ; 
 		}
 
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
+		// AFFICHAGE METHODES
 		for( MethodeObjet met : methodes )
 		{
+			String staticFlag = met.isStatique() ? "{static} " : "";
+
 			sRet += String.format( "%-2c",    changementVisibilite(met.getVisibilite())) +
+					staticFlag +
 					String.format( "%-25s" ,  met.getNom()) + 
 					String.format( "%-35s" ,  affichageParametre(met.getParametres()))  + 
 					String.format( "%-15s",   retourType(met.getRetourType()) ) + "\n" ; 
