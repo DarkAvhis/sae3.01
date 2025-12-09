@@ -5,49 +5,46 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-// Import java.util.HashSet est répété, une seule déclaration suffit.
 
 /**
- * Classe utilitaire pour l'analyse syntaxique (parsing) des fichiers Java.
- * Gère l'extraction des membres (attributs/méthodes) et la détection des relations simples (héritage).
+ * Classe utilitaire responsable de l'analyse syntaxique (parsing) manuelle des fichiers Java.
+ * Stocke les intentions d'héritage sous forme de noms (String) pour une résolution ultérieure par le Contrôleur.
  */
 public class AnalyseurUML
 {
     private static final int MULT_INDEFINIE = 999999999;
     
-    // Ces listes sont remplies lors de l'analyse d'un dossier et sont lues par le Contrôleur
-	private ArrayList<HeritageObjet> lstHerite = new ArrayList<>();
-    private HashSet<String> heritagesAjoutes = new HashSet<>();
-    // private ArrayList<InterfaceObjet> lstInterfaces = new ArrayList<>(); // Pour l'étape 4 Implémentation
-
-    // La méthode main est supprimée d'AnalyseurUML car elle est déplacée vers AnalyseIHMControleur
+    // Stocke l'héritage sous forme de paire (Nom Enfant, Nom Parent)
+	private ArrayList<String[]> lstIntentionHeritage = new ArrayList<>(); 
 
     /**
-     * Réinitialise les listes de relations stockées pour une nouvelle série d'analyses.
-     * Cruciale pour permettre au Contrôleur d'analyser plusieurs dossiers ou de raffraîchir les données.
+     * Réinitialise les listes de relations stockées.
      */
     public void resetRelations()
     {
+<<<<<<< HEAD
         this.lstHerite.clear();
         this.heritagesAjoutes.clear();
         // this.lstInterfaces.clear(); // Pour l'étape 4 Implémentation
+=======
+        this.lstIntentionHeritage.clear();
+        // this.lstInterfaces.clear(); 
+>>>>>>> 54ac3d4b67631fffab232f54d73de709fd332217
     }
 
     /**
-     * Getter pour la liste d'héritage, utilisé par le contrôleur (Étape 4).
+     * Getter pour les intentions d'héritage (Noms des classes seulement).
      */
-    public ArrayList<HeritageObjet> getLstHerite()
+    public ArrayList<String[]> getIntentionsHeritage()
     {
-        return lstHerite;
+        return lstIntentionHeritage;
     }
 
     /**
      * Analyse un fichier Java et construit l'objet ClasseObjet correspondant.
-     * Gère la détection du mot-clé 'extends'.
      */
     public ClasseObjet analyserFichierUnique(String chemin)
     {
@@ -57,22 +54,15 @@ public class AnalyseurUML
         ArrayList<AttributObjet> attributs = new ArrayList<>();
         ArrayList<MethodeObjet> methodes = new ArrayList<>();
         boolean estHeritier = false ;
-
-        // Ces variables sont utilisées pour stocker temporairement l'information d'héritage
-        ClasseObjet classeDest = null;
         String nomParent = null; 
+<<<<<<< HEAD
 
         // --- Début de la logique de recherche de fichiers pour la classe parente ---
         ArrayList<File> lstFichier = new ArrayList<>();
         File parentDir = file.getParentFile();
+=======
+>>>>>>> 54ac3d4b67631fffab232f54d73de709fd332217
         
-        if (parentDir != null)
-        {
-            // Nous utilisons directement ClassesDuDossier sur le répertoire parent
-            lstFichier = ClassesDuDossier(parentDir.getAbsolutePath());
-        }
-        // --- Fin de la logique de recherche de fichiers pour la classe parente ---
-
         try (Scanner sc = new Scanner(file))
         {
             while (sc.hasNextLine())
@@ -88,7 +78,7 @@ public class AnalyseurUML
                 if (ligne.contains("class ") && ligne.contains("extends"))
                 {
                     estHeritier = true;
-                    // Logique d'extraction du nom parent
+                    
                     String afterExtends = ligne.substring(ligne.indexOf("extends") + 7).trim();
                     int indexEspace = afterExtends.indexOf(' ');
                     int indexAccolade = afterExtends.indexOf('{');
@@ -98,6 +88,7 @@ public class AnalyseurUML
                     if (indexAccolade != -1 && indexAccolade < indexFinNom) indexFinNom = indexAccolade;
 
                     nomParent = afterExtends.substring(0, indexFinNom).trim();
+<<<<<<< HEAD
                     
                     // --- Résolution locale de la classe parente ---
                     for (File fichier : lstFichier)
@@ -110,6 +101,8 @@ public class AnalyseurUML
                         }
                     }
                     // --- Fin de la résolution locale ---
+=======
+>>>>>>> 54ac3d4b67631fffab232f54d73de709fd332217
                 }
 
                 boolean estStatique = ligne.contains("static");
@@ -131,17 +124,24 @@ public class AnalyseurUML
             return null;
         }
 
-        return new ClasseObjet(attributs, methodes, nomClasse);
+        ClasseObjet nouvelleClasse = new ClasseObjet(attributs, methodes, nomClasse);
+        
+        // --- Enregistrement de l'intention d'Héritage (Nom de la classe seulement) ---
+        if (estHeritier && nomParent != null)
+        {
+            // Stocke la paire (Nom Enfant, Nom Parent)
+            this.lstIntentionHeritage.add(new String[]{nomClasse, nomParent}); 
+        }
+        
+        return nouvelleClasse;
     }
 
     public void extraireAttribut(String ligne, boolean estStatique, ArrayList<AttributObjet> attributs)
     {
-        // ... (Logique inchangée pour extraireAttribut) ...
         if (ligne.contains("="))
-		{
-			// On ne conserve que la partie avant le signe égal
-			ligne = ligne.substring(0, ligne.indexOf("="));
-		}
+        {
+            ligne = ligne.substring(0, ligne.indexOf("="));
+        }
 
         String propre = ligne.replace(";", "").trim();
         String[] parts = propre.split("\\s+");
@@ -164,7 +164,6 @@ public class AnalyseurUML
     
     public void extraireMethode(String ligne, boolean estStatique, String nomClasse, ArrayList<MethodeObjet> methodes)
     {
-        // ... (Logique inchangée pour extraireMethode) ...
         int indexParenthese = ligne.indexOf('(');
         String avantParenthese = ligne.substring(0, indexParenthese).trim();
         String[] parts = avantParenthese.split("\\s+");
@@ -263,7 +262,6 @@ public class AnalyseurUML
 
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses)
     {
-        // ... (Logique inchangée pour detecterAssociations) ...
         List<AssociationObjet> associations = new ArrayList<>();
         
         for (ClasseObjet classeOrigine : classes)
@@ -273,7 +271,7 @@ public class AnalyseurUML
                 String typeAttribut = attribut.getType();
                 String typeCible = typeAttribut;
                 
-                MultipliciteObjet multCible   = new MultipliciteObjet(1, 1); 
+                MultipliciteObjet multCible = new MultipliciteObjet(1, 1); 
                 MultipliciteObjet multOrigine = new MultipliciteObjet(1, 1);
 
                 boolean estCollection = false;
@@ -315,7 +313,6 @@ public class AnalyseurUML
 
     public ArrayList<File> ClassesDuDossier(String cheminDossier)
     {
-        // ... (Logique inchangée pour ClassesDuDossier) ...
         File dossier = new File(cheminDossier);
         File[] tousLesFichiers = dossier.listFiles();
         ArrayList<File> fichiersJava = new ArrayList<>();
