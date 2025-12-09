@@ -91,7 +91,6 @@ public class ClasseObjet
 		sRet += String.format( "%50s" ,  this.nom ) +              "\n";
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
-		// AFFICHAGE ATTRIBUTS
 		for (AttributObjet att : attributs) 
 		{
 			String staticFlag = att.isStatique() ? " {static}" : "";
@@ -102,7 +101,6 @@ public class ClasseObjet
 
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
-		// AFFICHAGE METHODES
 		for( MethodeObjet met : methodes )
 		{
 			String staticFlag = met.isStatique() ? "{static} " : "";
@@ -114,16 +112,7 @@ public class ClasseObjet
 					String.format( "%-15s",   retourType(met.getRetourType()) ) + "\n" ; 
 		}
 		sRet += "-------------------------------------------------------------------------------------------\n";
-        sRet += "----------------------------------------------------------\n";
-        sRet += String.format("%30s", this.nom) + "\n";
-        sRet += "----------------------------------------------------------\n";
 
-        for (AttributObjet att : attributs)
-        {
-            sRet += changementVisibilite(att.getVisibilite()) + " " + att.getNom() + " " + " : " + att.getType() + "\n";
-        }
-
-
-        return sRet;
-    }
+		return sRet;
+	}
 }
