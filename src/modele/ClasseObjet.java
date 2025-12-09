@@ -112,7 +112,7 @@ public class ClasseObjet
 					String.format( "%-15s",   retourType(met.getRetourType()) ) + "\n" ; 
 		}
 		sRet += "-------------------------------------------------------------------------------------------\n";
-
+		
 		return sRet;
 	}
 }
