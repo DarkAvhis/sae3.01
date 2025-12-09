@@ -13,18 +13,18 @@ public class AttributObjet
 	private String  type;
 	private String  nom;
 	private String  visibilite;
-	private boolean estStatique;
+	private boolean statique;
 
 	/*-------------------------------------- */
 	/* Constructeur                          */
 	/*-------------------------------------- */
-	public AttributObjet(String nom, String portee, String type, String visibilite, boolean estStatique) 
+	public AttributObjet(String nom, String portee, String type, String visibilite, boolean statique) 
 	{
 		this.nom		 = nom;
 		this.portee      = portee;
 		this.type        = type;
 		this.visibilite  = visibilite;
-		this.estStatique = estStatique;
+		this.statique    = statique;
 	}
 
 	/**
