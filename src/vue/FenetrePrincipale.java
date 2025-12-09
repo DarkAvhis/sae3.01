@@ -2,45 +2,49 @@ package vue;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 
-public class FenetrePrincipale extends JFrame {
+public class FenetrePrincipale extends JFrame 
+{
 
     private PanneauProjets panneauProjets;
     private PanneauDiagramme panneauDiagramme;
 
-    public FenetrePrincipale() {
-        setTitle("Générateur de diagramme UML");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1400, 800);
-        setLocationRelativeTo(null);
-        setResizable(true);
+    public FenetrePrincipale() 
+    {
+        this.setTitle("Générateur de diagramme UML");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(1400, 800);
+        this.setLocationRelativeTo(null);
+        this.setResizable(true);
 
-        panneauProjets = new PanneauProjets(this);
-        panneauDiagramme = new PanneauDiagramme();
+        this.panneauProjets = new PanneauProjets(this);
+        this.panneauDiagramme = new PanneauDiagramme();
 
-        setLayout(new BorderLayout());
+        this.setLayout(new BorderLayout());
         
         // permettre le redimensionnement
         JSplitPane splitPane = new JSplitPane(
             JSplitPane.HORIZONTAL_SPLIT,
             true,
-            panneauProjets,
-            panneauDiagramme
+            this.panneauProjets,
+            this.panneauDiagramme
         );
         splitPane.setDividerLocation(250);
         splitPane.setOneTouchExpandable(true);
 
-        add(splitPane, BorderLayout.CENTER);
-        add(new BarreMenus(), BorderLayout.NORTH);
+        this.add(splitPane, BorderLayout.CENTER);
+        this.add(new BarreMenus(), BorderLayout.NORTH);
     }
 
-    public void chargerProjet(String cheminProjet) {
-        panneauDiagramme.chargerProjet(cheminProjet);
+    public void chargerProjet(String cheminProjet) 
+    {
+        this.panneauDiagramme.chargerProjet(cheminProjet);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
+    public static void main(String[] args) 
+    {
+        SwingUtilities.invokeLater(() -> 
+        {
             FenetrePrincipale fenetre = new FenetrePrincipale();
             fenetre.setVisible(true);
         });
