@@ -3,6 +3,11 @@ package modele;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
+/**
+ * Représente une classe UML analysée à partir d'un fichier Java.
+ * Contient son nom, sa liste d'attributs et sa liste de méthodes.
+ */
 public class ClasseObjet 
 {
 	/*-------------------------------------- */
@@ -44,8 +49,8 @@ public class ClasseObjet
 	{
 		switch (visibilite) 
 		{
-			case "private":   return '-';
-			case "public":    return '+';
+			case "private"  : return '-';
+			case "public"   : return '+';
 			case "protected": return '#';
 			default:          return '~';
 		}
@@ -108,10 +113,9 @@ public class ClasseObjet
 
 		for( MethodeObjet met : methodes )
 		{
-			String staticFlag = met.isStatique() ? "{static} " : "";
+			String staticFlag = met.estStatique() ? "{static} " : "";
 
-			sRet += String.format( "%-2c",    changementVisibilite(met.getVisibilite())) +
-					staticFlag +
+			sRet += String.format( "%-2c",    changementVisibilite(met.getVisibilite())) + staticFlag +
 					String.format( "%-25s" ,  met.getNom()) + 
 					String.format( "%-35s" ,  affichageParametre(met.getParametres()))  + 
 					String.format( "%-15s",   retourType(met.getRetourType()) ) + "\n" ; 
