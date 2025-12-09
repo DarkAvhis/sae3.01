@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
  */
 public class AnalyseurUML
 {
+    /**
+     * Constante représentant une multiplicité indéfinie.
+     */
     private static final int MULT_INDEFINIE = 999999999;
     
     // Ces listes sont remplies lors de l'analyse d'un dossier et sont lues par le Contrôleur
@@ -126,11 +129,12 @@ public class AnalyseurUML
                 boolean estStatique = ligne.contains("static");
                 boolean aVisibilite = (ligne.startsWith("public") || ligne.startsWith("private") || ligne.startsWith("protected"));
 
-                if (aVisibilite && ligne.endsWith(";") && !ligne.contains("("))
+                if (ligneVisibile && ligne.endsWith(";") && !ligne.contains("("))
                 {
                     extraireAttribut(ligne, estStatique, attributs);
                 }
-                else if (aVisibilite && ligne.contains("(") && !ligne.contains("class "))
+
+                else if (ligneVisibile && ligne.contains("(") && !ligne.contains("class "))
                 {
                     extraireMethode(ligne, estStatique, nomClasse, methodes);
                 }
@@ -142,46 +146,14 @@ public class AnalyseurUML
             return null;
         }
 
-        ClasseObjet nouvelleClasse = new ClasseObjet(attributs, methodes, nomClasse);
-        
-        // --- Enregistrement de l'intention d'Héritage ---
-        if (estHeritier)
-        {
-            if (classeDest != null)
-            {
-                String parent = classeDest.getNom(); // Nom bidon
-                String child = nouvelleClasse.getNom();
-                String cle = parent + "->" + child;
-                
-                if (!heritagesAjoutes.contains(cle))
-                {
-                    // Stocke l'héritage avec la classe cible bidon (nom Parent seulement)
-                    this.lstHerite.add(new HeritageObjet(classeDest, nouvelleClasse)); 
-                    this.heritagesAjoutes.add(cle);
-                }
-            }
-            else
-            {
-                // Dans le cas de l'héritage vers une classe non locale (ex: Object), nomParent est défini, mais classeDest est null.
-                // On met l'avertissement uniquement si la classe Parent n'est pas "Object" ou une autre classe de base non analysée.
-                if(nomParent != null && !nomParent.equals("Object")) {
-                     System.out.println("Avertissement: Super-classe '" + nomParent + "' de '" + nomClasse + "' déclarée, mais fichier parent non trouvé localement.");
-                }
-            }
-        }
-
-		
-        return nouvelleClasse;
+        return new ClasseObjet(attributs, methodes, nomClasse);
     }
-    
-    // --- (Les méthodes extraireAttribut, extraireMethode, detecterAssociations restent inchangées) ---
 
     private void extraireAttribut(String ligne, boolean estStatique, ArrayList<AttributObjet> attributs)
     {
         // ... (Logique inchangée pour extraireAttribut) ...
         if (ligne.contains("="))
 		{
-			// On ne conserve que la partie avant le signe égal
 			ligne = ligne.substring(0, ligne.indexOf("="));
 		}
 
@@ -196,20 +168,29 @@ public class AnalyseurUML
 
         if (motsUtiles.size() >= 2)
         {
-            String type = motsUtiles.get(motsUtiles.size() - 2);
-            String nom = motsUtiles.get(motsUtiles.size() - 1);
+            String type       = motsUtiles.get(motsUtiles.size() - 2);
+            String nom        = motsUtiles.get(motsUtiles.size() - 1);
             String visibilite = parts[0]; 
             
             attributs.add(new AttributObjet(nom, estStatique ? "static" : "instance", type, visibilite, estStatique));
         }
     }
     
+
+    /**
+     * Extrait une méthode depuis une ligne de code Java et l'ajoute à la liste.
+     * 
+     * @param ligne Ligne du code source
+     * @param estStatique Indique si la méthode est statique
+     * @param nomClasse Nom de la classe analysée
+     * @param methodes Liste de méthodes à compléter
+     */
     private void extraireMethode(String ligne, boolean estStatique, String nomClasse, ArrayList<MethodeObjet> methodes)
     {
         // ... (Logique inchangée pour extraireMethode) ...
         int indexParenthese = ligne.indexOf('(');
         String avantParenthese = ligne.substring(0, indexParenthese).trim();
-        String[] parts = avantParenthese.split("\\s+");
+        String[] parts         = avantParenthese.split("\\s+");
         
         List<String> motsExclus = Arrays.asList("private", "public", "protected", "static", "final", "abstract");
 
@@ -224,8 +205,8 @@ public class AnalyseurUML
 
         String nomMethode = motsUtiles.get(motsUtiles.size() - 1);
         String visibilite = parts[0];
-
         String typeRetour = null;
+        
         if (nomMethode.equals(nomClasse))
         {
             typeRetour = null;
@@ -266,6 +247,15 @@ public class AnalyseurUML
         methodes.add(new MethodeObjet(nomMethode, params, typeRetour, visibilite, estStatique));
     }
 
+
+
+    /**
+     * Détecte les associations entre classes à partir des attributs de chaque classe.
+     * 
+     * @param classes Liste des classes analysées
+     * @param mapClasses Map pour retrouver rapidement une classe par son nom
+     * @return Liste d'associations détectées
+     */
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses)
     {
         // ... (Logique inchangée pour detecterAssociations) ...
