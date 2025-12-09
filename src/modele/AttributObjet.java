@@ -14,41 +14,16 @@ public class AttributObjet {
 	}
 
 	
-	public void setVisibilite(String visibilite) {
-		this.visibilite = visibilite;
-	}
-
-	public String getPortee() {
-		return portee;
-	}
-
-	public void setPortee(String portee) {
-		this.portee = portee;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	
-
-	public String getVisibilite() { return visibilite; }
+	public String getVisibilite() { return visibilite   ;	}
+	public String getPortee    () {	return portee       ;	}
+	public String getNom       () {	return nom          ;	}
+	public String getType      () {	return type         ;	}
 
 
-
-
+	public void setPortee     (String portee     ) {	this.portee     = portee     ;	}
+	public void setVisibilite (String visibilite ) {	this.visibilite = visibilite ;	}
+	public void setType       (String type       ) {	this.type       = type       ;	}
+	public void setNom        (String nom        ) {	this.nom        = nom        ;	}
 
 	
 }

@@ -15,29 +15,14 @@ public class ClasseObjet {
 		this.nom = nom;
 	}
 
-	public String getNom() {
-		return nom;
-	}
+	public String                   getNom      () {	return nom       ;	}
+	public ArrayList<AttributObjet> getattributs() {	return attributs ;	}
+	public ArrayList<MethodeObjet>  getMethodes () {	return methodes  ;	}
 
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	public ArrayList<AttributObjet> getattributs() {
-		return attributs;
-	}
-
-	public void setattributs(ArrayList<AttributObjet> attributs) {
-		this.attributs = attributs;
-	}
-
-	public ArrayList<MethodeObjet> getMethodes() {
-		return methodes;
-	}
-
-	public void setmethodes(ArrayList<MethodeObjet> methodes) {
-		this.methodes = methodes;
-	}
+	public void setNom      (String nom                        ) {	this.nom       = nom       ;	}
+	public void setattributs(ArrayList<AttributObjet> attributs) {	this.attributs = attributs ;	}
+	public void setmethodes (ArrayList<MethodeObjet>  methodes ) {	this.methodes  = methodes  ;	}
+	
 
 	public char changementVisibilite( String visibilite ) {
 		switch (visibilite) {
@@ -84,24 +69,24 @@ public class ClasseObjet {
 	{
 		String sRet = "";
 
-		sRet += "----------------------------------------------------------\n";
+		sRet += "-------------------------------------------------------------------------------------------\n";
 		sRet += String.format( "%30s" ,  this.nom ) +              "\n";
-		sRet += "----------------------------------------------------------\n";
+		sRet += "-------------------------------------------------------------------------------------------\n";
 
 		for (AttributObjet att : attributs) {
 			sRet += changementVisibilite(att.getVisibilite())  + " " + att.getNom() + " " + " : " + att.getType() + "\n" ; 
 		}
 
-		sRet += "----------------------------------------------------------\n";
+		sRet += "-------------------------------------------------------------------------------------------\n";
 
 		for( MethodeObjet met : methodes )
 		{
 			sRet += String.format( "%-2c",    changementVisibilite(met.getVisibilite())) +
-					String.format( "%-15s" ,  met.getNom()) + 
-					String.format( "%-30s" ,  affichageParametre(met.getParametres()))  + 
-					String.format( "%-10s",   retourType(met.getRetourType()) ) + "\n" ; 
+					String.format( "%-25s" ,  met.getNom()) + 
+					String.format( "%-35s" ,  affichageParametre(met.getParametres()))  + 
+					String.format( "%-15s",   retourType(met.getRetourType()) ) + "\n" ; 
 		}
-		sRet += "----------------------------------------------------------\n";
+		sRet += "-------------------------------------------------------------------------------------------\n";
 
 		return sRet ; 
 	}
