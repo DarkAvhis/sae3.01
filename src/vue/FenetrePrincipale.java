@@ -3,7 +3,7 @@ package vue;
 import java.awt.*;
 import javax.swing.*;
 
-import Controleur;
+import src.Controleur;
 
 public class FenetrePrincipale extends JFrame 
 {
@@ -23,7 +23,7 @@ public class FenetrePrincipale extends JFrame
         this.setLocationRelativeTo(null);
         this.setResizable(true);
 
-        this.panneauProjets = new PanneauProjets(this, controleur);
+        this.panneauProjets   = new PanneauProjets(this, controleur);
         this.panneauDiagramme = new PanneauDiagramme(controleur);  
 
         this.setLayout(new BorderLayout());

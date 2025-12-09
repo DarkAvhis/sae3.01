@@ -105,7 +105,7 @@ public class AnalyseUMLControleur
             return;
         }
 
-        AnalyseIHMControleur controleur = new AnalyseIHMControleur();
+        AnalyseUMLControleur controleur = new AnalyseUMLControleur();
         
         if (controleur.analyserDossier(args[0]))
         {

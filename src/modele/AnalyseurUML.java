@@ -32,65 +32,9 @@ public class AnalyseurUML
      */
     public void resetRelations()
     {
-<<<<<<< HEAD
         this.lstHerite.clear();
         this.heritagesAjoutes.clear();
         // this.lstInterfaces.clear(); // Pour l'étape 4 Implémentation
-=======
-        if (args.length == 0)
-        {
-            System.out.println("Usage: java AnalyseurUML <chemin_du_repertoire_ou_fichier_java>");
-            return;
-        }
-
-        AnalyseurUML analyseur = new AnalyseurUML();
-        String       chemin    = args[0];
-        File         cible     = new File(chemin);
-
-        if (cible.isFile())
-        {
-            ClasseObjet classeResultat = analyseur.analyserFichierUnique(chemin);
-            
-            if (classeResultat != null)
-            {
-                System.out.println(classeResultat.toString()); 
-            }
-        }
-        else if (cible.isDirectory())
-        {
-            List<File> fichiersJava                 = analyseur.ClassesDuDossier(chemin);
-            List<ClasseObjet> classes               = new ArrayList<>();
-            HashMap<String, ClasseObjet> mapClasses = new HashMap<>();
-
-            for (File f : fichiersJava)
-            {
-                ClasseObjet c = analyseur.analyserFichierUnique(f.getAbsolutePath());
-                if (c != null)
-                {
-                    classes.add(c);
-                    mapClasses.put(c.getNom(), c);
-                }
-            }
-
-            System.out.println("\n=== DIAGRAMMES DE CLASSES (ETAPE 2 & 3) ===");
-            for (ClasseObjet c : classes)
-            {
-                System.out.println(c.toString());
-            }
-
-            System.out.println("\n=== LIAISONS D'ASSOCIATION (ETAPE 3) ===");
-            List<AssociationObjet> associations = analyseur.detecterAssociations(classes, mapClasses);
-            
-            for (AssociationObjet asso : associations)
-            {
-                System.out.println(asso.toString());
-            }
-        }
-        else
-        {
-            System.out.println("Erreur: Le chemin fourni n'est ni un fichier, ni un répertoire valide.");
-        }
->>>>>>> 8e3b5fa7f2bbe10a3dca8c5603b3ec1dee185878
     }
 
     /**
@@ -120,7 +64,7 @@ public class AnalyseurUML
 
         // --- Début de la logique de recherche de fichiers pour la classe parente ---
         ArrayList<File> lstFichier = new ArrayList<>();
-        File parentDir = f.getParentFile();
+        File parentDir = file.getParentFile();
         
         if (parentDir != null)
         {
@@ -161,17 +105,6 @@ public class AnalyseurUML
                         String baseName = fichier.getName().replaceAll("\\.java$", "");
                         if (baseName.equals(nomParent))
                         {
-                            // ATTENTION: Ceci provoque une analyse récursive ! 
-                            // Dans un environnement JDK uniquement, c'est parfois nécessaire
-                            // mais peut entraîner des problèmes si le fichier contient des dépendances circulaires.
-                            // Nous allons laisser le Contrôleur faire la résolution finale pour éviter la récursion,
-                            // en stockant juste le nom du parent.
-                            // Pour respecter la logique initiale fournie, nous conservons cette boucle
-                            // en la modifiant pour ne pas ré-analyser l'objet mais juste trouver le fichier.
-                            
-                            // Pour l'analyse récursive, on mettrait: classeDest = analyserFichierUnique(fichier.getAbsolutePath());
-                            // Pour le moment, nous laissons 'classeDest' à null ici, et la remplissons avec une classe bidon
-                            // contenant juste le nom, que le Contrôleur devra résoudre plus tard.
                             classeDest = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nomParent);
                             break;
                         }
@@ -201,7 +134,7 @@ public class AnalyseurUML
         return new ClasseObjet(attributs, methodes, nomClasse);
     }
 
-    private void extraireAttribut(String ligne, boolean estStatique, ArrayList<AttributObjet> attributs)
+    public void extraireAttribut(String ligne, boolean estStatique, ArrayList<AttributObjet> attributs)
     {
         // ... (Logique inchangée pour extraireAttribut) ...
         if (ligne.contains("="))
@@ -229,7 +162,7 @@ public class AnalyseurUML
         }
     }
     
-    private void extraireMethode(String ligne, boolean estStatique, String nomClasse, ArrayList<MethodeObjet> methodes)
+    public void extraireMethode(String ligne, boolean estStatique, String nomClasse, ArrayList<MethodeObjet> methodes)
     {
         // ... (Logique inchangée pour extraireMethode) ...
         int indexParenthese = ligne.indexOf('(');
@@ -289,6 +222,43 @@ public class AnalyseurUML
         }
 
         methodes.add(new MethodeObjet(nomMethode, params, typeRetour, visibilite, estStatique));
+    }
+
+    // Nouvelle méthode de conversion : AttributObjet -> String UML
+    public List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe)
+    {
+        List<String> liste = new ArrayList<>();
+        for (AttributObjet att : attributs)
+        {
+            String staticFlag = att.getStatique() ? " {static}" : "";
+            // Utiliser la méthode de ClasseObjet pour la visibilité
+            char visibilite = classe.changementVisibilite(att.getVisibilite());
+            
+            String s = visibilite + " " + att.getNom() + " : " + att.getType() + staticFlag; 
+            liste.add(s);
+        }
+        return liste;
+    }
+
+    // Nouvelle méthode de conversion : MethodeObjet -> String UML
+    public List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe)
+    {
+        List<String> liste = new ArrayList<>();
+        for (MethodeObjet met : methodes)
+        {
+            String staticFlag = met.isStatique() ? "{static} " : "";
+            char visibilite = classe.changementVisibilite(met.getVisibilite());
+            
+            // Utiliser la méthode de ClasseObjet pour les paramètres
+            String params = classe.affichageParametre(met.getParametres());
+            
+            // Utiliser la méthode de ClasseObjet pour le type de retour
+            String retour = classe.retourType(met.getRetourType());
+            
+            String s = visibilite + staticFlag + met.getNom() + params + retour;
+            liste.add(s);
+        }
+        return liste;
     }
 
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses)
