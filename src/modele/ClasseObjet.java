@@ -39,52 +39,71 @@ public class ClasseObjet {
 		this.methodes = methodes;
 	}
 
-	public String pran( HashMap<String , String > parametre )
-	{
-		String sRet = "" ; 
-
-		if( parametre != null)
-		{
-			sRet += "(" ; 
-			for ( String key : parametre.keySet())
-			{
-				sRet += key + parametre.get(key) ; 
-			}
-			sRet += ")" ; 
+	public char changementVisibilite( String visibilite ) {
+		switch (visibilite) {
+			case "private":   return '-';
+			case "public":    return '+';
+			case "protected": return '#';
+			default:          return '~';
 		}
+	}
+
+
+	public String affichageParametre(HashMap<String, String> parametre) 
+	{
+		String sRet = "";
+
+		if (parametre != null && !parametre.isEmpty()) 
+		{
+			sRet += "("; 
+			for (String key : parametre.keySet()) 
+			{
+				sRet += key + ": " + parametre.get(key) + ", ";
+			}
+			sRet = sRet.substring(0, sRet.length() - 2);
+			sRet += ")";
+		} 
 		else 
 		{
-			sRet = "()" ; 
+			sRet = "()"; 
 		}
-		return sRet ; 
+		return sRet; 
 	}
+
+	public String retourType(String type) 
+	{
+		if (type.equals("public") || type.equals("void")) {
+			return " ";
+		}
+		return " : " + type;
+	}
+
 	
 	@Override
 	public String toString() 
 	{
 		String sRet = "";
 
-		sRet += "------------------------------------------------\n";
-		sRet += String.format( "%20s" ,  this.nom ) +    "\n";
-		sRet += "------------------------------------------------\n";
+		sRet += "----------------------------------------------------------\n";
+		sRet += String.format( "%30s" ,  this.nom ) +              "\n";
+		sRet += "----------------------------------------------------------\n";
 
 		for (AttributObjet att : attributs) {
-			sRet += att.getVisibilite().getLibelle() + " " + att.getNom() + " " + ":" + att.getType() + "\n" ; 
+			sRet += changementVisibilite(att.getVisibilite())  + " " + att.getNom() + " " + " : " + att.getType() + "\n" ; 
 		}
 
-		sRet += "------------------------------------------------\n";
+		sRet += "----------------------------------------------------------\n";
 
 		for( MethodeObjet met : methodes )
 		{
-			sRet += String.format( "%-2s", met.getVisibilite().getLibelle()) +
-					String.format( "%-10s" ,  met.getNom()) + 
-					String.format( "%-20s" , pran(met.getParametres())) + 
-					String.format( "%-10s",met.getRetourType()) + "\n" ; 
+			sRet += String.format( "%-2c",    changementVisibilite(met.getVisibilite())) +
+					String.format( "%-15s" ,  met.getNom()) + 
+					String.format( "%-30s" ,  affichageParametre(met.getParametres()))  + 
+					String.format( "%-10s",   retourType(met.getRetourType()) ) + "\n" ; 
 		}
-		sRet += "------------------------------------------------\n";
+		sRet += "----------------------------------------------------------\n";
 
 		return sRet ; 
 	}
-	
 	
 }

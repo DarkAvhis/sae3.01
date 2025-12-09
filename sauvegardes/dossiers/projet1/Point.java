@@ -9,6 +9,7 @@ public class Point
     {
         this.nom = nom;
         this.x = x;
+        
         this.y = y;
     }
 
