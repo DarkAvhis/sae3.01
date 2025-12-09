@@ -1,10 +1,10 @@
 package vue;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 
 public class PanneauDiagramme extends JPanel 
 {
@@ -17,7 +17,7 @@ public class PanneauDiagramme extends JPanel
         this.blocsClasses = new ArrayList<>();
         this.cheminProjetCourant = null;
 
-        setLayout(null); // pour placer les blocs o`u on veut
+        setLayout(null); // pour placer les blocs où on veut
         setBackground(new Color(255, 255, 255));
         setBorder(BorderFactory.createTitledBorder("Diagramme UML"));
 
@@ -37,7 +37,7 @@ public class PanneauDiagramme extends JPanel
             return;
         }
 
-        // Charger les  .java du projet
+        // Charger les .java du projet
         File[] fichiersJava = dossier.listFiles((dir, name) -> name.endsWith(".java"));
 
         if (fichiersJava != null) 

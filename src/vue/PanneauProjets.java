@@ -1,11 +1,11 @@
 package vue;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import javax.swing.*;
 
-public class PanneauProjets extends JPanel {
-
+public class PanneauProjets extends JPanel
+{
     private FenetrePrincipale fenetrePrincipale;
     private String cheminDossiers;
 
