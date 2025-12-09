@@ -9,10 +9,28 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+
+/**
+ * Classe AnalyseurUML
+ * 
+ * Cette classe permet d'analyser des fichiers Java afin de générer
+ * des objets représentant des classes, leurs attributs, méthodes
+ * et détecter les associations entre classes pour construire un UML.
+ */
+
 public class AnalyseurUML
 {
+    /**
+     * Constante représentant une multiplicité indéfinie.
+     */
     private static final int MULT_INDEFINIE = 999999999;
 
+
+    /**
+     * Point d'entrée du programme.
+     * 
+     * @param args Arguments passés au programme : chemin d'un fichier ou d'un dossier Java
+     */
     public static void main(String[] args)
     {
         if (args.length == 0)
@@ -22,8 +40,8 @@ public class AnalyseurUML
         }
 
         AnalyseurUML analyseur = new AnalyseurUML();
-        String chemin = args[0];
-        File cible = new File(chemin);
+        String       chemin    = args[0];
+        File         cible     = new File(chemin);
 
         if (cible.isFile())
         {
@@ -70,6 +88,13 @@ public class AnalyseurUML
         }
     }
 
+
+    /**
+     * Analyse un fichier Java unique pour extraire sa classe, attributs et méthodes.
+     * 
+     * @param chemin Chemin du fichier Java
+     * @return Objet ClasseObjet représentant la classe analysée
+     */
     public ClasseObjet analyserFichierUnique(String chemin)
     {
         File file = new File(chemin);
@@ -89,14 +114,15 @@ public class AnalyseurUML
                     continue;
                 }
                 
-                boolean estStatique = ligne.contains("static");
-                boolean aVisibilite = (ligne.startsWith("public") || ligne.startsWith("private") || ligne.startsWith("protected"));
+                boolean estStatique   =  ligne.contains("static");
+                boolean ligneVisibile = (ligne.startsWith("public") || ligne.startsWith("private") || ligne.startsWith("protected"));
 
-                if (aVisibilite && ligne.endsWith(";") && !ligne.contains("("))
+                if (ligneVisibile && ligne.endsWith(";") && !ligne.contains("("))
                 {
                     extraireAttribut(ligne, estStatique, attributs);
                 }
-                else if (aVisibilite && ligne.contains("(") && !ligne.contains("class "))
+
+                else if (ligneVisibile && ligne.contains("(") && !ligne.contains("class "))
                 {
                     extraireMethode(ligne, estStatique, nomClasse, methodes);
                 }
@@ -111,16 +137,23 @@ public class AnalyseurUML
         return new ClasseObjet(attributs, methodes, nomClasse);
     }
 
+
+    /**
+     * Extrait un attribut depuis une ligne de code Java et l'ajoute à la liste.
+     * 
+     * @param ligne Ligne du code source
+     * @param estStatique Indique si l'attribut est statique
+     * @param attributs Liste d'attributs à compléter
+     */
     private void extraireAttribut(String ligne, boolean estStatique, ArrayList<AttributObjet> attributs)
     {
 
 		if (ligne.contains("="))
 		{
-			// On ne conserve que la partie avant le signe égal
 			ligne = ligne.substring(0, ligne.indexOf("="));
 		}
 		
-        String propre = ligne.replace(";", "").trim();
+        String propre  = ligne.replace(";", "").trim();
         String[] parts = propre.split("\\s+");
         
         List<String> motsExclus = Arrays.asList("private", "public", "protected", "static", "final", "abstract");
@@ -131,19 +164,28 @@ public class AnalyseurUML
 
         if (motsUtiles.size() >= 2)
         {
-            String type = motsUtiles.get(motsUtiles.size() - 2);
-            String nom = motsUtiles.get(motsUtiles.size() - 1);
+            String type       = motsUtiles.get(motsUtiles.size() - 2);
+            String nom        = motsUtiles.get(motsUtiles.size() - 1);
             String visibilite = parts[0]; 
             
             attributs.add(new AttributObjet(nom, estStatique ? "static" : "instance", type, visibilite, estStatique));
         }
     }
     
+
+    /**
+     * Extrait une méthode depuis une ligne de code Java et l'ajoute à la liste.
+     * 
+     * @param ligne Ligne du code source
+     * @param estStatique Indique si la méthode est statique
+     * @param nomClasse Nom de la classe analysée
+     * @param methodes Liste de méthodes à compléter
+     */
     private void extraireMethode(String ligne, boolean estStatique, String nomClasse, ArrayList<MethodeObjet> methodes)
     {
-        int indexParenthese = ligne.indexOf('(');
+        int indexParenthese    = ligne.indexOf('(');
         String avantParenthese = ligne.substring(0, indexParenthese).trim();
-        String[] parts = avantParenthese.split("\\s+");
+        String[] parts         = avantParenthese.split("\\s+");
         
         List<String> motsExclus = Arrays.asList("private", "public", "protected", "static", "final", "abstract");
 
@@ -158,8 +200,8 @@ public class AnalyseurUML
 
         String nomMethode = motsUtiles.get(motsUtiles.size() - 1);
         String visibilite = parts[0];
-
         String typeRetour = null;
+        
         if (nomMethode.equals(nomClasse))
         {
             typeRetour = null;
@@ -200,6 +242,15 @@ public class AnalyseurUML
         methodes.add(new MethodeObjet(nomMethode, params, typeRetour, visibilite, estStatique));
     }
 
+
+
+    /**
+     * Détecte les associations entre classes à partir des attributs de chaque classe.
+     * 
+     * @param classes Liste des classes analysées
+     * @param mapClasses Map pour retrouver rapidement une classe par son nom
+     * @return Liste d'associations détectées
+     */
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses)
     {
         List<AssociationObjet> associations = new ArrayList<>();
@@ -251,6 +302,13 @@ public class AnalyseurUML
         return associations;
     }
 
+
+    /**
+     * Retourne la liste des fichiers Java présents dans un dossier.
+     * 
+     * @param cheminDossier Chemin du dossier à analyser
+     * @return Liste de fichiers Java
+     */
     public List<File> ClassesDuDossier(String cheminDossier)
     {
         File dossier = new File(cheminDossier);
