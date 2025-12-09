@@ -70,7 +70,7 @@ public class ClasseObjet {
 		String sRet = "";
 
 		sRet += "-------------------------------------------------------------------------------------------\n";
-		sRet += String.format( "%30s" ,  this.nom ) +              "\n";
+		sRet += String.format( "%50s" ,  this.nom ) +              "\n";
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
 		for (AttributObjet att : attributs) {
