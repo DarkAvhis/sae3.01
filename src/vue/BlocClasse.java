@@ -2,8 +2,8 @@ package vue;
 
 import java.awt.*;
 
-public class BlocClasse {
-
+public class BlocClasse 
+{
     private String nom;
     private int x;
     private int y;
@@ -20,17 +20,19 @@ public class BlocClasse {
     private static final Color COULEUR_BORDURE = new Color(0, 0, 0);
     private static final Color COULEUR_ENTETE = new Color(100, 150, 200);
 
-    public BlocClasse(String nom, int x, int y) {
-        this.nom = nom;
-        this.x = x;
-        this.y = y;
-        this.largeur = 200;
-        this.hauteur = 150;
-        this.estInterface = false;
+    public BlocClasse(String nom, int x, int y) 
+    {
+        this.nom            = nom;
+        this.x              = x;
+        this.y              = y;
+        this.largeur        = 200;
+        this.hauteur        = 150;
+        this.estInterface   = false;
         this.estSelectionne = false;
     }
 
-    public void dessiner(Graphics2D g) {
+    public void dessiner(Graphics2D g) 
+    {
         // Fond
         g.setColor(COULEUR_FOND);
         g.fillRect(x, y, largeur, hauteur);
@@ -52,7 +54,8 @@ public class BlocClasse {
         g.drawString(nom, textX, textY);
 
         // <<interface>>
-        if (estInterface) {
+        if (estInterface) 
+        {
             g.setColor(Color.BLACK);
             g.setFont(new Font("Arial", Font.ITALIC, 10));
             String interfaceText = "<<interface>>";
@@ -74,7 +77,8 @@ public class BlocClasse {
     }
 
     // Vérifie si le point donné est dans le bloc.
-    public boolean contient(int px, int py) {
+    public boolean contient(int px, int py) 
+    {
         return px >= x 
         && px <= x + largeur 
         && py >= y 
@@ -82,53 +86,65 @@ public class BlocClasse {
     }
 
     // Déplace le bloc à une nouvelle position.
-    public void deplacer(int dx, int dy) {
+    public void deplacer(int dx, int dy) 
+    {
         this.x += dx;
         this.y += dy;
     }
 
     // Getters et Setters
-    public String getNom() {
-        return nom;
+    public String getNom() 
+    {
+        return this.nom;
     }
 
-    public int getX() {
-        return x;
+    public int getX() 
+    {
+        return this.x;
     }
 
-    public void setX(int x) {
+    public void setX(int x) 
+    {
         this.x = x;
     }
 
-    public int getY() {
-        return y;
+    public int getY() 
+    {
+        return this.y;
     }
 
-    public void setY(int y) {
+    public void setY(int y) 
+    {
         this.y = y;
     }
 
-    public int getLargeur() {
-        return largeur;
+    public int getLargeur() 
+    {
+        return this.largeur;
     }
 
-    public int getHauteur() {
-        return hauteur;
+    public int getHauteur() 
+    {
+        return this.hauteur;
     }
 
-    public boolean estInterface() {
-        return estInterface;
+    public boolean estInterface() 
+    {
+        return this.estInterface;
     }
 
-    public void setInterface(boolean estInterface) {
+    public void setInterface(boolean estInterface) 
+    {
         this.estInterface = estInterface;
     }
 
-    public boolean estSelectionne() {
-        return estSelectionne;
+    public boolean estSelectionne() 
+    {
+        return this.estSelectionne;
     }
 
-    public void setSelectionne(boolean selectionne) {
-        estSelectionne = selectionne;
+    public void setSelectionne(boolean selectionne) 
+    {
+        this.estSelectionne = selectionne;
     }
 }

@@ -6,16 +6,19 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-public class BarreMenus extends JMenuBar {
+public class BarreMenus extends JMenuBar 
+{
 
-    public BarreMenus() {
-        add(creerMenuFichier());
-        //add(creerMenuEdition());
-        add(creerMenuAffichage());
-        add(creerMenuAide());
+    public BarreMenus() 
+    {
+        this.add(creerMenuFichier());
+        this.add(creerMenuEdition());
+        this.add(creerMenuAffichage());
+        this.add(creerMenuAide());
     }
 
-    private JMenu creerMenuFichier() {
+    private JMenu creerMenuFichier() 
+    {
         JMenu menu = new JMenu("Fichier");
 
         JMenuItem nouvelleItem = new JMenuItem("Nouveau projet");
@@ -44,7 +47,8 @@ public class BarreMenus extends JMenuBar {
         return menu;
     }
 
-    private JMenu creerMenuEdition() {
+    private JMenu creerMenuEdition() 
+    {
         JMenu menu = new JMenu("Édition");
 
         JMenuItem annulerItem = new JMenuItem("Annuler");
@@ -63,7 +67,8 @@ public class BarreMenus extends JMenuBar {
         return menu;
     }
 
-    private JMenu creerMenuAffichage() {
+    private JMenu creerMenuAffichage() 
+    {
         JMenu menu = new JMenu("Affichage");
 
         JCheckBoxMenuItem afficherAttributsItem = new JCheckBoxMenuItem("Afficher attributs", true);
@@ -85,7 +90,8 @@ public class BarreMenus extends JMenuBar {
         return menu;
     }
 
-    private JMenu creerMenuAide() {
+    private JMenu creerMenuAide() 
+    {
         JMenu menu = new JMenu("Aide");
 
         JMenuItem aProposItem = new JMenuItem("À propos");
@@ -97,54 +103,66 @@ public class BarreMenus extends JMenuBar {
     }
 
     // Méthodes d'action (à implémenter)
-    private void actionNouveauProjet() {
+    private void actionNouveauProjet() 
+    {
         JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
-    private void actionOuvrirProjet() {
+    private void actionOuvrirProjet() 
+    {
         JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
-    private void actionExporter() {
+    private void actionExporter() 
+    {
         JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
-    private void actionSauvegarder() {
+    private void actionSauvegarder() 
+    {
         JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
-    private void actionAnnuler() {
+    private void actionAnnuler() 
+    {
         JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
-    private void actionRetablir() {
+    private void actionRetablir() 
+    {
         JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
-    private void actionSupprimer() {
+    private void actionSupprimer() 
+    {
         JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
-    private void actionAffichageAttributs() {
+    private void actionAffichageAttributs() 
+    {
         // À implémenter
     }
 
-    private void actionAffichageMethodes() {
+    private void actionAffichageMethodes() 
+    {
         // À implémenter
     }
 
-    private void actionAligner() {
+    private void actionAligner() 
+    {
         JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
-    private void actionOptimiser() {
+    private void actionOptimiser() 
+    {
         JOptionPane.showMessageDialog(null, "Pas fini");
     }
 
-    private void actionAPropos() {
+    private void actionAPropos() 
+    {
         JOptionPane.showMessageDialog(null,
             "Modélisation UML - Générateur de Diagrammes\n" +
-            "par Quentin MORVAN,\n" + "Valentin LEROY,\n" + "Celim CHAOU,\n" + "Enzo DUMONT,\n" + "Ariunbayar BUYANBADRAKH,\n" + "Jules BOUQUET",
+            "par Quentin MORVAN,\n" + "Valentin LEROY,\n" + "Celim CHAOU,\n" + "Enzo DUMONT,\n" + "Ariunbayar BUYANBADRAKH,\n" + "Yassine EL MAADI",
             "À propos",
             JOptionPane.INFORMATION_MESSAGE);
     }
