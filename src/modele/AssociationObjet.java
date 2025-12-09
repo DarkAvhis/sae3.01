@@ -20,6 +20,8 @@ public class AssociationObjet extends LiaisonObjet
 	private boolean unidirectionnel;
 	private MultipliciteObjet multOrig;
 	private MultipliciteObjet multDest;
+    private ClasseObjet classeDest;
+    private ClasseObjet classeOrig;
 
 	/*-------------------------------------- */
 	/* Constructeur                          */
@@ -46,7 +48,7 @@ public class AssociationObjet extends LiaisonObjet
         super(nomAttribut, classeDest, classeOrig);
         this.multiDest          = multDest;
         this.multiOrig          = multOrig;
-        this.estUnidirectionnel = unidirectionnel;
+        this.estUnidirectionnel = unidirectionnel;         
     }
 
     /*-------------------------------------- */
