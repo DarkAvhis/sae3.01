@@ -6,11 +6,16 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import Controleur;
+
 public class BarreMenus extends JMenuBar 
 {
 
-    public BarreMenus() 
+    private Controleur controleur;
+
+    public BarreMenus(Controleur controleur) 
     {
+        this.controleur = controleur;
         this.add(creerMenuFichier());
         this.add(creerMenuEdition());
         this.add(creerMenuAffichage());

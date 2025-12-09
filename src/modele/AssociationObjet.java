@@ -14,6 +14,16 @@ public class AssociationObjet extends LiaisonObjet
      */
 	private boolean estUnidirectionnel;
 
+    /*-------------------------------------- */
+	/* Attributs                             */
+	/*-------------------------------------- */
+	private boolean unidirectionnel;
+	private MultipliciteObjet multOrig;
+	private MultipliciteObjet multDest;
+
+	/*-------------------------------------- */
+	/* Constructeur                          */
+	/*-------------------------------------- */
     /**
      * Multiplicité de l'origine de l'association.
      * Multiplicité de la destination de l'association.
@@ -39,64 +49,24 @@ public class AssociationObjet extends LiaisonObjet
         this.estUnidirectionnel = unidirectionnel;
     }
 
-    /**
-     * Retourne la multiplicité de l'origine de l'association.
-     * 
-     * @return Multiplicité de l'origine
-     */
-    public MultipliciteObjet getMultOrig() {return multiOrig;}
-    
-    /**
-     * Retourne la multiplicité de la destination de l'association.
-     * 
-     * @return Multiplicité de la destination
-     */
-    public MultipliciteObjet getMultDest() {return multiDest;}
+    /*-------------------------------------- */
+	/* Les Accesseurs                        */
+	/*-------------------------------------- */
+    public MultipliciteObjet getMultOrig       () {    return multOrig        ;   }
+    public MultipliciteObjet getMultDest       () {    return multDest        ;   }
+    public boolean           getUnidirectionnel() {    return unidirectionnel ;   }
 
+    /*-------------------------------------- */
+	/* Modificateurs                         */
+	/*-------------------------------------- */
+    public void setMultOrig       (MultipliciteObjet multOrig) {    this.multOrig        = multOrig        ;   }
+    public void setMultDest       (MultipliciteObjet multDest) {    this.multDest        = multDest        ;   }
+    public void setUnidirectionnel(boolean unidirectionnel   ) {    this.unidirectionnel = unidirectionnel ;   }
 
-
-    /**
-     * Définit la multiplicité de l'origine de l'association.
-     * 
-     * @param multOrig Multiplicité de l'origine
-     */
-    public void setMultOrig(MultipliciteObjet multOrig) {this.multiOrig = multOrig;}
-
-    /**
-     * Définit la multiplicité de la destination de l'association.
-     * 
-     * @param multDest Multiplicité de la destination
-     */
-    public void setMultDest(MultipliciteObjet multDest) {this.multiDest = multDest;}
-
-
-    /**
-     * Indique si l'association est unidirectionnelle.
-     * 
-     * @return vrai si unidirectionnelle, sinon faux
-     */
-    public boolean estUnidirectionnel() 
-    {
-        return estUnidirectionnel;
-    }
-
-    /**
-     * Définit si l'association est unidirectionnelle.
-     * 
-     * @param unidirectionnel vrai pour unidirectionnelle, faux pour bidirectionnelle
-     */
-    public void setUnidirectionnel(boolean unidirectionnel) 
-    {
-        this.estUnidirectionnel = unidirectionnel;
-    }
-
-    /**
-     * Retourne une représentation textuelle de l'association.
-     * 
-     * Exemple : "Association 1 : unidirectionnelle de ClasseA(1..*) vers ClasseB(1)"
-     * 
-     * @return Chaîne décrivant l'association
-     */
+    /*-------------------------------------- */
+	/* toString                              */
+	/*-------------------------------------- */
+   
     @Override
     public String toString() 
     {

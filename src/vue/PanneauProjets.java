@@ -83,6 +83,7 @@ public class PanneauProjets extends JPanel
     private JButton creerBoutonProjet(File projet) 
     {
         JButton bouton = new JButton(projet.getName());
+
         bouton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         bouton.setFont(new Font("Arial", Font.PLAIN, 12));
         bouton.setBackground(new Color(100, 150, 200));

@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -30,42 +30,6 @@ public class PanneauDiagramme extends JPanel
         this.ajouterListenersInteraction();
     }
 
-    public void chargerProjet(String cheminProjet) {
-        this.cheminProjetCourant = cheminProjet;
-        blocsClasses.clear();
-
-        File dossier = new File(cheminProjet);
-        if (!dossier.exists() || !dossier.isDirectory()) {
-            repaint();
-            return;
-        }
-
-        // Charger les .java du projet
-        File[] fichiersJava = dossier.listFiles((dir, name) -> name.endsWith(".java"));
-
-        if (fichiersJava != null) 
-        {
-            int x = 50;
-            int y = 50;
-
-            for (File fichier : fichiersJava) 
-            {
-                BlocClasse bloc = new BlocClasse(
-                        fichier.getName().replace(".java", ""),
-                        x, y);
-                blocsClasses.add(bloc);
-
-                x += 250;
-                if (x > getWidth() - 250) 
-                {
-                    x = 50;
-                    y += 200;
-                }
-            }
-        }
-        repaint();
-    }
-
     private class GereSourisInteraction extends MouseAdapter 
     {
         private BlocClasse blocSelectionne = null;
@@ -75,8 +39,6 @@ public class PanneauDiagramme extends JPanel
         @Override
         public void mousePressed(MouseEvent e) 
         {
-            // Supposons que 'blocsClasses' est un champ de la classe englobante
-            // et qu'on y accède directement.
             blocSelectionne = null;
 
             // Parcourir de la fin vers le début pour sélectionner le bloc le plus "en
@@ -87,25 +49,20 @@ public class PanneauDiagramme extends JPanel
 
                 // Supposons que 'contient(x, y)' est une méthode de BlocClasse
                 if (bloc.contient(e.getX(), e.getY())) 
-                    {
+                {
                     blocSelectionne = bloc;
                     offsetX = e.getX() - bloc.getX();
                     offsetY = e.getY() - bloc.getY();
 
                     // Désélectionner tous les autres blocs
                     for (BlocClasse b : blocsClasses) 
-                        {
+                    {
                         b.setSelectionne(false);
                     }
 
                     // Sélectionner le bloc actuel
                     bloc.setSelectionne(true);
-                    // Supposons que 'repaint()' est une méthode de la classe englobante (e.g.
-                    // JPanel)
                     repaint();
-
-                    // On a trouvé un bloc, on peut s'arrêter
-                    break;
                 }
             }
         }
@@ -117,6 +74,7 @@ public class PanneauDiagramme extends JPanel
             {
                 blocSelectionne.setX(e.getX() - offsetX);
                 blocSelectionne.setY(e.getY() - offsetY);
+
                 // Redessiner pour voir le déplacement
                 repaint();
             }
@@ -129,10 +87,6 @@ public class PanneauDiagramme extends JPanel
             blocSelectionne = null;
             offsetX = 0;
             offsetY = 0;
-
-            // Optionnel : si vous voulez sauvegarder la position du bloc relâché
-            // Vous pourriez appeler une méthode du contrôleur ici.
-            // Exemple : PanelGraphe.this.ctrl.sauvegarderEtatAvantModification();
         }
     }
 
@@ -175,5 +129,11 @@ public class PanneauDiagramme extends JPanel
     public String getCheminProjetCourant() 
     {
         return cheminProjetCourant;
+    }
+
+    public void afficherDiagramme(List<BlocClasse> blocs) 
+    {
+        this.blocsClasses = blocs;
+        this.repaint();
     }
 }
