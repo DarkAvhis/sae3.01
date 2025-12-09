@@ -43,7 +43,7 @@ public class MethodeObjet
 	public String                  getVisibilite() {	return visibilite ; }
 	public String                  getRetourType() {	return retourType ; }
 	public HashMap<String, String> getParametres() {    return parametres ; }
-	public boolean                 isStatique   () {    return statique   ; }
+	public boolean                 estStatique  () {    return statique   ; }
 
 
 	public void setNom       (String                  nom       ) {  this.nom        = nom        ;  }
