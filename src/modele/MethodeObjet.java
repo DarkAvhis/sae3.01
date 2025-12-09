@@ -8,11 +8,11 @@ public class MethodeObjet
 {
 
 	private String nom;
-	private Visibilite visibilite;
+	private String visibilite;
 	private String retourType;
 	private HashMap<String, String> parametres; // Nom et Type
 
-    public MethodeObjet(String nom, HashMap<String, String> parametres, String retourType, Visibilite visibilite) 
+    public MethodeObjet(String nom, HashMap<String, String> parametres, String retourType, String visibilite) 
     {
         this.nom = nom;
         this.parametres = parametres;
@@ -20,13 +20,20 @@ public class MethodeObjet
         this.visibilite = visibilite;
     }
 
+    public MethodeObjet( String nom, HashMap<String, String> parametres,String visibilite )
+    {
+        this.nom = nom;
+        this.parametres = parametres;
+        this.visibilite = visibilite;
+    }
+
     public String getNom() {return nom;}
 
     public void setNom(String nom) {this.nom = nom;}
 
-    public Visibilite getVisibilite() {return visibilite;}
+    public String getVisibilite() {return visibilite;}
 
-    public void setVisibilite(Visibilite visibilite) {this.visibilite = visibilite;}
+    public void setVisibilite(String visibilite) {this.visibilite = visibilite;}
 
     public String getRetourType() {return retourType;}
 

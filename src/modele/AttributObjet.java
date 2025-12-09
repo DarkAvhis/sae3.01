@@ -4,9 +4,9 @@ public class AttributObjet {
 	private String portee;
 	private String type;
 	private String nom;
-	private Visibilite visibilite;
+	private String visibilite;
 
-	public AttributObjet(String nom, String portee, String type, Visibilite visibilite) {
+	public AttributObjet(String nom, String portee, String type, String visibilite) {
 		this.nom = nom;
 		this.portee = portee;
 		this.type = type;
@@ -14,7 +14,7 @@ public class AttributObjet {
 	}
 
 	
-	public void setVisibilite(Visibilite visibilite) {
+	public void setVisibilite(String visibilite) {
 		this.visibilite = visibilite;
 	}
 
@@ -44,7 +44,7 @@ public class AttributObjet {
 
 	
 
-	public Visibilite getVisibilite() { return visibilite; }
+	public String getVisibilite() { return visibilite; }
 
 
 
