@@ -1,7 +1,9 @@
 package modele;
 
-import java.util.ArrayList;
-
+/**
+ * Représente un attribut dans une classe UML.
+ * Contient son nom, son type, sa visibilité, et s'il est statique ou non.
+ */
 public class AttributObjet
 {
 	/*-------------------------------------- */
@@ -11,20 +13,28 @@ public class AttributObjet
 	private String  type;
 	private String  nom;
 	private String  visibilite;
-	private boolean statique;
+	private boolean estStatique;
 
 	/*-------------------------------------- */
 	/* Constructeur                          */
 	/*-------------------------------------- */
 	public AttributObjet(String nom, String portee, String type, String visibilite, boolean estStatique) 
 	{
-		this.nom = nom;
-		this.portee = portee;
-		this.type = type;
-		this.visibilite = visibilite;
-		this.statique = estStatique;
+		this.nom		 = nom;
+		this.portee      = portee;
+		this.type        = type;
+		this.visibilite  = visibilite;
+		this.estStatique = estStatique;
 	}
 
+	/**
+     * Constructeur simplifié qui crée un attribut non statique.
+     *
+     * @param nom         Nom de l'attribut
+     * @param portee      Portée (ex. : "instance")
+     * @param type        Type de l'attribut
+     * @param visibilite  Visibilité
+     */
 	public AttributObjet(String nom, String portee, String type, String visibilite) 
 	{
 		this(nom, portee, type, visibilite, false);
