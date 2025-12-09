@@ -201,7 +201,7 @@ public class AnalyseurUML
         List<String> liste = new ArrayList<>();
         for (AttributObjet att : attributs)
         {
-            String staticFlag = att.getStatique() ? " {static}" : "";
+            String staticFlag = att.estStatique() ? " {static}" : "";
             // Utiliser la méthode de ClasseObjet pour la visibilité
             char visibilite = classe.changementVisibilite(att.getVisibilite());
             
@@ -217,7 +217,7 @@ public class AnalyseurUML
         List<String> liste = new ArrayList<>();
         for (MethodeObjet met : methodes)
         {
-            String staticFlag = met.isStatique() ? "{static} " : "";
+            String staticFlag = met.estStatique() ? "{static} " : "";
             char visibilite = classe.changementVisibilite(met.getVisibilite());
             
             // Utiliser la méthode de ClasseObjet pour les paramètres
