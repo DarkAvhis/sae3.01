@@ -4,13 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.HashSet;
 
 /**
  * Contrôleur principal pour l'IHM (Interface Homme-Machine).
  * Gère l'orchestration de l'analyse, la détection des relations,
  * et fournit les données au niveau de l'application (Vue).
  */
-public class AnalyseUMLControleur
+public class AnalyseIHMControleur
 {
     private List<ClasseObjet> classes;
     private HashMap<String, ClasseObjet> mapClasses;
@@ -19,7 +20,7 @@ public class AnalyseUMLControleur
     private List<InterfaceObjet> implementations;
     private AnalyseurUML analyseur;
     
-    public AnalyseUMLControleur()
+    public AnalyseIHMControleur()
     {
         this.classes = new ArrayList<>();
         this.mapClasses = new HashMap<>();
@@ -49,11 +50,11 @@ public class AnalyseUMLControleur
         this.associations.clear();
         this.heritages.clear();
         this.implementations.clear();
-        this.analyseur.resetRelations(); // Important pour les relations stockées
+        this.analyseur.resetRelations(); // Réinitialise l'intention d'héritage
 
         List<File> fichiersJava = analyseur.ClassesDuDossier(cheminDossier);
         
-        // 1. Analyse de tous les fichiers et construction du modèle (remplit l'héritage interne)
+        // 1. Analyse de tous les fichiers et construction du modèle (remplit lstIntentionHeritage)
         for (File f : fichiersJava)
         {
             ClasseObjet c = analyseur.analyserFichierUnique(f.getAbsolutePath()); 
@@ -66,10 +67,48 @@ public class AnalyseUMLControleur
         
         // 2. Détection des relations qui nécessitent toutes les classes chargées
         this.associations.addAll(analyseur.detecterAssociations(this.classes, this.mapClasses));
-        this.heritages.addAll(analyseur.getLstHerite());
+        
+        // 3. Résolution de l'Héritage (Conversion de l'intention en objets concrets)
+        resoudreHeritage();
         // L'implémentation (InterfaceObjet) sera gérée dans l'Étape 4
 
         return true;
+    }
+    
+    /**
+     * Convertit la liste des noms de classes (intentions) en objets HeritageObjet réels 
+     * en utilisant la map de toutes les classes parsées.
+     */
+    private void resoudreHeritage()
+    {
+        // Utilisation d'un HashSet pour éviter les doublons d'affichage des liens
+        HashSet<String> heritagesAjoutes = new HashSet<>();
+        
+        for (String[] intention : analyseur.getIntentionsHeritage())
+        {
+            String nomEnfant = intention[0];
+            String nomParent = intention[1];
+            
+            // Vérification si les deux classes existent (Enfant doit exister, Parent peut être null/Object)
+            if (mapClasses.containsKey(nomEnfant) && mapClasses.containsKey(nomParent))
+            {
+                ClasseObjet classeEnfant = mapClasses.get(nomEnfant);
+                ClasseObjet classeParent = mapClasses.get(nomParent);
+                
+                String cle = nomParent + "->" + nomEnfant;
+                
+                if (!heritagesAjoutes.contains(cle))
+                {
+                    this.heritages.add(new HeritageObjet(classeParent, classeEnfant));
+                    heritagesAjoutes.add(cle);
+                }
+            } 
+            else if (!nomParent.equals("Object"))
+            {
+                // Avertissement si la super-classe est locale mais non trouvée (et n'est pas la classe de base Object)
+                System.out.println("Avertissement: Super-classe '" + nomParent + "' déclarée pour '" + nomEnfant + "', mais non trouvée dans le répertoire analysé.");
+            }
+        }
     }
     
     // --- Getters pour l'IHM/Vue ---
