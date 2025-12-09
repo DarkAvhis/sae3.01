@@ -47,26 +47,26 @@ public class ClasseObjet
 	}
 
 
-	public String affichageParametre(HashMap<String, String> parametre) 
-	{
-		String sRet = "";
+    public String affichageParametre(HashMap<String, String> parametre)
+    {
+        String sRet = "";
 
-		if (parametre != null && !parametre.isEmpty()) 
-		{
-			sRet += "("; 
-			for (String key : parametre.keySet()) 
-			{
-				sRet += key + ": " + parametre.get(key) + ", ";
-			}
-			sRet = sRet.substring(0, sRet.length() - 2);
-			sRet += ")";
-		} 
-		else 
-		{
-			sRet = "()"; 
-		}
-		return sRet; 
-	}
+        if (parametre != null && !parametre.isEmpty())
+        {
+            sRet += "(";
+            for (String key : parametre.keySet())
+            {
+                sRet += key + ": " + parametre.get(key) + ", ";
+            }
+            sRet = sRet.substring(0, sRet.length() - 2);
+            sRet += ")";
+        }
+        else
+        {
+            sRet = "()";
+        }
+        return sRet;
+    }
 
 	public String retourType(String type) 
 	{
@@ -114,8 +114,17 @@ public class ClasseObjet
 					String.format( "%-15s",   retourType(met.getRetourType()) ) + "\n" ; 
 		}
 		sRet += "-------------------------------------------------------------------------------------------\n";
+        sRet += "----------------------------------------------------------\n";
+        sRet += String.format("%30s", this.nom) + "\n";
+        sRet += "----------------------------------------------------------\n";
 
-		return sRet ; 
-	}
-	
+        for (AttributObjet att : attributs)
+        {
+            sRet += changementVisibilite(att.getVisibilite()) + " " + att.getNom() + " " + " : " + att.getType() + "\n";
+        }
+>>>>>>> 6273b33 (allman modele et test)
+
+
+        return sRet;
+    }
 }

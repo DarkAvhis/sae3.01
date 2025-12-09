@@ -1,6 +1,7 @@
 package modele;
 
-public class MultipliciteObjet {
+public class MultipliciteObjet 
+{
     //999999999 = * ("infini")
     private int debut;
     private int fin;
