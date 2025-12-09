@@ -7,7 +7,6 @@ src/modele/LiaisonObjet.java
 src/modele/MethodeObjet.java
 src/modele/MultipliciteObjet.java
 
-src/test/Point.java
 src/test/Test.java
 src/test/Disque.java
 
