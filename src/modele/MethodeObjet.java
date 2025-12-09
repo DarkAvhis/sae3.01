@@ -7,11 +7,11 @@ import java.util.HashMap;
  * 
  * Chaque méthode possède :
  * 
- * nom : le nom de la méthode</li>
- * visibilite : public, private ou protected</li>
- * retourType : type de retour (null ou void si aucune valeur)</li>
- * parametres : liste des paramètres sous forme de HashMap (nom -> type)</li>
- * statique : indique si la méthode est statique</li>
+ * nom : le nom de la méthode
+ * visibilite : public, private ou protected
+ * retourType : type de retour (null ou void si aucune valeur)
+ * parametres : liste des paramètres sous forme de HashMap (nom -> type)
+ * statique : indique si la méthode est statique
  */
 public class MethodeObjet 
 {
