@@ -1,9 +1,11 @@
+package test;
+
 public class Disque 
 {
+	private static int compteur = 0;
+
 	private double rayon;
 	private Point centre;
-	private static int compteur = 0;
-	private static final double PI_APPROX = 3.14159;
 	private boolean actif;
 	private String couleur;
 
@@ -47,7 +49,6 @@ public class Disque
 	}
 
 	// Méthodes supplémentaires avec différents types
-
 	public synchronized void setActif(boolean actif)
 	{
 		this.actif = actif;

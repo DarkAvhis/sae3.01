@@ -11,7 +11,6 @@ public class PanneauDiagramme extends JPanel
 
     private List<BlocClasse> blocsClasses;
     private String cheminProjetCourant;
-    private Point pointDernier;
 
     public PanneauDiagramme() 
     {
@@ -80,7 +79,7 @@ public class PanneauDiagramme extends JPanel
 
         // Dessiner les blocs
         for (BlocClasse bloc : blocsClasses) 
-            {
+        {
             bloc.dessiner(g2d);
         }
 

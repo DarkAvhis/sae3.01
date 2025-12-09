@@ -15,7 +15,6 @@ public class BlocClasse
     // Constantes 
     private static final int PADDING = 10;
     private static final int HAUTEUR_ENTETE = 30;
-    private static final int HAUTEUR_LIGNE = 20;
     private static final Color COULEUR_FOND = new Color(230, 240, 250);
     private static final Color COULEUR_BORDURE = new Color(0, 0, 0);
     private static final Color COULEUR_ENTETE = new Color(100, 150, 200);
