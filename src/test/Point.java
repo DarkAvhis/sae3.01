@@ -1,4 +1,5 @@
-//classe test
+package test;
+
 public class Point 
 {
     private String nom;
