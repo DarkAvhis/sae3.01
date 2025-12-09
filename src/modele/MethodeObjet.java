@@ -41,7 +41,7 @@ public class MethodeObjet
 	public String                  getVisibilite() {	return visibilite ; }
 	public String                  getRetourType() {	return retourType ; }
 	public HashMap<String, String> getParametres() {    return parametres ; }
-	public boolean                 isStatique   () {    return statique   ; }
+	public boolean                 getStatique   () {    return statique   ; }
 
 	/*-------------------------------------- */
 	/* Modificateurs                         */
@@ -61,5 +61,7 @@ public class MethodeObjet
 	public MethodeObjet( String nom, HashMap<String, String> parametres,String visibilite )
 	{
 		this(nom, parametres, null, visibilite, false);
-	} */
+	}
+	*/
+
 }
