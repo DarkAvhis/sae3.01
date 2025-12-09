@@ -122,7 +122,6 @@ public class ClasseObjet
         {
             sRet += changementVisibilite(att.getVisibilite()) + " " + att.getNom() + " " + " : " + att.getType() + "\n";
         }
->>>>>>> 6273b33 (allman modele et test)
 
 
         return sRet;
