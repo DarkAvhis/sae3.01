@@ -5,8 +5,12 @@ public class LiaisonObjet {
     protected String nomAttribut; //Non utilisé en affichage
     protected ClasseObjet classeOrig;
     protected ClasseObjet classeDest;
+    protected int num;
+
+    private static int nbLiaisons = 0;
 
     public LiaisonObjet(String nomAttribut, ClasseObjet classeDest, ClasseObjet classeOrig) {
+        num =  ++nbLiaisons;
         this.classeDest = classeDest;
         this.classeOrig = classeOrig;
         this.nomAttribut = nomAttribut;
@@ -34,6 +38,14 @@ public class LiaisonObjet {
 
     public void setClasseDest(ClasseObjet classeDest) {
         this.classeDest = classeDest;
+    }
+
+    public int getNum() {
+        return num;
+    }
+
+    public void setNum(int num) {
+        this.num = num;
     }
 
     
