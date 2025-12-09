@@ -130,4 +130,10 @@ public class PanneauDiagramme extends JPanel
     {
         return cheminProjetCourant;
     }
+
+    public void afficherDiagramme(List<BlocClasse> blocs) 
+    {
+        this.blocsClasses = blocs;
+        this.repaint();
+    }
 }

@@ -1,6 +1,8 @@
 import modele.AnalyseurUML;
 import modele.AssociationObjet;
+import modele.AttributObjet;
 import modele.ClasseObjet;
+import modele.MethodeObjet;
 import vue.FenetrePrincipale;
 import vue.BlocClasse; // Pour convertir le modèle en vue
 
@@ -33,14 +35,18 @@ public class Controleur
             this.vuePrincipale.setVisible(true);
         });
     }
+    
+    // Ajoutez ici d'autres méthodes de contrôle (annuler, exporter, etc.)
+    public void exporterDiagramme()
+    {
+        // Logique d'export : appel au modèle pour générer l'image, 
+        // puis interaction avec la Vue pour le dialogue de sauvegarde.
+        System.out.println("Contrôleur: Exporter le diagramme");
+    }
 
-    /**
-     * Reçoit le chemin du projet de la Vue et demande au Modèle de l'analyser.
-     * Met ensuite à jour la Vue avec les résultats.
-     */
     public void analyserEtAfficherDiagramme(String cheminProjet)
     {
-        // 1. Appel du Modèle pour récupérer les fichiers
+        // ... (1. Appel du Modèle pour récupérer les fichiers - Logique conservée)
         List<File> fichiersJava = this.modeleAnalyseur.ClassesDuDossier(cheminProjet);
         List<ClasseObjet> classes = new ArrayList<>();
         HashMap<String, ClasseObjet> mapClasses = new HashMap<>();
@@ -55,7 +61,7 @@ public class Controleur
             }
         }
 
-        this.classesChargees = mapClasses; // Stocker les classes analysées
+        this.classesChargees = mapClasses;
         
         // 2. Préparer les objets de Vue (BlocClasse) à partir des objets de Modèle (ClasseObjet)
         List<BlocClasse> blocsVue = new ArrayList<>();
@@ -64,28 +70,69 @@ public class Controleur
 
         for (ClasseObjet classeModele : classes)
         {
-            // Conversion Modèle -> Vue (gestion des coordonnées simple pour l'exemple)
-            BlocClasse bloc = new BlocClasse(classeModele.getNom(), x, y);
+            // CONVERSION DES ATTRIBUTS ET MÉTHODES ICI
+            List<String> attributsVue = convertirAttributs(classeModele.getattributs(), classeModele);
+            List<String> methodesVue  = convertirMethodes(classeModele.getMethodes(), classeModele);
+
+            // Création du BlocClasse avec les détails
+            BlocClasse bloc = new BlocClasse(
+                classeModele.getNom(), 
+                x, y, 
+                attributsVue, 
+                methodesVue
+            );
             blocsVue.add(bloc);
             
             x += 250;
-            // Note: Le PanneauDiagramme avait cette logique, mais idéalement, 
-            // la position initiale devrait être décidée ici ou par un service de placement.
+            // ... (Logique de positionnement conservée)
+            if (x > 1000) { // Valeur arbitraire, doit être lié à la taille de la fenêtre
+                x = 50;
+                y += 200;
+            }
         }
 
-        // 3. Demander à la Vue de s'actualiser
+        // ... (3. Demander à la Vue de s'actualiser - Logique conservée)
         if (this.vuePrincipale != null && this.vuePrincipale.getPanneauDiagramme() != null)
         {
             this.vuePrincipale.getPanneauDiagramme().afficherDiagramme(blocsVue);
         }
     }
     
-    // Ajoutez ici d'autres méthodes de contrôle (annuler, exporter, etc.)
-    public void exporterDiagramme()
+    // Nouvelle méthode de conversion : AttributObjet -> String UML
+    private List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe)
     {
-        // Logique d'export : appel au modèle pour générer l'image, 
-        // puis interaction avec la Vue pour le dialogue de sauvegarde.
-        System.out.println("Contrôleur: Exporter le diagramme");
+        List<String> liste = new ArrayList<>();
+        for (AttributObjet att : attributs)
+        {
+            String staticFlag = att.isStatique() ? " {static}" : "";
+            // Utiliser la méthode de ClasseObjet pour la visibilité
+            char visibilite = classe.changementVisibilite(att.getVisibilite());
+            
+            String s = visibilite + " " + att.getNom() + " : " + att.getType() + staticFlag; 
+            liste.add(s);
+        }
+        return liste;
+    }
+
+    // Nouvelle méthode de conversion : MethodeObjet -> String UML
+    private List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe)
+    {
+        List<String> liste = new ArrayList<>();
+        for (MethodeObjet met : methodes)
+        {
+            String staticFlag = met.isStatique() ? "{static} " : "";
+            char visibilite = classe.changementVisibilite(met.getVisibilite());
+            
+            // Utiliser la méthode de ClasseObjet pour les paramètres
+            String params = classe.affichageParametre(met.getParametres());
+            
+            // Utiliser la méthode de ClasseObjet pour le type de retour
+            String retour = classe.retourType(met.getRetourType());
+            
+            String s = visibilite + staticFlag + met.getNom() + params + retour;
+            liste.add(s);
+        }
+        return liste;
     }
 
     // Ancienne logique de main, simplifiée
