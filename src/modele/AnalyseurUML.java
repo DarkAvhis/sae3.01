@@ -56,6 +56,11 @@ public class AnalyseurUML
         boolean estHeritier = false;
         ArrayList<String> interfacesDetectees = new ArrayList<>();
         String nomParent = null;
+        String specifique = "";
+        String[] tabSpecifique = {"abstract class", 
+                                    "interface",
+                                    "enum",    
+                                    "record"};
 
         try (Scanner sc = new Scanner(file))
         {
@@ -83,6 +88,56 @@ public class AnalyseurUML
 
                     nomParent = afterExtends.substring(0, indexFinNom).trim();
                 }
+                
+                for (int i = 0; i < tabSpecifique.length; i++)
+                {
+                    if (ligne.contains(tabSpecifique[i]))
+                    {
+                        specifique = tabSpecifique[i];
+                    }
+
+                }
+
+                if (ligne.contains("record"))
+                {
+                    int debut = ligne.indexOf('(');
+                    int fin = ligne.lastIndexOf(')');
+
+                    if (debut != -1 && fin != -1 && debut < fin)
+                    {
+                        String contenu = ligne.substring(debut + 1, fin);
+                        int start = 0;
+
+                        for( int i =0; i <= contenu.length() ; i++)
+                        {
+                            if  (i == contenu.length() || contenu.charAt(i) == ',' )
+                            {
+                                String param = contenu.substring(start,i).trim();
+                                start = i +1 ;
+
+                                int idx = param.lastIndexOf(' ');
+
+
+                                if (idx != -1)
+                                {
+                                    String type = param.substring(0, idx).trim();
+                                    String nom  = param.substring(idx + 1).trim();
+
+
+                                    attributs.add(new AttributObjet(nom,"instance",type,"private",true));
+
+
+                                    methodes.add(new MethodeObjet(nom,new HashMap<>(),type,"public",true));
+                                }
+
+                            }
+                        }
+                    }
+
+                    continue;
+                }
+
+
 
                 // détection implements (gère plusieurs interfaces séparées par des virgules)
                 if (ligne.contains("class ") && ligne.contains("implements"))
@@ -132,7 +187,7 @@ public class AnalyseurUML
             return null;
         }
 
-        ClasseObjet nouvelleClasse = new ClasseObjet(attributs, methodes, nomClasse);
+        ClasseObjet nouvelleClasse = new ClasseObjet(attributs, methodes, nomClasse , specifique);
 
         // enregistrement héritage
         if (estHeritier && nomParent != null)

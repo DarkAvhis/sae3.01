@@ -1,35 +1,73 @@
 package modele;
 
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Représente une relation d'implémentation d'une interface dans un diagramme UML.
- * Dans cette relation :
- * classeDest : la classe qui implémente l'interface (la classe concrète)</li>
- * classeOrig : l'interface ou classe abstraite implémentée</li>
+ * MODIFIÉ : classeFille est la classe concrète unique. lstInterfaces est la liste des interfaces implémentées.
  */
 public class InterfaceObjet extends LiaisonObjet 
 {
-     /**
-     * Crée une relation d'implémentation entre une classe et une interface.
-     *
-     * @param nomAttribut      Le nom de la relation (souvent vide pour l'implémentation)
-     * @param classeDest       La classe concrète qui implémente l'interface
-     * @param classeOrig       L'interface ou classe abstraite implémentée
-     */
-    public InterfaceObjet( String nomAttribut, ClasseObjet classeMere, ClasseObjet classeFille) 
-    {
-        super(nomAttribut, classeMere, classeFille);
-    }
+    // Rétablissement de la liste pour stocker plusieurs interfaces
+    private List<ClasseObjet> lstInterfaces; 
 
-    /**
-     * Retourne une représentation textuelle de la relation d'implémentation.
+     /**
+     * Constructeur d'initialisation pour la classe concrète.
+     * La classe Mere (Parent) est null car plusieurs interfaces seront ajoutées.
      *
-     * @return une chaîne du type : "ClasseDest implémente ClasseOrig"
+     * @param classeFille      La classe concrète (classe fille)
+     */
+    public InterfaceObjet(ClasseObjet classeFille) 
+    {
+        // On passe null pour classeMere car il y en aura potentiellement plusieurs.
+        super(null, null, classeFille); 
+        this.lstInterfaces = new ArrayList<>();
+    }
+    
+    /**
+     * Ajoute une interface à la liste des implémentations.
+     * @param interfaceObjet L'interface (qui est un ClasseObjet) à ajouter.
+     */
+    public void ajouterInterface(ClasseObjet interfaceObjet)
+    {
+        if (interfaceObjet != null)
+        {
+            this.lstInterfaces.add(interfaceObjet);
+        }
+    }
+    
+    /**
+     * Retourne une représentation textuelle de toutes les relations d'implémentation.
+     * Format attendu: "Classe Concrète implémente Interface1, Interface2, ..."
      */
     @Override
     public String toString() 
     {
-        return classeFille.getNom() + "\timplémente " + classeMere.getNom();
+        // 1. Récupérer le nom de la classe concrète
+        String nomFille = (this.classeFille != null) ? this.classeFille.getNom() : "[Classe Concrète manquante]";
+        
+        if (this.lstInterfaces.isEmpty())
+        {
+             return nomFille + " n'implémente aucune interface enregistrée.";
+        }
+
+        // 2. Assembler les noms des interfaces séparés par des virgules
+        String sRet = "";
+        
+        for (int i = 0; i < this.lstInterfaces.size(); i++)
+        {
+            if (this.lstInterfaces.get(i) != null)
+            {
+                sRet += this.lstInterfaces.get(i).getNom();
+                if (i < this.lstInterfaces.size() - 1)
+                {
+                    sRet+= " , " ; // Utilisation de ' , ' pour plus de clarté
+                }
+            }
+        }
+
+        return nomFille + " implémente " + sRet;
     }
      
 }

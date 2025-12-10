@@ -16,15 +16,17 @@ public class ClasseObjet
 	private String nom;
 	private ArrayList<AttributObjet> attributs;
 	private ArrayList<MethodeObjet>  methodes;
+	private String specifique ;
 
 	/*-------------------------------------- */
 	/* Constructeur                          */
 	/*-------------------------------------- */
-	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom) 
+	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom ,String specifique) 
 	{
 		this.attributs = attributs;
 		this.methodes  = methodes;
 		this.nom       = nom;
+		this.specifique = specifique;
 	}
 
 	/*-------------------------------------- */
@@ -96,17 +98,28 @@ public class ClasseObjet
 	{
 		String sRet = "";
 
-		sRet += "-------------------------------------------------------------------------------------------\n";
-		sRet += String.format( "%50s" ,  this.nom ) +              "\n";
-		sRet += "-------------------------------------------------------------------------------------------\n";
+		
+		if ( !this.specifique.equals("") ) 
+		{
+			sRet += "-------------------------------------------------------------------------------------------\n";
+			sRet += String.format( "%53s" ,  "<<" + this.specifique + ">>") +              "\n";
+			sRet += String.format( "%50s" ,  this.nom ) +              "\n";
+			sRet += "-------------------------------------------------------------------------------------------\n";
+		}
+		else
+		{
+			sRet += "-------------------------------------------------------------------------------------------\n";
+			sRet += String.format( "%50s" ,  this.nom ) +              "\n";
+			sRet += "-------------------------------------------------------------------------------------------\n";
+		}
 
 		for (AttributObjet att : attributs) 
 		{
 			String staticFlag = att.estStatique() ? " {static}" : "";
 			sRet +=  String.format( "%-2c" , changementVisibilite(att.getVisibilite()) )   + 
-					 String.format("%-15s" , att.getNom() )  + 
-					 String.format("%-15s" , retourType( att.getType() ))  + 
-					 String.format("%-10s" , staticFlag ) + "\n" ; 
+					String.format("%-15s" , att.getNom() )  + 
+					String.format("%-15s" , retourType( att.getType() ))  + 
+					String.format("%-10s" , staticFlag ) + "\n" ; 
 		}
 
 		sRet += "-------------------------------------------------------------------------------------------\n";
@@ -121,7 +134,8 @@ public class ClasseObjet
 					String.format( "%-15s",   retourType(met.getRetourType()) ) + "\n" ; 
 		}
 		sRet += "-------------------------------------------------------------------------------------------\n";
-		
+	
+
 		return sRet;
 	}
 }

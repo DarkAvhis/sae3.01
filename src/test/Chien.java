@@ -1,6 +1,6 @@
 package test;
 
-public class Chien extends Animal implements Capacte
+public class Chien extends Animal implements Capacte , Parler
 {
     private String race;
     private static final String ESPECE = "Canis familiaris";

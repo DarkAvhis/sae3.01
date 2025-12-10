@@ -114,9 +114,15 @@ public class AnalyseIHMControleur
     /**
      * NOUVEAU: Résout les implémentations d'interfaces en objets InterfaceObjet réels.
      */
+    // ... dans AnalyseIHMControleur.java
+
+    /**
+     * Résout les implémentations d'interfaces en objets InterfaceObjet réels et les regroupe par classe.
+     */
     private void resoudreImplementation()
     {
-        HashSet<String> implementsAjoutes = new HashSet<>();
+        // Map pour regrouper les interfaces par la CLASSE CONCRÈTE (Clé = Nom Classe Concrète)
+        HashMap<String, InterfaceObjet> regroupement = new HashMap<>();
 
         // Le format de l'intention est String[0] = Classe Concrète, String[1] = Interface
         for (String[] intention : analyseur.getInterfaces())
@@ -130,19 +136,23 @@ public class AnalyseIHMControleur
                 ClasseObjet classeConcrète = mapClasses.get(nomClasseConcrète);
                 ClasseObjet interfaceObjet = mapClasses.get(nomInterface);
                 
-                String cle = nomClasseConcrète + " -> " + nomInterface;
-                
-                if (!implementsAjoutes.contains(cle))
+                // 1. Vérifier si la classe concrète a déjà une relation InterfaceObjet
+                if (!regroupement.containsKey(nomClasseConcrète))
                 {
-                    // Dans InterfaceObjet : classeMere = Interface, classeFille = Classe Concrète
-                    this.implementations.add(new InterfaceObjet(null, interfaceObjet, classeConcrète));
-                    implementsAjoutes.add(cle);
+                    // Si non, créer l'objet InterfaceObjet de base pour cette classe
+                    regroupement.put(nomClasseConcrète, new InterfaceObjet(classeConcrète));
                 }
+                
+                // 2. Ajouter l'interface à la relation existante
+                regroupement.get(nomClasseConcrète).ajouterInterface(interfaceObjet);
             }
-            // Note: On n'ajoute pas d'avertissement pour les interfaces non trouvées, 
-            // car elles peuvent être des interfaces standards du JDK non analysées.
         }
+        
+        // 3. Transférer tous les objets InterfaceObjet rassemblés vers la liste finale
+        this.implementations.addAll(regroupement.values());
     }
+
+// ...
     
     // --- Getters pour l'IHM/Vue ---
     
