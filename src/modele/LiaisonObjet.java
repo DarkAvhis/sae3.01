@@ -43,6 +43,13 @@ public class LiaisonObjet
 		num              = ++nbLiaisons;
 	}
 
+    public LiaisonObjet(String nomAttribut, ClasseObjet classeFille) 
+	{
+		this.nomAttribut = nomAttribut ;
+		this.classeFille  = classeFille  ;
+		num              = ++nbLiaisons;
+	}
+
 	// ----------------- Getters -----------------
 
     /** @return le nom de la liaison */

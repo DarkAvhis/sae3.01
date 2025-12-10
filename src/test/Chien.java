@@ -1,6 +1,6 @@
 package test;
 
-public class Chien extends Animal
+public class Chien extends Animal implements Capacte , Parler
 {
     private String race;
     private static final String ESPECE = "Canis familiaris";
@@ -22,7 +22,7 @@ public class Chien extends Animal
     }
 
     @Override
-    public synchronized String parler()
+    public String parler()
     {
         return "Woof";
     }

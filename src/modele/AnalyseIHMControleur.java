@@ -54,7 +54,7 @@ public class AnalyseIHMControleur
 
         List<File> fichiersJava = analyseur.ClassesDuDossier(cheminDossier);
         
-        // 1. Analyse de tous les fichiers et construction du modèle (remplit lstIntentionHeritage)
+        // 1. Analyse de tous les fichiers et construction du modèle
         for (File f : fichiersJava)
         {
             ClasseObjet c = analyseur.analyserFichierUnique(f.getAbsolutePath()); 
@@ -68,9 +68,9 @@ public class AnalyseIHMControleur
         // 2. Détection des relations qui nécessitent toutes les classes chargées
         this.associations.addAll(analyseur.detecterAssociations(this.classes, this.mapClasses));
         
-        // 3. Résolution de l'Héritage (Conversion de l'intention en objets concrets)
+        // 3. Résolution des liens
         resoudreHeritage();
-        // L'implémentation (InterfaceObjet) sera gérée dans l'Étape 4
+        resoudreImplementation();
 
         return true;
     }
@@ -111,6 +111,49 @@ public class AnalyseIHMControleur
         }
     }
     
+    /**
+     * NOUVEAU: Résout les implémentations d'interfaces en objets InterfaceObjet réels.
+     */
+    // ... dans AnalyseIHMControleur.java
+
+    /**
+     * Résout les implémentations d'interfaces en objets InterfaceObjet réels et les regroupe par classe.
+     */
+    private void resoudreImplementation()
+    {
+        // Map pour regrouper les interfaces par la CLASSE CONCRÈTE (Clé = Nom Classe Concrète)
+        HashMap<String, InterfaceObjet> regroupement = new HashMap<>();
+
+        // Le format de l'intention est String[0] = Classe Concrète, String[1] = Interface
+        for (String[] intention : analyseur.getInterfaces())
+        {
+            String nomClasseConcrète = intention[0];
+            String nomInterface = intention[1];
+            
+            // Résolution dans la map
+            if (mapClasses.containsKey(nomClasseConcrète) && mapClasses.containsKey(nomInterface))
+            {
+                ClasseObjet classeConcrète = mapClasses.get(nomClasseConcrète);
+                ClasseObjet interfaceObjet = mapClasses.get(nomInterface);
+                
+                // 1. Vérifier si la classe concrète a déjà une relation InterfaceObjet
+                if (!regroupement.containsKey(nomClasseConcrète))
+                {
+                    // Si non, créer l'objet InterfaceObjet de base pour cette classe
+                    regroupement.put(nomClasseConcrète, new InterfaceObjet(classeConcrète));
+                }
+                
+                // 2. Ajouter l'interface à la relation existante
+                regroupement.get(nomClasseConcrète).ajouterInterface(interfaceObjet);
+            }
+        }
+        
+        // 3. Transférer tous les objets InterfaceObjet rassemblés vers la liste finale
+        this.implementations.addAll(regroupement.values());
+    }
+
+// ...
+    
     // --- Getters pour l'IHM/Vue ---
     
     public List<ClasseObjet> getClasses()
@@ -130,7 +173,6 @@ public class AnalyseIHMControleur
     
     public List<InterfaceObjet> getImplementations()
     {
-        // Sera rempli lors de l'implémentation de l'étape 4 (interfaces)
         return implementations;
     }
 
@@ -167,8 +209,12 @@ public class AnalyseIHMControleur
             {
                 System.out.println(heri);
             }
-            
-            // Les implémentations seront affichées ici après l'étape 4
+
+            System.out.println("\n=== IMPLÉMENTATION (ETAPE 4) ===");
+			for (InterfaceObjet impl : controleur.getImplementations())
+            {
+                System.out.println(impl.toString());
+            }
         }
     }
 }

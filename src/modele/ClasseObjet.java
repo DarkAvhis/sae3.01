@@ -13,39 +13,90 @@ public class ClasseObjet
 	/*-------------------------------------- */
 	/* Attributs                             */
 	/*-------------------------------------- */
+
+	/** Nom de la classe analysée. */
 	private String nom;
+
+	/** Liste des attributs appartenant à la classe. */
 	private ArrayList<AttributObjet> attributs;
+
+	/** Liste des méthodes appartenant à la classe. */
 	private ArrayList<MethodeObjet>  methodes;
+	private String specifique ;
 
 	/*-------------------------------------- */
 	/* Constructeur                          */
 	/*-------------------------------------- */
-	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom) 
+	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom ,String specifique) 
 	{
 		this.attributs = attributs;
 		this.methodes  = methodes;
 		this.nom       = nom;
+		this.specifique = specifique;
 	}
 
 	/*-------------------------------------- */
 	/* Les Accesseurs                        */
 	/*-------------------------------------- */
-	public String                   getNom      () {	return nom       ;	}
-	public ArrayList<AttributObjet> getattributs() {	return attributs ;	}
-	public ArrayList<MethodeObjet>  getMethodes () {	return methodes  ;	}
+
+	/**
+	 * Retourne le nom de la classe.
+	 *
+	 * @return nom de la classe
+	 */
+	public String getNom() { return nom; }
+
+	/**
+	 * Retourne la liste des attributs de la classe.
+	 *
+	 * @return liste des attributs
+	 */
+	public ArrayList<AttributObjet> getattributs() { return attributs; }
+
+	/**
+	 * Retourne la liste des méthodes de la classe.
+	 *
+	 * @return liste des méthodes
+	 */
+	public ArrayList<MethodeObjet> getMethodes() { return methodes; }
 
 	/*-------------------------------------- */
 	/* Modificateurs                         */
 	/*-------------------------------------- */
-	public void setNom      (String nom                        ) {	this.nom       = nom       ;	}
-	public void setattributs(ArrayList<AttributObjet> attributs) {	this.attributs = attributs ;	}
-	public void setmethodes (ArrayList<MethodeObjet>  methodes ) {	this.methodes  = methodes  ;	}
-	
+
+	/**
+	 * Modifie le nom de la classe.
+	 *
+	 * @param nom nouveau nom
+	 */
+	public void setNom(String nom) { this.nom = nom; }
+
+	/**
+	 * Modifie la liste des attributs de la classe.
+	 *
+	 * @param attributs nouvelle liste d'attributs
+	 */
+	public void setattributs(ArrayList<AttributObjet> attributs) { this.attributs = attributs; }
+
+	/**
+	 * Modifie la liste des méthodes de la classe.
+	 *
+	 * @param methodes nouvelle liste de méthodes
+	 */
+	public void setmethodes(ArrayList<MethodeObjet> methodes) { this.methodes = methodes; }
+
 
 	/*-------------------------------------- */
 	/* Methode autre                         */
 	/*-------------------------------------- */
-	public char changementVisibilite( String visibilite ) 
+
+	/**
+	 * Convertit une visibilité Java en symbole UML.
+	 *
+	 * @param visibilite "public", "private", "protected" ou autre
+	 * @return symbole UML correspondant (+, -, #, ~)
+	 */
+	public char changementVisibilite(String visibilite) 
 	{
 		switch (visibilite) 
 		{
@@ -56,6 +107,12 @@ public class ClasseObjet
 		}
 	}
 
+	/**
+	 * Formate les paramètres d'une méthode selon la syntaxe UML.
+	 *
+	 * @param parametre hashmap contenant nomParam → typeParam
+	 * @return chaîne formatée des paramètres (exemple : "(x: int, y: String)")
+	 */
 	public String affichageParametre(HashMap<String, String> parametre)
 	{
 		String sRet = "";
@@ -77,6 +134,12 @@ public class ClasseObjet
 		return sRet;
 	}
 
+	/**
+	 * Retourne la syntaxe UML pour un type de retour.
+	 *
+	 * @param type type de retour Java
+	 * @return ": type" ou chaîne vide si void
+	 */
 	public String retourType(String type) 
 	{
 		if (type == null) return " "; 
@@ -91,37 +154,56 @@ public class ClasseObjet
 	/*-------------------------------------- */
 	/* toString                              */
 	/*-------------------------------------- */
+
+	/**
+	 * Génère une représentation textuelle de la classe sous forme UML.
+	 *
+	 * @return chaîne formatée représentant la classe (attributs + méthodes)
+	 */
 	@Override
 	public String toString() 
 	{
 		String sRet = "";
 
-		sRet += "-------------------------------------------------------------------------------------------\n";
-		sRet += String.format( "%50s" ,  this.nom ) +              "\n";
-		sRet += "-------------------------------------------------------------------------------------------\n";
+		
+		if ( !this.specifique.equals("") ) 
+		{
+			sRet += "-------------------------------------------------------------------------------------------\n";
+			sRet += String.format( "%53s" ,  "<<" + this.specifique + ">>") +              "\n";
+			sRet += String.format( "%50s" ,  this.nom ) +              "\n";
+			sRet += "-------------------------------------------------------------------------------------------\n";
+		}
+		else
+		{
+			sRet += "-------------------------------------------------------------------------------------------\n";
+			sRet += String.format( "%50s" ,  this.nom ) +              "\n";
+			sRet += "-------------------------------------------------------------------------------------------\n";
+		}
 
 		for (AttributObjet att : attributs) 
 		{
 			String staticFlag = att.estStatique() ? " {static}" : "";
 			sRet +=  String.format( "%-2c" , changementVisibilite(att.getVisibilite()) )   + 
-					 String.format("%-15s" , att.getNom() )  + 
-					 String.format("%-15s" , retourType( att.getType() ))  + 
-					 String.format("%-10s" , staticFlag ) + "\n" ; 
+					String.format("%-15s" , att.getNom() )  + 
+					String.format("%-15s" , retourType( att.getType() ))  + 
+					String.format("%-10s" , staticFlag ) + "\n" ; 
 		}
 
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
-		for( MethodeObjet met : methodes )
+		for (MethodeObjet met : methodes)
 		{
 			String staticFlag = met.estStatique() ? "{static} " : "";
 
-			sRet += String.format( "%-2c",    changementVisibilite(met.getVisibilite())) + staticFlag +
-					String.format( "%-25s" ,  met.getNom()) + 
-					String.format( "%-35s" ,  affichageParametre(met.getParametres()))  + 
-					String.format( "%-15s",   retourType(met.getRetourType()) ) + "\n" ; 
+			sRet += String.format("%-2c", changementVisibilite(met.getVisibilite())) + staticFlag +
+					String.format("%-25s", met.getNom()) + 
+					String.format("%-35s", affichageParametre(met.getParametres())) + 
+					String.format("%-15s", retourType(met.getRetourType())) + "\n"; 
 		}
+
 		sRet += "-------------------------------------------------------------------------------------------\n";
-		
+	
+
 		return sRet;
 	}
 }
