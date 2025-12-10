@@ -29,7 +29,7 @@ public class InterfaceObjet extends LiaisonObjet
     @Override
     public String toString() 
     {
-        return classeMere.getNom() + "\timplémente " + classeFille.getNom();
+        return classeFille.getNom() + "\timplémente " + classeMere.getNom();
     }
      
 }

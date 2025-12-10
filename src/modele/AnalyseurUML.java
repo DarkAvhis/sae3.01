@@ -19,6 +19,7 @@ public class AnalyseurUML
     
     // Stocke l'héritage sous forme de paire (Nom Enfant, Nom Parent)
 	private ArrayList<String[]> lstIntentionHeritage = new ArrayList<>(); 
+    private ArrayList<String[]> lstInterfaces = new ArrayList<>();
 
     /**
      * Réinitialise les listes de relations stockées.
@@ -26,7 +27,7 @@ public class AnalyseurUML
     public void resetRelations()
     {
         this.lstIntentionHeritage.clear();
-        // this.lstInterfaces.clear(); 
+        this.lstInterfaces.clear(); 
     }
 
     /**
@@ -35,6 +36,11 @@ public class AnalyseurUML
     public ArrayList<String[]> getIntentionsHeritage()
     {
         return lstIntentionHeritage;
+    }
+
+    public ArrayList<String[]> getInterfaces()
+    {
+        return lstInterfaces;
     }
 
     /**
@@ -47,10 +53,10 @@ public class AnalyseurUML
 
         ArrayList<AttributObjet> attributs = new ArrayList<>();
         ArrayList<MethodeObjet> methodes = new ArrayList<>();
-        boolean estHeritier = false ;
-        boolean estImplemente = false ;
-        String nomParent = null; 
-        
+        boolean estHeritier = false;
+        ArrayList<String> interfacesDetectees = new ArrayList<>();
+        String nomParent = null;
+
         try (Scanner sc = new Scanner(file))
         {
             while (sc.hasNextLine())
@@ -62,36 +68,49 @@ public class AnalyseurUML
                     continue;
                 }
 
-                // --- DÉTECTION HÉRITAGE (ETAPE 4) ---
+                // détection extends
                 if (ligne.contains("class ") && ligne.contains("extends"))
                 {
                     estHeritier = true;
-                    
-                    String afterExtends = ligne.substring(ligne.indexOf("extends") + 7).trim();
+
+                    String afterExtends = ligne.substring(ligne.indexOf("extends") + "extends".length()).trim();
                     int indexEspace = afterExtends.indexOf(' ');
                     int indexAccolade = afterExtends.indexOf('{');
                     int indexFinNom = afterExtends.length();
-                    
+
                     if (indexEspace != -1 && indexEspace < indexFinNom) indexFinNom = indexEspace;
                     if (indexAccolade != -1 && indexAccolade < indexFinNom) indexFinNom = indexAccolade;
 
                     nomParent = afterExtends.substring(0, indexFinNom).trim();
                 }
 
-                // --- DETECTION IMPLEMENTATION (ETAPE 4) ---
+                // détection implements (gère plusieurs interfaces séparées par des virgules)
                 if (ligne.contains("class ") && ligne.contains("implements"))
                 {
-                    estImplemente = true;
-                    
-                    String afterImplements = ligne.substring(ligne.indexOf("implements") + 10).trim();
-                    int indexEspace = afterImplements.indexOf(' ');
+                    String afterImplements = ligne.substring(ligne.indexOf("implements") + "implements".length()).trim();
+                    // tronquer au '{' si présent
                     int indexAccolade = afterImplements.indexOf('{');
-                    int indexFinNom = afterImplements.length();
-                    
-                    if (indexEspace != -1 && indexEspace < indexFinNom) indexFinNom = indexEspace;
-                    if (indexAccolade != -1 && indexAccolade < indexFinNom) indexFinNom = indexAccolade;
-
-                    nomParent = afterImplements.substring(0, indexFinNom).trim();
+                    if (indexAccolade != -1)
+                    {
+                        afterImplements = afterImplements.substring(0, indexAccolade).trim();
+                    }
+                    // séparation par virgule
+                    String[] parts = afterImplements.split(",");
+                    for (String p : parts)
+                    {
+                        String inter = p.trim();
+                        // couper au premier espace ou '<' s'il y a des génériques
+                        int idxSpace = inter.indexOf(' ');
+                        int idxChevron = inter.indexOf('<');
+                        int idxFin = inter.length();
+                        if (idxSpace != -1 && idxSpace < idxFin) idxFin = idxSpace;
+                        if (idxChevron != -1 && idxChevron < idxFin) idxFin = idxChevron;
+                        inter = inter.substring(0, idxFin).trim();
+                        if (!inter.isEmpty())
+                        {
+                            interfacesDetectees.add(inter);
+                        }
+                    }
                 }
 
                 boolean estStatique = ligne.contains("static");
@@ -114,14 +133,19 @@ public class AnalyseurUML
         }
 
         ClasseObjet nouvelleClasse = new ClasseObjet(attributs, methodes, nomClasse);
-        
-        // --- Enregistrement de l'intention d'Héritage (Nom de la classe seulement) ---
+
+        // enregistrement héritage
         if (estHeritier && nomParent != null)
         {
-            // Stocke la paire (Nom Enfant, Nom Parent)
-            this.lstIntentionHeritage.add(new String[]{nomClasse, nomParent}); 
+            this.lstIntentionHeritage.add(new String[]{nomClasse, nomParent});
         }
-        
+
+        // enregistrement implémentations (une entrée par interface)
+        for (String iface : interfacesDetectees)
+        {
+            this.lstInterfaces.add(new String[]{nomClasse, iface});
+        }
+
         return nouvelleClasse;
     }
 
@@ -185,10 +209,7 @@ public class AnalyseurUML
             typeRetour = "void";
         }
         
-        String contenuParam = ligne.substring(
-                indexParenthese + 1,
-                ligne.lastIndexOf(")")
-        ).trim();
+        String contenuParam = ligne.substring(indexParenthese + 1,ligne.lastIndexOf(")")).trim();
 
         HashMap<String, String> params = new HashMap<>();
 
