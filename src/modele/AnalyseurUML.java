@@ -48,6 +48,7 @@ public class AnalyseurUML
         ArrayList<AttributObjet> attributs = new ArrayList<>();
         ArrayList<MethodeObjet> methodes = new ArrayList<>();
         boolean estHeritier = false ;
+        boolean estImplemente = false ;
         String nomParent = null; 
         
         try (Scanner sc = new Scanner(file))
@@ -75,6 +76,22 @@ public class AnalyseurUML
                     if (indexAccolade != -1 && indexAccolade < indexFinNom) indexFinNom = indexAccolade;
 
                     nomParent = afterExtends.substring(0, indexFinNom).trim();
+                }
+
+                // --- DETECTION IMPLEMENTATION (ETAPE 4) ---
+                if (ligne.contains("class ") && ligne.contains("implements"))
+                {
+                    estImplemente = true;
+                    
+                    String afterImplements = ligne.substring(ligne.indexOf("implements") + 10).trim();
+                    int indexEspace = afterImplements.indexOf(' ');
+                    int indexAccolade = afterImplements.indexOf('{');
+                    int indexFinNom = afterImplements.length();
+                    
+                    if (indexEspace != -1 && indexEspace < indexFinNom) indexFinNom = indexEspace;
+                    if (indexAccolade != -1 && indexAccolade < indexFinNom) indexFinNom = indexAccolade;
+
+                    nomParent = afterImplements.substring(0, indexFinNom).trim();
                 }
 
                 boolean estStatique = ligne.contains("static");
