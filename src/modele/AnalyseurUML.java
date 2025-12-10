@@ -25,14 +25,9 @@ public class AnalyseurUML
      */
     public void resetRelations()
     {
-<<<<<<< HEAD
         this.lstHerite.clear();
         this.heritagesAjoutes.clear();
         // this.lstInterfaces.clear(); // Pour l'étape 4 Implémentation
-=======
-        this.lstIntentionHeritage.clear();
-        // this.lstInterfaces.clear(); 
->>>>>>> 54ac3d4b67631fffab232f54d73de709fd332217
     }
 
     /**
@@ -55,13 +50,10 @@ public class AnalyseurUML
         ArrayList<MethodeObjet> methodes = new ArrayList<>();
         boolean estHeritier = false ;
         String nomParent = null; 
-<<<<<<< HEAD
 
         // --- Début de la logique de recherche de fichiers pour la classe parente ---
         ArrayList<File> lstFichier = new ArrayList<>();
         File parentDir = file.getParentFile();
-=======
->>>>>>> 54ac3d4b67631fffab232f54d73de709fd332217
         
         try (Scanner sc = new Scanner(file))
         {
@@ -88,7 +80,6 @@ public class AnalyseurUML
                     if (indexAccolade != -1 && indexAccolade < indexFinNom) indexFinNom = indexAccolade;
 
                     nomParent = afterExtends.substring(0, indexFinNom).trim();
-<<<<<<< HEAD
                     
                     // --- Résolution locale de la classe parente ---
                     for (File fichier : lstFichier)
@@ -101,8 +92,6 @@ public class AnalyseurUML
                         }
                     }
                     // --- Fin de la résolution locale ---
-=======
->>>>>>> 54ac3d4b67631fffab232f54d73de709fd332217
                 }
 
                 boolean estStatique = ligne.contains("static");

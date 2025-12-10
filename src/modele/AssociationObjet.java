@@ -20,6 +20,8 @@ public class AssociationObjet extends LiaisonObjet
 	private boolean unidirectionnel;
 	private MultipliciteObjet multOrig;
 	private MultipliciteObjet multDest;
+    private ClasseObjet classeOrig;
+    private ClasseObjet classeDest;
 
 	/*-------------------------------------- */
 	/* Constructeur                          */
