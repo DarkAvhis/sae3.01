@@ -78,7 +78,7 @@ public class MethodeObjet
     public HashMap<String, String> getParametres() { return parametres;  }
 
     /** @return true si la méthode est statique, false sinon */
-    public boolean getStatique()                   { return estStatique; }
+    public boolean estStatique()                   { return estStatique; }
 
     // ----------------- Setters -----------------
 
