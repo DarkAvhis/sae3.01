@@ -102,7 +102,7 @@ public class ClasseObjet
 
 		for (AttributObjet att : attributs) 
 		{
-			String staticFlag = att.getStatique() ? " {static}" : "";
+			String staticFlag = att.estStatique() ? " {static}" : "";
 			sRet +=  String.format( "%-2c" , changementVisibilite(att.getVisibilite()) )   + 
 					 String.format("%-15s" , att.getNom() )  + 
 					 String.format("%-15s" , retourType( att.getType() ))  + 
@@ -113,7 +113,7 @@ public class ClasseObjet
 
 		for( MethodeObjet met : methodes )
 		{
-			String staticFlag = met.isStatique() ? "{static} " : "";
+			String staticFlag = met.estStatique() ? "{static} " : "";
 
 			sRet += String.format( "%-2c",    changementVisibilite(met.getVisibilite())) + staticFlag +
 					String.format( "%-25s" ,  met.getNom()) + 

@@ -1,5 +1,5 @@
 src/modele/AnalyseurUML.java
-src/modele/AnalyseUMLControleur.java
+src/modele/AnalyseIHMControleur.java
 src/modele/AssociationObjet.java
 src/modele/AttributObjet.java
 src/modele/ClasseObjet.java

@@ -1,21 +1,36 @@
 package vue;
 
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
+import java.awt.event.*;
+import javax.swing.*;
 
 import src.Controleur;
 
-public class BarreMenus extends JMenuBar 
+public class BarreMenus extends JMenuBar implements ActionListener
 {
-
     private Controleur controleur;
+
+    // Références aux items pour les reconnaître dans actionPerformed
+    private JMenuItem nouvelleItem;
+    private JMenuItem ouvrirItem;
+    private JMenuItem exporterItem;
+    private JMenuItem sauvegarderItem;
+    private JMenuItem quitterItem;
+
+    private JMenuItem annulerItem;
+    private JMenuItem retablirItem;
+    private JMenuItem supprimerItem;
+
+    private JCheckBoxMenuItem afficherAttributsItem;
+    private JCheckBoxMenuItem afficherMethodesItem;
+    private JMenuItem alignerItem;
+    private JMenuItem optimiserItem;
+
+    private JMenuItem aProposItem;
 
     public BarreMenus(Controleur controleur) 
     {
         this.controleur = controleur;
+
         this.add(creerMenuFichier());
         this.add(creerMenuEdition());
         this.add(creerMenuAffichage());
@@ -26,26 +41,19 @@ public class BarreMenus extends JMenuBar
     {
         JMenu menu = new JMenu("Fichier");
 
-        JMenuItem nouvelleItem = new JMenuItem("Nouveau projet");
-        nouvelleItem.addActionListener(e -> actionNouveauProjet());
+        this.nouvelleItem   = new JMenuItem("Nouveau projet");
+        this.ouvrirItem     = new JMenuItem("Ouvrir projet");
+        this.exporterItem   = new JMenuItem("Exporter en image");
+        this.sauvegarderItem= new JMenuItem("Sauvegarder positions");
+        this.quitterItem    = new JMenuItem("Quitter");
 
-        JMenuItem ouvrirItem = new JMenuItem("Ouvrir projet");
-        ouvrirItem.addActionListener(e -> actionOuvrirProjet());
+        this.nouvelleItem.addActionListener(this);
+        this.ouvrirItem.addActionListener(this);
+        this.exporterItem.addActionListener(this);
+        this.sauvegarderItem.addActionListener(this);
+        this.quitterItem.addActionListener(this);
 
-        JMenuItem exporterItem = new JMenuItem("Exporter en image");
-        exporterItem.addActionListener(e -> actionExporter());
-
-        JMenuItem sauvegarderItem = new JMenuItem("Sauvegarder positions");
-        sauvegarderItem.addActionListener(e -> actionSauvegarder());
-
-        JMenuItem quitterItem = new JMenuItem("Quitter");
-        quitterItem.addActionListener(e -> System.exit(0));
-
-        //menu.add(nouvelleItem);
-        //menu.add(ouvrirItem);
-        //menu.addSeparator();
         menu.add(exporterItem);
-        //menu.add(sauvegarderItem);
         menu.addSeparator();
         menu.add(quitterItem);
 
@@ -56,13 +64,13 @@ public class BarreMenus extends JMenuBar
     {
         JMenu menu = new JMenu("Édition");
 
-        JMenuItem annulerItem = new JMenuItem("Annuler");
-        JMenuItem retablirItem = new JMenuItem("Rétablir");
-        JMenuItem supprimerItem = new JMenuItem("Supprimer");
+        this.annulerItem   = new JMenuItem("Annuler");
+        this.retablirItem  = new JMenuItem("Rétablir");
+        this.supprimerItem = new JMenuItem("Supprimer");
 
-        annulerItem.addActionListener(e -> actionAnnuler());
-        retablirItem.addActionListener(e -> actionRetablir());
-        supprimerItem.addActionListener(e -> actionSupprimer());
+        annulerItem.addActionListener(this);
+        retablirItem.addActionListener(this);
+        supprimerItem.addActionListener(this);
 
         menu.add(annulerItem);
         menu.add(retablirItem);
@@ -76,15 +84,15 @@ public class BarreMenus extends JMenuBar
     {
         JMenu menu = new JMenu("Affichage");
 
-        JCheckBoxMenuItem afficherAttributsItem = new JCheckBoxMenuItem("Afficher attributs", true);
-        JCheckBoxMenuItem afficherMethodesItem = new JCheckBoxMenuItem("Afficher méthodes", true);
-        JMenuItem alignerItem = new JMenuItem("Aligner les symboles");
-        JMenuItem optimiserItem = new JMenuItem("Optimiser les positions");
+        this.afficherAttributsItem = new JCheckBoxMenuItem("Afficher attributs", false);
+        this.afficherMethodesItem  = new JCheckBoxMenuItem("Afficher méthodes", false);
+        this.alignerItem           = new JMenuItem("Aligner les symboles");
+        this.optimiserItem         = new JMenuItem("Optimiser les positions");
 
-        afficherAttributsItem.addActionListener(e -> actionAffichageAttributs());
-        afficherMethodesItem.addActionListener(e -> actionAffichageMethodes());
-        alignerItem.addActionListener(e -> actionAligner());
-        optimiserItem.addActionListener(e -> actionOptimiser());
+        afficherAttributsItem.addActionListener(this);
+        afficherMethodesItem.addActionListener(this);
+        alignerItem.addActionListener(this);
+        optimiserItem.addActionListener(this);
 
         menu.add(afficherAttributsItem);
         menu.add(afficherMethodesItem);
@@ -99,75 +107,58 @@ public class BarreMenus extends JMenuBar
     {
         JMenu menu = new JMenu("Aide");
 
-        JMenuItem aProposItem = new JMenuItem("À propos");
-        aProposItem.addActionListener(e -> actionAPropos());
+        this.aProposItem = new JMenuItem("À propos");
+        aProposItem.addActionListener(this);
 
         menu.add(aProposItem);
 
         return menu;
     }
 
-    // Méthodes d'action (à implémenter)
-    private void actionNouveauProjet() 
+ 
+    @Override
+    public void actionPerformed(ActionEvent e)
     {
-        JOptionPane.showMessageDialog(null, "Pas fini");
+        Object src = e.getSource();
+        
+            if (src == nouvelleItem)        actionNouveauProjet();
+            else if (src == ouvrirItem)     actionOuvrirProjet();
+            else if (src == exporterItem)   actionExporter();
+            else if (src == sauvegarderItem)actionSauvegarder();
+            else if (src == quitterItem)    System.exit(0);
+
+            else if (src == annulerItem)    actionAnnuler();
+            else if (src == retablirItem)   actionRetablir();
+            else if (src == supprimerItem)  actionSupprimer();
+
+            else if (src == afficherAttributsItem) actionAffichageAttributs();
+            else if (src == afficherMethodesItem)  actionAffichageMethodes();
+            else if (src == alignerItem)           actionAligner();
+            else if (src == optimiserItem)         actionOptimiser();
+            else if (src == aProposItem)    actionAPropos();
+
     }
 
-    private void actionOuvrirProjet() 
-    {
-        JOptionPane.showMessageDialog(null, "Pas fini");
-    }
 
-    private void actionExporter() 
-    {
-        JOptionPane.showMessageDialog(null, "Pas fini");
-    }
+    private void actionNouveauProjet() { JOptionPane.showMessageDialog(null, "Pas fini"); }
+    private void actionOuvrirProjet()  { JOptionPane.showMessageDialog(null, "Pas fini"); }
+    private void actionExporter()      { JOptionPane.showMessageDialog(null, "Pas fini"); }
+    private void actionSauvegarder()   { JOptionPane.showMessageDialog(null, "Pas fini"); }
+    private void actionAnnuler()       { JOptionPane.showMessageDialog(null, "Pas fini"); }
+    private void actionRetablir()      { JOptionPane.showMessageDialog(null, "Pas fini"); }
+    private void actionSupprimer()     { JOptionPane.showMessageDialog(null, "Pas fini"); }
 
-    private void actionSauvegarder() 
-    {
-        JOptionPane.showMessageDialog(null, "Pas fini");
-    }
+    private void actionAffichageAttributs() { /* À implémenter */ }
+    private void actionAffichageMethodes()  { /* À implémenter */ }
 
-    private void actionAnnuler() 
-    {
-        JOptionPane.showMessageDialog(null, "Pas fini");
-    }
+    private void actionAligner()    { JOptionPane.showMessageDialog(null, "Pas fini"); }
+    private void actionOptimiser()  { JOptionPane.showMessageDialog(null, "Pas fini"); }
 
-    private void actionRetablir() 
-    {
-        JOptionPane.showMessageDialog(null, "Pas fini");
-    }
-
-    private void actionSupprimer() 
-    {
-        JOptionPane.showMessageDialog(null, "Pas fini");
-    }
-
-    private void actionAffichageAttributs() 
-    {
-        // À implémenter
-    }
-
-    private void actionAffichageMethodes() 
-    {
-        // À implémenter
-    }
-
-    private void actionAligner() 
-    {
-        JOptionPane.showMessageDialog(null, "Pas fini");
-    }
-
-    private void actionOptimiser() 
-    {
-        JOptionPane.showMessageDialog(null, "Pas fini");
-    }
-
-    private void actionAPropos() 
+    private void actionAPropos()
     {
         JOptionPane.showMessageDialog(null,
             "Modélisation UML - Générateur de Diagrammes\n" +
-            "par Quentin MORVAN,\n" + "Valentin LEROY,\n" + "Celim CHAOU,\n" + "Enzo DUMONT,\n" + "Ariunbayar BUYANBADRAKH,\n" + "Yassine EL MAADI",
+            "par Quentin MORVAN,\nValentin LEROY,\nCelim CHAOU,\nEnzo DUMONT,\nAriunbayar BUYANBADRAKH,\nYassine EL MAADI",
             "À propos",
             JOptionPane.INFORMATION_MESSAGE);
     }

@@ -25,9 +25,14 @@ public class AnalyseurUML
      */
     public void resetRelations()
     {
+<<<<<<< HEAD
         this.lstHerite.clear();
         this.heritagesAjoutes.clear();
         // this.lstInterfaces.clear(); // Pour l'étape 4 Implémentation
+=======
+        this.lstIntentionHeritage.clear();
+        // this.lstInterfaces.clear(); 
+>>>>>>> 219d2663f5bb5367a73a1a8f308bc4d3033c64e6
     }
 
     /**
@@ -50,10 +55,13 @@ public class AnalyseurUML
         ArrayList<MethodeObjet> methodes = new ArrayList<>();
         boolean estHeritier = false ;
         String nomParent = null; 
+<<<<<<< HEAD
 
         // --- Début de la logique de recherche de fichiers pour la classe parente ---
         ArrayList<File> lstFichier = new ArrayList<>();
         File parentDir = file.getParentFile();
+=======
+>>>>>>> 219d2663f5bb5367a73a1a8f308bc4d3033c64e6
         
         try (Scanner sc = new Scanner(file))
         {
@@ -80,6 +88,7 @@ public class AnalyseurUML
                     if (indexAccolade != -1 && indexAccolade < indexFinNom) indexFinNom = indexAccolade;
 
                     nomParent = afterExtends.substring(0, indexFinNom).trim();
+<<<<<<< HEAD
                     
                     // --- Résolution locale de la classe parente ---
                     for (File fichier : lstFichier)
@@ -92,6 +101,8 @@ public class AnalyseurUML
                         }
                     }
                     // --- Fin de la résolution locale ---
+=======
+>>>>>>> 219d2663f5bb5367a73a1a8f308bc4d3033c64e6
                 }
 
                 boolean estStatique = ligne.contains("static");
@@ -218,7 +229,7 @@ public class AnalyseurUML
         List<String> liste = new ArrayList<>();
         for (AttributObjet att : attributs)
         {
-            String staticFlag = att.getStatique() ? " {static}" : "";
+            String staticFlag = att.estStatique() ? " {static}" : "";
             // Utiliser la méthode de ClasseObjet pour la visibilité
             char visibilite = classe.changementVisibilite(att.getVisibilite());
             
@@ -234,7 +245,7 @@ public class AnalyseurUML
         List<String> liste = new ArrayList<>();
         for (MethodeObjet met : methodes)
         {
-            String staticFlag = met.isStatique() ? "{static} " : "";
+            String staticFlag = met.estStatique() ? "{static} " : "";
             char visibilite = classe.changementVisibilite(met.getVisibilite());
             
             // Utiliser la méthode de ClasseObjet pour les paramètres
