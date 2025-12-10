@@ -16,10 +16,12 @@ public class FenetrePrincipale extends JFrame
 	public FenetrePrincipale(Controleur controleur) 
 	{
 		this.controleur = controleur;
+
+		Dimension tailleEcran = Toolkit.getDefaultToolkit().getScreenSize();
 		
 		this.setTitle("Générateur de diagramme UML"); 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(1400, 800);
+		this.setSize(tailleEcran.width, tailleEcran.height);
 		this.setLocationRelativeTo(null);
 		this.setResizable(true);
 

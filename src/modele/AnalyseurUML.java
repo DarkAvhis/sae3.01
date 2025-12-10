@@ -9,21 +9,34 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+
+
 /**
- * Classe utilitaire responsable de l'analyse syntaxique (parsing) manuelle des fichiers Java.
- * Gère l'extraction des membres (attributs/méthodes) et la détection des relations (héritage/implémentation).
+ * Analyseur UML permettant de réaliser un parsing manuel de fichiers Java afin
+ * d'en extraire :
+ *     Le nom de la classe</li>
+ *     Ses attributs</li>
+ *     Ses méthodes</li>
+ *     Ses relations d'héritage</li>
+ *     Ses implémentations d'interfaces</li>
+ *     Ses associations avec d'autres classes du projet
+ *
+ * L'analyse syntaxique est volontairement simplifiée pour fonctionner sans
+ * backend de compilation, en reposant principalement sur des règles
+ * textuelles. Les relations (héritage / implémentation) sont stockées sous
+ * forme de chaînes pour être résolues plus tard par le contrôleur.
  */
 public class AnalyseurUML
 {
+    /** Valeur représentant une multiplicité indéfinie (ex: *). */
     private static final int MULT_INDEFINIE = 999999999;
     
-    // Stocke l'héritage sous forme de paire (Nom Enfant, Nom Parent)
+    /** Liste des intentions d'héritage au format {enfant, parent}. */
 	private ArrayList<String[]> lstIntentionHeritage = new ArrayList<>(); 
-    // Stocke l'implémentation (Nom Classe, Nom Interface)
     private ArrayList<String[]> lstInterfaces = new ArrayList<>();
 
     /**
-     * Réinitialise les listes de relations stockées.
+     * Réinitialise toutes les relations enregistrées par l'analyseur.
      */
     public void resetRelations()
     {
@@ -32,46 +45,39 @@ public class AnalyseurUML
     }
 
     /**
-     * Getter pour les intentions d'héritage (Noms des classes seulement).
+     * Retourne la liste des intentions d'héritage détectées lors du parsing.
+     *
+     * @return liste de couples {nomClasse, nomParent}
      */
     public ArrayList<String[]> getIntentionsHeritage()
     {
         return lstIntentionHeritage;
     }
 
-    /**
-     * Getter pour les intentions d'implémentation.
-     */
     public ArrayList<String[]> getInterfaces()
     {
         return lstInterfaces;
     }
 
+
     /**
      * Analyse un fichier Java et construit l'objet ClasseObjet correspondant.
-     * Gère la détection de l'entité (Classe, Interface, Record, Enum) et de ses membres.
      */
     public ClasseObjet analyserFichierUnique(String chemin)
     {
         File file = new File(chemin);
         String nomClasse = file.getName().replace(".java", "");
-        
-        // Variables pour l'entité en cours
+
         ArrayList<AttributObjet> attributs = new ArrayList<>();
         ArrayList<MethodeObjet> methodes = new ArrayList<>();
-        
-        // Variables de contrôle de la structure
-        String nomEntite = nomClasse; 
-        String specifique = ""; 
-        boolean estInterface = false;
-        boolean enTeteTrouve = false;
-        
-        // Variables de relation
         boolean estHeritier = false;
-        String nomParent = null;
         ArrayList<String> interfacesDetectees = new ArrayList<>();
-        
-        String[] tabSpecifique = {"abstract class", "interface", "enum", "record"}; 
+        String nomParent = null;
+        String specifique = "";
+        String[] tabSpecifique = {"abstract class", 
+                                    "interface",
+                                    "enum",    
+                                    "record"};
 
         try (Scanner sc = new Scanner(file))
         {
@@ -79,92 +85,40 @@ public class AnalyseurUML
             {
                 String ligne = sc.nextLine().trim();
 
-                if (ligne.isEmpty() || ligne.startsWith("package") || ligne.startsWith("import"))
-                {
-                    continue;
-                }
-                
-                if (ligne.equals("}"))
+                if (ligne.isEmpty() || ligne.startsWith("package") || ligne.startsWith("import") || ligne.equals("}"))
                 {
                     continue;
                 }
 
-                // --- 1. DÉTECTION DE L'EN-TÊTE ET DE LA STRUCTURE ---
-                
-                if (!enTeteTrouve && (ligne.contains(" class ") || ligne.contains(" interface ") || ligne.contains(" record ") || ligne.contains(" enum ")))
+                // détection extends
+                if (ligne.contains("class ") && ligne.contains("extends"))
                 {
-                    enTeteTrouve = true;
-                    
-                    // Détecter le stéréotype (le plus spécifique d'abord)
-                    for (String motCle : tabSpecifique)
+                    estHeritier = true;
+
+                    String afterExtends = ligne.substring(ligne.indexOf("extends") + "extends".length()).trim();
+                    int indexEspace = afterExtends.indexOf(' ');
+                    int indexAccolade = afterExtends.indexOf('{');
+                    int indexFinNom = afterExtends.length();
+
+                    if (indexEspace != -1 && indexEspace < indexFinNom) indexFinNom = indexEspace;
+                    if (indexAccolade != -1 && indexAccolade < indexFinNom) indexFinNom = indexAccolade;
+
+                    nomParent = afterExtends.substring(0, indexFinNom).trim();
+                }
+                
+                for (int i = 0; i < tabSpecifique.length; i++)
+                {
+                    if (ligne.contains(tabSpecifique[i]))
                     {
-                        if (ligne.contains(motCle))
-                        {
-                            specifique = motCle;
-                            if (motCle.contains("interface")) estInterface = true;
-                            
-                            // Si c'est une interface, extraire son nom réel
-                            if (estInterface) {
-                                int indexDebutNom = ligne.indexOf("interface") + "interface".length();
-                                int indexFinNom = ligne.indexOf('{', indexDebutNom);
-                                if (indexFinNom == -1) indexFinNom = ligne.length();
-                                
-                                String declaration = ligne.substring(indexDebutNom, indexFinNom).trim();
-                                nomEntite = declaration.split("\\s+")[0];
-                            }
-                            break;
-                        }
+                        specifique = tabSpecifique[i];
                     }
 
-                    // Détection extends (Héritage)
-                    if (ligne.contains("extends"))
-                    {
-                        estHeritier = true;
+                }
 
-                        int indexDebut = ligne.indexOf("extends") + "extends".length();
-                        int indexFin = ligne.contains("implements") ? ligne.indexOf("implements") : ligne.indexOf('{');
-                        if (indexFin == -1) indexFin = ligne.length();
-                        
-                        String afterExtends = ligne.substring(indexDebut, indexFin).trim();
-                        nomParent = afterExtends.split("\\s+")[0].trim();
-                    }
-
-                    // Détection implements (Implémentation d'Interface)
-                    if (ligne.contains("implements"))
-                    {
-                        int indexImplements = ligne.indexOf("implements") + "implements".length();
-                        String afterImplements = ligne.substring(indexImplements).trim();
-                        
-                        int indexAccolade = afterImplements.indexOf('{');
-                        if (indexAccolade != -1)
-                        {
-                            afterImplements = afterImplements.substring(0, indexAccolade).trim();
-                        }
-                        
-                        String[] parts = afterImplements.split(",");
-                        for (String p : parts)
-                        {
-                            String inter = p.trim();
-                            int idxSpace = inter.indexOf(' ');
-                            int idxChevron = inter.indexOf('<');
-                            int idxFin = inter.length();
-                            
-                            if (idxSpace != -1) idxFin = Math.min(idxFin, idxSpace);
-                            if (idxChevron != -1) idxFin = Math.min(idxFin, idxChevron);
-
-                            inter = inter.substring(0, idxFin).trim();
-                            if (!inter.isEmpty())
-                            {
-                                interfacesDetectees.add(inter);
-                            }
-                        }
-                    }
-                    
-                    // Traitement spécifique des RECORDS
-                    if (specifique.equals("record"))
-                    {
-                        int debut = ligne.indexOf('(');
-                        int fin = ligne.lastIndexOf(')');
+                if (ligne.contains("record"))
+                {
+                    int debut = ligne.indexOf('(');
+                    int fin = ligne.lastIndexOf(')');
 
                         if (debut != -1 && fin != -1 && debut < fin)
                         {
@@ -186,47 +140,62 @@ public class AnalyseurUML
                                         String type = param.substring(0, idx).trim();
                                         String nom  = param.substring(idx + 1).trim();
 
-                                        attributs.add(new AttributObjet(nom,"instance",type,"private",true));
-                                        methodes.add(new MethodeObjet(nom,new HashMap<>(),type,"public",true));
-                                    }
+                                    attributs.add(new AttributObjet(nom,"instance",type,"private",true));
 
+
+                                    methodes.add(new MethodeObjet(nom,new HashMap<>(),type,"public",true));
                                 }
+
                             }
                         }
                     }
-                    
-                    continue; // Passer la ligne d'en-tête
-                } 
-                
-                // --- 2. DÉTECTION DES MEMBRES DANS LE CORPS (Après la ligne d'en-tête) ---
-                
-                if (enTeteTrouve)
-                {
-                    boolean estStatique = ligne.contains("static");
-                    boolean aVisibilite = (ligne.startsWith("public") || ligne.startsWith("private") || ligne.startsWith("protected"));
 
-                    // Extraction des Attributs (non applicable aux interfaces/records)
-                    if (!estInterface && !specifique.equals("record") && aVisibilite && ligne.endsWith(";") && !ligne.contains("("))
+                    continue;
+                }
+
+
+
+                // détection implements (gère plusieurs interfaces séparées par des virgules)
+                if (ligne.contains("class ") && ligne.contains("implements"))
+                {
+                    String afterImplements = ligne.substring(ligne.indexOf("implements") + "implements".length()).trim();
+                    // tronquer au '{' si présent
+                    int indexAccolade = afterImplements.indexOf('{');
+                    if (indexAccolade != -1)
                     {
-                        extraireAttribut(ligne, estStatique, attributs);
+                        afterImplements = afterImplements.substring(0, indexAccolade).trim();
                     }
-                    
-                    // Extraction des Méthodes (Applicable à TOUTES les structures, y compris les interfaces)
-                    if (aVisibilite && ligne.contains("(") && !ligne.contains("class "))
+                    // séparation par virgule
+                    String[] parts = afterImplements.split(",");
+                    for (String p : parts)
                     {
-                        // Si interface, nomEntite est le nom de l'interface, sinon nomClasse
-                        String nomCible = estInterface ? nomEntite : nomClasse;
-                        
-                        // Si la ligne se termine par un point-virgule (méthode abstraite/interface) ou un corps ouvrant.
-                        // On extrait toujours s'il y a une signature (pour capturer les méthodes d'interface qui finissent par ';')
-                        if (ligne.contains(")") && (ligne.endsWith(";") || ligne.endsWith("{")))
+                        String inter = p.trim();
+                        // couper au premier espace ou '<' s'il y a des génériques
+                        int idxSpace = inter.indexOf(' ');
+                        int idxChevron = inter.indexOf('<');
+                        int idxFin = inter.length();
+                        if (idxSpace != -1 && idxSpace < idxFin) idxFin = idxSpace;
+                        if (idxChevron != -1 && idxChevron < idxFin) idxFin = idxChevron;
+                        inter = inter.substring(0, idxFin).trim();
+                        if (!inter.isEmpty())
                         {
-                             extraireMethode(ligne, estStatique, nomCible, methodes); 
+                            interfacesDetectees.add(inter);
                         }
                     }
                 }
-                
-            } // Fin de la boucle while
+
+                boolean estStatique = ligne.contains("static");
+                boolean aVisibilite = (ligne.startsWith("public") || ligne.startsWith("private") || ligne.startsWith("protected"));
+
+                if (aVisibilite && ligne.endsWith(";") && !ligne.contains("("))
+                {
+                    extraireAttribut(ligne, estStatique, attributs);
+                }
+                else if (aVisibilite && ligne.contains("(") && !ligne.contains("class "))
+                {
+                    extraireMethode(ligne, estStatique, nomClasse, methodes);
+                }
+            }
         }
         catch (FileNotFoundException e)
         {
@@ -247,6 +216,8 @@ public class AnalyseurUML
         {
             this.lstIntentionHeritage.add(new String[]{nomClasse, nomParent});
         }
+
+        // enregistrement implémentations (une entrée par interface)
         for (String iface : interfacesDetectees)
         {
             this.lstInterfaces.add(new String[]{nomClasse, iface});
@@ -255,9 +226,6 @@ public class AnalyseurUML
         return nouvelleClasse;
     }
 
-    /**
-     * Extrait les informations d'un attribut à partir d'une ligne de code.
-     */
     public void extraireAttribut(String ligne, boolean estStatique, ArrayList<AttributObjet> attributs)
     {
         if (ligne.contains("="))
@@ -265,8 +233,8 @@ public class AnalyseurUML
             ligne = ligne.substring(0, ligne.indexOf("="));
         }
 
-        String propre = ligne.replace(";", "").trim();
-        String[] parts = propre.split("\\s+");
+        String supVirgule = ligne.replace(";", "").trim();
+        String[] parts = supVirgule.split("\\s+");
         
         List<String> motsExclus = Arrays.asList("private", "public", "protected", "static", "final", "abstract");
 
@@ -277,19 +245,16 @@ public class AnalyseurUML
         if (motsUtiles.size() >= 2)
         {
             String type = motsUtiles.get(motsUtiles.size() - 2);
-            String nom = motsUtiles.get(motsUtiles.size() - 1);
+            String nom  = motsUtiles.get(motsUtiles.size() - 1);
             String visibilite = parts[0]; 
             
             attributs.add(new AttributObjet(nom, estStatique ? "static" : "instance", type, visibilite, estStatique));
         }
     }
     
-    /**
-     * Extrait les informations d'une méthode à partir d'une ligne de code.
-     */
     public void extraireMethode(String ligne, boolean estStatique, String nomClasse, ArrayList<MethodeObjet> methodes)
     {
-        int indexParenthese = ligne.indexOf('(');
+        int    indexParenthese = ligne.indexOf('(');
         String avantParenthese = ligne.substring(0, indexParenthese).trim();
         String[] parts = avantParenthese.split("\\s+");
         
@@ -310,7 +275,7 @@ public class AnalyseurUML
         String typeRetour = null;
         if (nomMethode.equals(nomClasse))
         {
-            typeRetour = null;
+            typeRetour = null; // constructeur
         }
         else if (motsUtiles.size() >= 2)
         {
@@ -345,11 +310,7 @@ public class AnalyseurUML
         methodes.add(new MethodeObjet(nomMethode, params, typeRetour, visibilite, estStatique));
     }
 
-    // --- Les méthodes convertirAttributs, convertirMethodes, detecterAssociations, ClassesDuDossier sont conservées (inchangées) ---
-    
-    /**
-     * Logique de conversion (non modifiée)
-     */
+    // Nouvelle méthode de conversion : AttributObjet -> String UML
     public List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe)
     {
         List<String> liste = new ArrayList<>();
@@ -364,9 +325,7 @@ public class AnalyseurUML
         return liste;
     }
 
-    /**
-     * Logique de conversion (non modifiée)
-     */
+    // Nouvelle méthode de conversion : MethodeObjet -> String UML
     public List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe)
     {
         List<String> liste = new ArrayList<>();
@@ -375,7 +334,10 @@ public class AnalyseurUML
             String staticFlag = met.estStatique() ? "{static} " : "";
             char visibilite = classe.changementVisibilite(met.getVisibilite());
             
+            // Utiliser la méthode de ClasseObjet pour les paramètres
             String params = classe.affichageParametre(met.getParametres());
+            
+            // Utiliser la méthode de ClasseObjet pour le type de retour
             String retour = classe.retourType(met.getRetourType());
             
             String s = visibilite + staticFlag + met.getNom() + params + retour;
@@ -384,9 +346,6 @@ public class AnalyseurUML
         return liste;
     }
 
-    /**
-     * Logique de détection des associations (non modifiée)
-     */
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses)
     {
         List<AssociationObjet> associations = new ArrayList<>();
@@ -403,6 +362,7 @@ public class AnalyseurUML
 
                 boolean estCollection = false;
                 
+                // Gestion des collections (List<T>, Set<T>, tableaux, etc.)
                 if (typeAttribut.contains("<") && typeAttribut.contains(">"))
                 {
                     typeCible = typeAttribut.substring(typeAttribut.indexOf("<") + 1, typeAttribut.indexOf(">")).trim();
@@ -438,9 +398,6 @@ public class AnalyseurUML
         return associations;
     }
 
-    /**
-     * Logique de recherche de fichiers (non modifiée)
-     */
     public ArrayList<File> ClassesDuDossier(String cheminDossier)
     {
         File dossier = new File(cheminDossier);

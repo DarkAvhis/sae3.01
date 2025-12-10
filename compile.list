@@ -15,5 +15,6 @@ src/vue/BlocClasse.java
 src/vue/FenetrePrincipale.java
 src/vue/PanneauDiagramme.java
 src/vue/PanneauProjets.java
+src/vue/LiaisonVue.java
 
 src/Controleur.java
