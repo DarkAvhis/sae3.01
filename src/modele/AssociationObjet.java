@@ -13,17 +13,6 @@ public class AssociationObjet extends LiaisonObjet
     private MultipliciteObjet multiDest;
 	private MultipliciteObjet multiOrig;
 
-<<<<<<< HEAD
-    /*-------------------------------------- */
-	/* Attributs                             */
-	/*-------------------------------------- */
-	private boolean unidirectionnel;
-	private MultipliciteObjet multOrig;
-	private MultipliciteObjet multDest;
-    private ClasseObjet classeOrig;
-    private ClasseObjet classeDest;
-=======
->>>>>>> 219d2663f5bb5367a73a1a8f308bc4d3033c64e6
 
 	/*-------------------------------------- */
 	/* Constructeur                          */

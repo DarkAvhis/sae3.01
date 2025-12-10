@@ -25,14 +25,8 @@ public class AnalyseurUML
      */
     public void resetRelations()
     {
-<<<<<<< HEAD
-        this.lstHerite.clear();
-        this.heritagesAjoutes.clear();
-        // this.lstInterfaces.clear(); // Pour l'étape 4 Implémentation
-=======
         this.lstIntentionHeritage.clear();
         // this.lstInterfaces.clear(); 
->>>>>>> 219d2663f5bb5367a73a1a8f308bc4d3033c64e6
     }
 
     /**
@@ -56,13 +50,6 @@ public class AnalyseurUML
         boolean estHeritier = false ;
         boolean estImplemente = false ;
         String nomParent = null; 
-<<<<<<< HEAD
-
-        // --- Début de la logique de recherche de fichiers pour la classe parente ---
-        ArrayList<File> lstFichier = new ArrayList<>();
-        File parentDir = file.getParentFile();
-=======
->>>>>>> 219d2663f5bb5367a73a1a8f308bc4d3033c64e6
         
         try (Scanner sc = new Scanner(file))
         {
@@ -89,21 +76,6 @@ public class AnalyseurUML
                     if (indexAccolade != -1 && indexAccolade < indexFinNom) indexFinNom = indexAccolade;
 
                     nomParent = afterExtends.substring(0, indexFinNom).trim();
-<<<<<<< HEAD
-                    
-                    // --- Résolution locale de la classe parente ---
-                    for (File fichier : lstFichier)
-                    {
-                        String baseName = fichier.getName().replaceAll("\\.java$", "");
-                        if (baseName.equals(nomParent))
-                        {
-                            classeDest = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nomParent);
-                            break;
-                        }
-                    }
-                    // --- Fin de la résolution locale ---
-=======
->>>>>>> 219d2663f5bb5367a73a1a8f308bc4d3033c64e6
                 }
 
                 // --- DETECTION IMPLEMENTATION (ETAPE 4) ---
