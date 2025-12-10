@@ -1,12 +1,18 @@
 package src;
 
-import modele.AnalyseurUML;
-import modele.AssociationObjet;
+import modele.AnalyseIHMControleur; // Import de la classe complète du modèle
 import modele.AttributObjet;
-import modele.ClasseObjet;
 import modele.MethodeObjet;
+import modele.ClasseObjet;
+import modele.LiaisonObjet; 
+import modele.AssociationObjet;
+import modele.HeritageObjet;
+import modele.InterfaceObjet;
+
 import vue.FenetrePrincipale;
-import vue.BlocClasse; // Pour convertir le modèle en vue
+import vue.BlocClasse; 
+import vue.LiaisonVue;
+import vue.LiaisonVue.TypeLiaison;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,111 +22,139 @@ import javax.swing.SwingUtilities;
 
 public class Controleur
 {
-    private AnalyseurUML modeleAnalyseur;
+    // Remplacement d'AnalyseurUML par le contrôleur de la couche Modèle pour une analyse complète
+    private AnalyseIHMControleur metierComplet; 
     private FenetrePrincipale vuePrincipale;
-    
-    // Pour simuler l'état du diagramme (à intégrer au modèle plus tard)
-    private HashMap<String, ClasseObjet> classesChargees;
+    private HashMap<String, ClasseObjet> classesChargees; // Conservé pour la référence au modèle
 
     public Controleur()
     {
-        this.modeleAnalyseur = new AnalyseurUML();
+        this.metierComplet = new AnalyseIHMControleur(); 
         this.classesChargees = new HashMap<>();
     }
     
     public void demarrerApplication()
     {
-        // Création de la Vue. Elle doit être faite sur l'EDT.
         SwingUtilities.invokeLater(() -> 
         {
             this.vuePrincipale = new FenetrePrincipale(this);
             this.vuePrincipale.setVisible(true);
         });
     }
-    
-    // Ajoutez ici d'autres méthodes de contrôle (annuler, exporter, etc.)
-    public void exporterDiagramme()
-    {
-        // Logique d'export : appel au modèle pour générer l'image, 
-        // puis interaction avec la Vue pour le dialogue de sauvegarde.
-        System.out.println("Contrôleur: Exporter le diagramme");
-    }
 
+    /**
+     * Analyse un dossier projet et met à jour l'affichage du diagramme.
+     */
     public void analyserEtAfficherDiagramme(String cheminProjet)
     {
-        // ... (1. Appel du Modèle pour récupérer les fichiers - Logique conservée)
-        List<File> fichiersJava = this.modeleAnalyseur.ClassesDuDossier(cheminProjet);
-        List<ClasseObjet> classes = new ArrayList<>();
-        HashMap<String, ClasseObjet> mapClasses = new HashMap<>();
-
-        for (File f : fichiersJava)
-        {
-            ClasseObjet c = this.modeleAnalyseur.analyserFichierUnique(f.getAbsolutePath());
-            if (c != null)
-            {
-                classes.add(c);
-                mapClasses.put(c.getNom(), c);
-            }
+        // 1. Analyse complète via la couche Modèle/Contrôleur
+        if (!this.metierComplet.analyserDossier(cheminProjet)) {
+            // Gérer l'erreur si l'analyse échoue (ex: dossier non valide)
+            return;
         }
 
-        this.classesChargees = mapClasses;
-        
-        // 2. Préparer les objets de Vue (BlocClasse) à partir des objets de Modèle (ClasseObjet)
+        // Récupérer toutes les données du modèle
+        List<ClasseObjet> classes = this.metierComplet.getClasses();
+        List<AssociationObjet> associations = this.metierComplet.getAssociations();
+        List<HeritageObjet> heritages = this.metierComplet.getHeritages();
+        List<InterfaceObjet> implementations = this.metierComplet.getImplementations(); 
+
+        // 2. Conversion en objets de Vue (BlocClasse et LiaisonVue)
         List<BlocClasse> blocsVue = new ArrayList<>();
         int x = 50;
         int y = 50;
 
-        for (ClasseObjet classeModele : classes)
+        for (ClasseObjet c : classes)
         {
-            // CONVERSION DES ATTRIBUTS ET MÉTHODES ICI
-            List<String> attributsVue = convertirAttributs(classeModele.getattributs(), classeModele);
-            List<String> methodesVue  = convertirMethodes(classeModele.getMethodes(), classeModele);
-
-            // Création du BlocClasse avec les détails
-            BlocClasse bloc = new BlocClasse(
-                classeModele.getNom(), 
-                x, y, 
-                attributsVue, 
-                methodesVue
-            );
-            blocsVue.add(bloc);
+            // Les méthodes de conversion ont été déplacées ici dans la dernière étape
+            List<String> attrVue = this.convertirAttributs(c.getattributs(), c);
+            List<String> methVue = this.convertirMethodes(c.getMethodes(), c);
             
-            x += 250;
-            // ... (Logique de positionnement conservée)
-            if (x > 1000) { // Valeur arbitraire, doit être lié à la taille de la fenêtre
-                x = 50;
-                y += 200;
+            BlocClasse bloc = new BlocClasse(c.getNom(), x, y, attrVue, methVue);
+            
+            // DÉTECTION SIMPLE DES INTERFACES (à affiner si nécessaire)
+            if (c.getNom().contains("Interface")) {
+                bloc.setInterface(true);
             }
+            
+            blocsVue.add(bloc);
+            x += 250; 
+            if (x > 1000) { x = 50; y += 200; }
         }
 
-        // ... (3. Demander à la Vue de s'actualiser - Logique conservée)
-        if (this.vuePrincipale != null && this.vuePrincipale.getPanneauDiagramme() != null)
+        // Conversion de TOUS les types de liaisons en objets de vue
+        List<LiaisonVue> liaisonsVue = new ArrayList<>();
+        liaisonsVue.addAll(convertirLiaisons(associations, TypeLiaison.ASSOCIATION_UNIDI)); 
+        liaisonsVue.addAll(convertirLiaisons(heritages, TypeLiaison.HERITAGE));             // AJOUT
+        liaisonsVue.addAll(convertirLiaisons(implementations, TypeLiaison.IMPLEMENTATION)); // AJOUT
+
+        // 3. Affichage (envoi à la Vue)
+        if (this.vuePrincipale != null)
         {
-            this.vuePrincipale.getPanneauDiagramme().afficherDiagramme(blocsVue);
+            this.vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocsVue);
+            this.vuePrincipale.getPanneauDiagramme().setLiaisonsVue(liaisonsVue);
+            this.vuePrincipale.getPanneauDiagramme().repaint();
         }
     }
-    
-    public List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe)
+
+    /**
+     * Convertit une liste de LiaisonsObjet (Association, Héritage ou Implémentation) 
+     * en une liste de LiaisonVue pour le dessin.
+     */
+    private List<LiaisonVue> convertirLiaisons(List<? extends LiaisonObjet> liaisons, TypeLiaison type)
     {
-        return this.modeleAnalyseur.convertirAttributs(attributs, classe);
+        List<LiaisonVue> liaisonsVue = new ArrayList<>();
+        for (LiaisonObjet liaison : liaisons)
+        {
+            // IMPORTANT : L'origine de la flèche (début) est la classe Fille/Concrète
+            String nomOrig = liaison.getClasseFille().getNom(); 
+            // La destination de la flèche (pointe) est la classe Mère/Interface
+            String nomDest = liaison.getClasseMere().getNom();  
+            
+            liaisonsVue.add(new LiaisonVue(nomOrig, nomDest, type)); 
+        }
+        return liaisonsVue;
     }
 
-    public List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe)
+    // --- Méthodes de conversion Attributs/Méthodes (conservées ici pour la cohérence) ---
+
+    private List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe)
     {
-        return this.modeleAnalyseur.convertirMethodes(methodes, classe);
+        // ... (Logique inchangée pour la vue Attribut) ...
+        List<String> liste = new ArrayList<>();
+        for (AttributObjet att : attributs)
+        {
+            String staticFlag = att.estStatique() ? " {static}" : ""; 
+            char visibilite = classe.changementVisibilite(att.getVisibilite()); 
+            
+            String s = visibilite + " " + att.getNom() + " : " + att.getType() + staticFlag; 
+            liste.add(s);
+        }
+        return liste;
     }
 
-    // Ancienne logique de main, simplifiée
+    private List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe)
+    {
+        // ... (Logique inchangée pour la vue Méthode) ...
+        List<String> liste = new ArrayList<>();
+        for (MethodeObjet met : methodes)
+        {
+            String staticFlag = met.estStatique() ? "{static} " : ""; 
+            char visibilite = classe.changementVisibilite(met.getVisibilite());
+            
+            String params = classe.affichageParametre(met.getParametres());
+            String retour = classe.retourType(met.getRetourType());
+            
+            String s = visibilite + staticFlag + met.getNom() + params + retour;
+            liste.add(s);
+        }
+        return liste;
+    }
+
+
     public static void main(String[] args)
     {
         Controleur controleur = new Controleur();
         controleur.demarrerApplication();
-        
-        // Si des arguments sont passés (pour l'analyse automatique au démarrage), on peut les traiter ici.
-        if (args.length > 0)
-        {
-             // Logique pour analyser immédiatement le dossier/fichier donné en argument
-             controleur.analyserEtAfficherDiagramme(args[0]);
-        }
     }
 }
