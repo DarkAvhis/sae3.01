@@ -11,25 +11,22 @@ public class FenetrePrincipale extends JFrame
 	private PanneauProjets panneauProjets;
 	private PanneauDiagramme panneauDiagramme;
 
+	private BarreMenus barreMenus;//
+
+	// Mise à jour : le constructeur prend maintenant le contrôleur
 	public FenetrePrincipale(Controleur controleur) 
 	{
 		this.controleur = controleur;
 
-		Dimension tailleEcran = Toolkit.getDefaultToolkit().getScreenSize();
-		
 		this.setTitle("Générateur de diagramme UML"); 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(tailleEcran.width, tailleEcran.height);
+		this.setSize(1400, 800);
 		this.setLocationRelativeTo(null);
 		this.setResizable(true);
 
 		this.panneauProjets   = new PanneauProjets(this, controleur);
-		this.panneauDiagramme = new PanneauDiagramme(controleur); 
-		
-		// CORRECTION : Encapsulation de panneauDiagramme dans un JScrollPane
-		JScrollPane scrollDiagramme = new JScrollPane(this.panneauDiagramme);
-		scrollDiagramme.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollDiagramme.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.panneauDiagramme = new PanneauDiagramme(controleur);  
+		this.barreMenus       = new BarreMenus(controleur, panneauProjets);//
 
 		this.setLayout(new BorderLayout());
 		
@@ -43,7 +40,8 @@ public class FenetrePrincipale extends JFrame
 		splitPane.setOneTouchExpandable(true);
 
 		this.add(splitPane, BorderLayout.CENTER);
-		this.add(new BarreMenus(controleur), BorderLayout.NORTH); 
+		
+		this.setJMenuBar(barreMenus);//
 	}
 
 	public void chargerProjet(String cheminProjet) 

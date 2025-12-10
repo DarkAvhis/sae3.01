@@ -3,8 +3,8 @@ package modele;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Contrôleur principal pour l'IHM (Interface Homme-Machine).
@@ -22,12 +22,13 @@ public class AnalyseIHMControleur
     
     public AnalyseIHMControleur()
     {
-        this.classes = new ArrayList<>();
-        this.mapClasses = new HashMap<>();
-        this.associations = new ArrayList<>();
-        this.heritages = new ArrayList<>();
+        this.classes         = new ArrayList<>();
+        this.associations    = new ArrayList<>();
+        this.heritages       = new ArrayList<>();
         this.implementations = new ArrayList<>();
-        this.analyseur = new AnalyseurUML(); // L'analyseur est délégué ici
+
+        this.mapClasses = new HashMap<>();
+        this.analyseur = new AnalyseurUML();
     }
 
     /**
@@ -150,6 +151,12 @@ public class AnalyseIHMControleur
         
         // 3. Transférer tous les objets InterfaceObjet rassemblés vers la liste finale
         this.implementations.addAll(regroupement.values());
+    }
+    
+    public void supprimerClasse( String classe )
+    {
+        if( classe == null ) return ; 
+        this.classes.remove(classe) ; 
     }
 
 // ...

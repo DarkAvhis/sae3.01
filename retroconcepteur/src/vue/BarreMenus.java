@@ -1,6 +1,8 @@
 package vue;
 
 import java.awt.event.*;
+import java.io.File;
+
 import javax.swing.*;
 
 import src.Controleur;
@@ -8,151 +10,231 @@ import src.Controleur;
 public class BarreMenus extends JMenuBar implements ActionListener
 {
 
-    // Références aux items pour les reconnaître dans actionPerformed
-    private JMenuItem nouvelleItem;
-    private JMenuItem ouvrirItem;
-    private JMenuItem exporterItem;
-    private JMenuItem sauvegarderItem;
-    private JMenuItem quitterItem;
+    // Références aux Classes pour les reconnaître dans actionPerformed
+    private JMenuItem nouvelleClasse;
+    private JMenuItem ouvrirClasse;
+    private JMenuItem sauvegarderClasse;
+    private JMenuItem quitterClasse;
 
-    private JMenuItem annulerItem;
-    private JMenuItem retablirItem;
-    private JMenuItem supprimerItem;
+    private JMenuItem annulerClasse;
+    private JMenuItem retablirClasse;
+    private JMenuItem supprimerClasse;
 
-    private JCheckBoxMenuItem afficherAttributsItem;
-    private JCheckBoxMenuItem afficherMethodesItem;
-    private JMenuItem alignerItem;
-    private JMenuItem optimiserItem;
+    private JCheckBoxMenuItem afficherAttributsClasse;
+    private JCheckBoxMenuItem afficherMethodesClasse;
+    private JMenuItem         alignerClasse;
+    private JMenuItem         optimiserClasse;
 
-    private JMenuItem aProposItem;
+    private JMenuItem aProposClasse;
 
-    public BarreMenus(Controleur controleur) 
+    private PanneauProjets panneauProjets;
+
+    public BarreMenus(Controleur controleur, PanneauProjets panneauProjets) 
     {
+<<<<<<< HEAD:retroconcepteur/src/vue/BarreMenus.java
         
+=======
+        this.controleur     = controleur;
+        this.panneauProjets = panneauProjets;
+
+>>>>>>> b720a42b10e613d36f8cac112876beabca0e536e:src/vue/BarreMenus.java
         this.add(creerMenuFichier());
         this.add(creerMenuEdition());
         this.add(creerMenuAffichage());
         this.add(creerMenuAide());
     }
 
-    private JMenu creerMenuFichier() 
+    public JMenu creerMenuFichier() 
     {
         JMenu menu = new JMenu("Fichier");
 
-        this.nouvelleItem   = new JMenuItem("Nouveau projet");
-        this.ouvrirItem     = new JMenuItem("Ouvrir projet");
-        this.exporterItem   = new JMenuItem("Exporter en image");
-        this.sauvegarderItem= new JMenuItem("Sauvegarder positions");
-        this.quitterItem    = new JMenuItem("Quitter");
+        this.nouvelleClasse    = new JMenuItem("Nouveau projet"       );
+        this.ouvrirClasse      = new JMenuItem("Ouvrir projet"        );
+        this.sauvegarderClasse = new JMenuItem("Sauvegarder positions");
+        this.quitterClasse     = new JMenuItem("Quitter"              );
 
-        this.nouvelleItem.addActionListener(this);
-        this.ouvrirItem.addActionListener(this);
-        this.exporterItem.addActionListener(this);
-        this.sauvegarderItem.addActionListener(this);
-        this.quitterItem.addActionListener(this);
+        this.nouvelleClasse   .addActionListener(this);
+        this.ouvrirClasse     .addActionListener(this);
+        this.sauvegarderClasse.addActionListener(this);
+        this.quitterClasse    .addActionListener(this);
 
-        menu.add(exporterItem);
-        menu.addSeparator();
-        menu.add(quitterItem);
+        menu.add(nouvelleClasse   );
+        menu.add(ouvrirClasse     );
+        menu.addSeparator(      );
+        menu.add(sauvegarderClasse);
+        menu.add(quitterClasse    );
 
         return menu;
     }
 
-    private JMenu creerMenuEdition() 
+    public JMenu creerMenuEdition() 
     {
         JMenu menu = new JMenu("Édition");
 
-        this.annulerItem   = new JMenuItem("Annuler");
-        this.retablirItem  = new JMenuItem("Rétablir");
-        this.supprimerItem = new JMenuItem("Supprimer");
+        this.annulerClasse   = new JMenuItem("Annuler"  );
+        this.retablirClasse  = new JMenuItem("Rétablir" );
+        this.supprimerClasse = new JMenuItem("Supprimer");
 
-        annulerItem.addActionListener(this);
-        retablirItem.addActionListener(this);
-        supprimerItem.addActionListener(this);
+        annulerClasse  .addActionListener(this);
+        retablirClasse .addActionListener(this);
+        supprimerClasse.addActionListener(this);
 
-        menu.add(annulerItem);
-        menu.add(retablirItem);
-        menu.addSeparator();
-        menu.add(supprimerItem);
+        menu.add(annulerClasse  );
+        menu.add(retablirClasse );
+        menu.addSeparator(    );
+        menu.add(supprimerClasse);
 
         return menu;
     }
 
-    private JMenu creerMenuAffichage() 
+    public JMenu creerMenuAffichage() 
     {
         JMenu menu = new JMenu("Affichage");
 
-        this.afficherAttributsItem = new JCheckBoxMenuItem("Afficher attributs", false);
-        this.afficherMethodesItem  = new JCheckBoxMenuItem("Afficher méthodes", false);
-        this.alignerItem           = new JMenuItem("Aligner les symboles");
-        this.optimiserItem         = new JMenuItem("Optimiser les positions");
+        this.afficherAttributsClasse = new JCheckBoxMenuItem("Afficher attributs",false);
+        this.afficherMethodesClasse  = new JCheckBoxMenuItem("Afficher méthodes", false);
+        this.alignerClasse           = new JMenuItem        ("Aligner les symboles"       );
+        this.optimiserClasse         = new JMenuItem        ("Optimiser les positions"    );
 
-        afficherAttributsItem.addActionListener(this);
-        afficherMethodesItem.addActionListener(this);
-        alignerItem.addActionListener(this);
-        optimiserItem.addActionListener(this);
+        afficherAttributsClasse.addActionListener(this);
+        afficherMethodesClasse .addActionListener(this);
+        alignerClasse          .addActionListener(this);
+        optimiserClasse        .addActionListener(this);
 
-        menu.add(afficherAttributsItem);
-        menu.add(afficherMethodesItem);
-        menu.addSeparator();
-        menu.add(alignerItem);
-        menu.add(optimiserItem);
+        menu.add(afficherAttributsClasse);
+        menu.add(afficherMethodesClasse );
+        menu.addSeparator(            );
+        menu.add(alignerClasse          );
+        menu.add(optimiserClasse        );
 
         return menu;
     }
 
-    private JMenu creerMenuAide() 
+    public JMenu creerMenuAide() 
     {
         JMenu menu = new JMenu("Aide");
 
-        this.aProposItem = new JMenuItem("À propos");
-        aProposItem.addActionListener(this);
+        this.aProposClasse = new JMenuItem("À propos");
+        aProposClasse.addActionListener(this);
 
-        menu.add(aProposItem);
+        menu.add(aProposClasse);
 
         return menu;
     }
-
  
-    @Override
     public void actionPerformed(ActionEvent e)
     {
         Object src = e.getSource();
         
-            if (src == nouvelleItem)        actionNouveauProjet();
-            else if (src == ouvrirItem)     actionOuvrirProjet();
-            else if (src == exporterItem)   actionExporter();
-            else if (src == sauvegarderItem)actionSauvegarder();
-            else if (src == quitterItem)    System.exit(0);
+             if (src == nouvelleClasse   ) actionNouveauProjet();
+        else if (src == ouvrirClasse     ) actionOuvrirProjet ();
+        else if (src == sauvegarderClasse) actionSauvegarder  ();
+        else if (src == quitterClasse    ) System.exit(0);
 
-            else if (src == annulerItem)    actionAnnuler();
-            else if (src == retablirItem)   actionRetablir();
-            else if (src == supprimerItem)  actionSupprimer();
+        else if (src == annulerClasse  )   actionAnnuler  ();
+        else if (src == retablirClasse )   actionRetablir ();
+        else if (src == supprimerClasse)   actionSupprimer();
 
-            else if (src == afficherAttributsItem) actionAffichageAttributs();
-            else if (src == afficherMethodesItem)  actionAffichageMethodes();
-            else if (src == alignerItem)           actionAligner();
-            else if (src == optimiserItem)         actionOptimiser();
-            else if (src == aProposItem)    actionAPropos();
-
+        else if (src == afficherAttributsClasse) actionAffichageAttributs();
+        else if (src == afficherMethodesClasse ) actionAffichageMethodes ();
+        else if (src == alignerClasse          ) actionAligner           ();
+        else if (src == optimiserClasse        ) actionOptimiser         ();
+        else if (src == aProposClasse          ) actionAPropos           ();
     }
 
+    public void actionNouveauProjet() 
+    { 
+        JOptionPane.showMessageDialog(null, "Pas fini"); 
+    }
 
-    private void actionNouveauProjet() { JOptionPane.showMessageDialog(null, "Pas fini"); }
-    private void actionOuvrirProjet()  { JOptionPane.showMessageDialog(null, "Pas fini"); }
-    private void actionExporter()      { JOptionPane.showMessageDialog(null, "Pas fini"); }
-    private void actionSauvegarder()   { JOptionPane.showMessageDialog(null, "Pas fini"); }
-    private void actionAnnuler()       { JOptionPane.showMessageDialog(null, "Pas fini"); }
-    private void actionRetablir()      { JOptionPane.showMessageDialog(null, "Pas fini"); }
-    private void actionSupprimer()     { JOptionPane.showMessageDialog(null, "Pas fini"); }
+    //ouvrir mes dossier, les parcourir et l'ouvrir
+    public void actionOuvrirProjet()  
+    { 
+        JFileChooser chooser = new JFileChooser(new java.io.File(System.getProperty("user.dir")));
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
 
-    private void actionAffichageAttributs() { /* À implémenter */ }
-    private void actionAffichageMethodes()  { /* À implémenter */ }
+        int retour = chooser.showOpenDialog(this);
 
-    private void actionAligner()    { JOptionPane.showMessageDialog(null, "Pas fini"); }
-    private void actionOptimiser()  { JOptionPane.showMessageDialog(null, "Pas fini"); }
+        if (retour == JFileChooser.APPROVE_OPTION) 
+        {
+            File dossier = chooser.getSelectedFile();
 
-    private void actionAPropos()
+            if (dossier.exists() && dossier.isDirectory()) 
+            {
+                try 
+                {
+                    this.controleur.analyserEtAfficherDiagramme(dossier.getAbsolutePath());
+                    JOptionPane.showMessageDialog(this, "Dossier chargé : " + dossier.getName());
+
+                    // ajoute dans panneauProjet le projet ouvert
+                    this.panneauProjets.ajouterProjet(dossier.getAbsolutePath());
+                } 
+                catch (Exception ex) 
+                {
+                    JOptionPane.showMessageDialog(this,
+                        "Erreur lors de l'ouverture du dossier :\n" + ex.getMessage(),
+                        "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else 
+                JOptionPane.showMessageDialog(this, "Impossible d'ouvrir ce dossier.",
+                    "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void actionSauvegarder()   
+    { 
+        this.controleur.sauvegarde();
+    }
+
+    public void actionAnnuler()       
+    { 
+        JOptionPane.showMessageDialog(null, "Pas fini");
+    }
+
+    public void actionRetablir()      
+    { 
+        JOptionPane.showMessageDialog(null, "Pas fini"); 
+    }
+
+    public void actionSupprimer()     
+    { 
+     
+        int rep = JOptionPane.showConfirmDialog(
+            null,
+            "Voulez-vous vraiment supprimer la classe sélectionnée ?",
+            "Confirmation",
+            JOptionPane.YES_NO_OPTION
+        );
+
+        if (rep == JOptionPane.YES_OPTION)
+        {
+            this.controleur.supprimerClasseSelectionnee();
+        }
+        
+    }
+
+    public void actionAffichageAttributs() 
+    { 
+        /* À implémenter */ 
+    }
+
+    public void actionAffichageMethodes()  
+    { 
+        /* À implémenter */ 
+    }
+
+    public void actionAligner()    
+    { 
+        JOptionPane.showMessageDialog(null, "Pas fini"); 
+    }
+
+    public void actionOptimiser()  
+    { 
+        JOptionPane.showMessageDialog(null, "Pas fini"); 
+    }
+
+    public void actionAPropos()
     {
         JOptionPane.showMessageDialog(null,
             "Modélisation UML - Générateur de Diagrammes\n" +

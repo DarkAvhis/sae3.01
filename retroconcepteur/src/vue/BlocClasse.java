@@ -7,11 +7,11 @@ import java.util.ArrayList;
 
 public class BlocClasse 
 {
-    private String nom;
-    private int x;
-    private int y;
-    private int largeur;
-    private int hauteur;
+    private String  nom;
+    private int     x;
+    private int     y;
+    private int     largeur;
+    private int     hauteur;
     private boolean estInterface;
     private boolean estSelectionne;
 
@@ -20,12 +20,12 @@ public class BlocClasse
     private List<String> methodesAffichage;
 
     // Constantes 
-    private static final int PADDING = 10;
-    private static final int HAUTEUR_ENTETE = 30;
-    private static final int HAUTEUR_LIGNE = 20; // Nouvelle constante pour la hauteur d'une ligne de texte
-    private static final Color COULEUR_FOND = new Color(230, 240, 250);
+    private static final int   PADDING         = 10;
+    private static final int   HAUTEUR_ENTETE  = 30;
+    private static final int   HAUTEUR_LIGNE   = 20; // Nouvelle constante pour la hauteur d'une ligne de texte
+    private static final Color COULEUR_FOND    = new Color(230, 240, 250);
     private static final Color COULEUR_BORDURE = new Color(0, 0, 0);
-    private static final Color COULEUR_ENTETE = new Color(100, 150, 200);
+    private static final Color COULEUR_ENTETE  = new Color(100, 150, 200);
 
     // Mise à jour du constructeur
     public BlocClasse(String nom, int x, int y, List<String> attributs, List<String> methodes) 
@@ -40,9 +40,9 @@ public class BlocClasse
         this.estSelectionne = false;
         
         // Calculer la taille initiale minimale
-        int maxLgNom = nom.length() * 8; // Estimation
+        int maxLgNom       = nom.length() * 8; // Estimation
         int maxLgAttributs = attributs.stream().mapToInt(String::length).max().orElse(0) * 8;
-        int maxLgMethodes = methodes.stream().mapToInt(String::length).max().orElse(0) * 8;
+        int maxLgMethodes  = methodes .stream().mapToInt(String::length).max().orElse(0) * 8;
         
         // Calcul de la largeur : min(max) ou 200
         this.largeur = Math.max(200, PADDING * 2 + Math.max(maxLgNom, Math.max(maxLgAttributs, maxLgMethodes)));
@@ -56,9 +56,8 @@ public class BlocClasse
     // Ancien constructeur à conserver (avec des listes vides) ou à retirer
     public BlocClasse(String nom, int x, int y) 
     {
-         this(nom, x, y, new ArrayList<>(), new ArrayList<>());
+        this(nom, x, y, new ArrayList<>(), new ArrayList<>());
     }
-
 
     public void dessiner(Graphics2D g) 
     {
@@ -122,58 +121,17 @@ public class BlocClasse
     }
 
     // Getters et Setters
-    public String getNom() 
-    {
-        return this.nom;
-    }
+    public String getNom    () { return this.nom    ; }
+    public int    getX      () { return this.x      ; }
+    public int    getY      () { return this.y      ; }
+    public int    getLargeur() { return this.largeur; }
+    public int    getHauteur() { return this.hauteur; }
 
-    public int getX() 
-    {
-        return this.x;
-    }
+    public void setX          (int x               ) { this.x              = x           ; }
+    public void setY          (int y               ) { this.y              = y           ; }
+    public void setInterface  (boolean estInterface) { this.estInterface   = estInterface; }
+    public void setSelectionne(boolean selectionne ) { this.estSelectionne = selectionne ; }
 
-    public void setX(int x) 
-    {
-        this.x = x;
-    }
-
-    public int getY() 
-    {
-        return this.y;
-    }
-
-    public void setY(int y) 
-    {
-        this.y = y;
-    }
-
-    public int getLargeur() 
-    {
-        return this.largeur;
-    }
-
-    public int getHauteur() 
-    {
-        return this.hauteur;
-    }
-
-    public boolean estInterface() 
-    {
-        return this.estInterface;
-    }
-
-    public void setInterface(boolean estInterface) 
-    {
-        this.estInterface = estInterface;
-    }
-
-    public boolean estSelectionne() 
-    {
-        return this.estSelectionne;
-    }
-
-    public void setSelectionne(boolean selectionne) 
-    {
-        this.estSelectionne = selectionne;
-    }
+    public boolean estInterface  ()  { return this.estInterface  ; }
+    public boolean estSelectionne()  { return this.estSelectionne; }
 }
