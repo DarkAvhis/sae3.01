@@ -8,9 +8,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+
+import java.awt.event.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,21 +19,19 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import src.Controleur;
-import vue.LiaisonVue;
-import vue.LiaisonVue.TypeLiaison;
 
 public class PanneauDiagramme extends JPanel 
 {
     private List<BlocClasse> blocsClasses;
-    private List<LiaisonVue> liaisonsVue; // Liste des liaisons à dessiner (AJOUT)
-    private String cheminProjetCourant;
-    // ... autres attributs (Controleur, etc.)
+    private List<LiaisonVue> liaisonsVue;
 
     public PanneauDiagramme(Controleur controleur)
     {
         this.blocsClasses = new ArrayList<>();
-        this.liaisonsVue = new ArrayList<>(); // Initialisation (AJOUT)
-        this.cheminProjetCourant = null;
+        this.liaisonsVue = new ArrayList<>(); 
+        
+        // Définit une taille préférée pour que le JScrollPane fonctionne
+        this.setPreferredSize(new java.awt.Dimension(2000, 2000));
 
         this.setLayout(null);
         this.setBackground(new Color(255, 255, 255));
@@ -46,7 +44,15 @@ public class PanneauDiagramme extends JPanel
     public void setLiaisonsVue(List<LiaisonVue> liaisonsVue) 
     {
         this.liaisonsVue = liaisonsVue;
+        this.repaint(); // Redessine après la mise à jour des liaisons
     }
+    
+    // NOUVEAU SETTER pour les BlocsClasses (pour que le contrôleur mette à jour les blocs)
+    public void setBlocsClasses(List<BlocClasse> blocsVue) 
+    {
+        this.blocsClasses = blocsVue;
+    }
+
 
     private class GereSourisInteraction extends MouseAdapter 
     {
@@ -59,7 +65,6 @@ public class PanneauDiagramme extends JPanel
         {
             blocSelectionne = null;
 
-            // Parcourir de la fin vers le début pour sélectionner le bloc le plus "en avant"
             for (int i = blocsClasses.size() - 1; i >= 0; i--) 
             {
                 BlocClasse bloc = blocsClasses.get(i);
@@ -70,13 +75,11 @@ public class PanneauDiagramme extends JPanel
                     offsetX = e.getX() - bloc.getX();
                     offsetY = e.getY() - bloc.getY();
 
-                    // Désélectionner tous les autres blocs
                     for (BlocClasse b : blocsClasses) 
                     {
                         b.setSelectionne(false);
                     }
 
-                    // Sélectionner le bloc actuel
                     bloc.setSelectionne(true);
                     repaint(); 
                     
@@ -100,14 +103,12 @@ public class PanneauDiagramme extends JPanel
         @Override
         public void mouseReleased(MouseEvent e) 
         {
-            // Réinitialiser les variables de sélection
             blocSelectionne = null;
             offsetX = 0;
             offsetY = 0;
         }
     }
 
-    // Méthode pour installer les listeners
     private void ajouterListenersInteraction() 
     {
         GereSourisInteraction adapter = new GereSourisInteraction();
@@ -123,19 +124,14 @@ public class PanneauDiagramme extends JPanel
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Dessiner les liaisons EN PREMIER pour qu'elles soient sous les blocs
         dessinerLiaisons(g2d);
 
-        // Dessiner les blocs
         for (BlocClasse bloc : blocsClasses) 
         {
             bloc.dessiner(g2d);
         }
     }
 
-    /**
-     * Dessine toutes les liaisons (Association, Héritage, Implémentation) entre les blocs.
-     */
     private void dessinerLiaisons(Graphics2D g2d) 
     {
         if (liaisonsVue == null || blocsClasses == null) return;
@@ -143,6 +139,7 @@ public class PanneauDiagramme extends JPanel
         for (LiaisonVue liaison : liaisonsVue)
         {
             // Trouver les BlocsClasse correspondants par nom
+            // Note: Optional est utilisé par le stream, mais la vérification isPresent() est faite après.
             Optional<BlocClasse> blocOrig = blocsClasses.stream()
                 .filter(b -> b.getNom().equals(liaison.getNomClasseOrig()))
                 .findFirst();
@@ -153,9 +150,10 @@ public class PanneauDiagramme extends JPanel
 
             if (blocOrig.isPresent() && blocDest.isPresent())
             {
-                // Calculer les points de connexion sur la bordure la plus proche
-                Point p1 = calculerPointConnexion(blocOrig.get(), blocDest.get()); // Classe Fille/Concrète
-                Point p2 = calculerPointConnexion(blocDest.get(), blocOrig.get()); // Classe Mère/Interface (Pointe)
+                // p1 = Origine de la flèche (Fille)
+                Point p1 = calculerPointConnexion(blocOrig.get(), blocDest.get()); 
+                // p2 = Destination de la flèche (Mère/Interface)
+                Point p2 = calculerPointConnexion(blocDest.get(), blocOrig.get()); 
                 
                 g2d.setColor(Color.BLACK);
                 
@@ -183,28 +181,21 @@ public class PanneauDiagramme extends JPanel
                         break;
                 }
                 
-                g2d.setStroke(oldStroke); // Rétablir le trait
+                g2d.setStroke(oldStroke); 
             }
         }
     }
     
-    /**
-     * Dessine la flèche de généralisation (triangle vide) pour l'Héritage et l'Implémentation.
-     * La ligne est tracée de p1 jusqu'à la base du triangle.
-     */
     private void dessinerFlecheHeritage(Graphics2D g2d, Point p1, Point p2, boolean isImplementation) 
     {
         int tailleTriangle = 15; 
         
-        // 1. Calcul de l'angle et des points du triangle
-        double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x); // Angle de p1 vers p2
+        double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x); 
         
-        // Point de base du triangle (au milieu de la ligne, à tailleTriangle de p2)
         int x_base = (int) (p2.x + tailleTriangle * Math.cos(angle));
         int y_base = (int) (p2.y + tailleTriangle * Math.sin(angle));
         
-        // Points latéraux (aux extrémités de la base, perpendiculairement à la ligne principale)
-        double demiLargeur = tailleTriangle * 0.4; // Largeur de la base (pour un aspect esthétique)
+        double demiLargeur = tailleTriangle * 0.4;
         double angleFlanc1 = angle + Math.PI / 2;
         double angleFlanc2 = angle - Math.PI / 2;
 
@@ -214,7 +205,6 @@ public class PanneauDiagramme extends JPanel
         int x_lat2 = (int) (x_base + demiLargeur * Math.cos(angleFlanc2));
         int y_lat2 = (int) (y_base + demiLargeur * Math.sin(angleFlanc2));
         
-        // Le triangle a ses sommets à p2 (pointe), (x_lat1, y_lat1) et (x_lat2, y_lat2)
         int[] xPoints = {p2.x, x_lat1, x_lat2};
         int[] yPoints = {p2.y, y_lat1, y_lat2};
         Polygon triangle = new Polygon(xPoints, yPoints, 3);
@@ -222,27 +212,21 @@ public class PanneauDiagramme extends JPanel
         // 2. Dessin de la ligne (pleine ou pointillée)
         if (isImplementation)
         {
-             // Ligne pointillée
             g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{4.0f, 4.0f}, 0.0f));
         } else {
-             // Ligne pleine (Héritage)
             g2d.setStroke(new BasicStroke(1));
         }
         
-        // La ligne va de l'origine (p1) à la base du triangle (x_base, y_base)
         g2d.drawLine(p1.x, p1.y, x_base, y_base);
         
         // 3. Dessin du triangle (vide)
-        g2d.setStroke(new BasicStroke(1)); // Rétablir le trait simple pour le contour
+        g2d.setStroke(new BasicStroke(1));
         g2d.setColor(Color.WHITE); 
         g2d.fill(triangle);
         g2d.setColor(Color.BLACK); 
         g2d.draw(triangle);
     }
 
-    /**
-     * Dessine la flèche simple d'association unidirectionnelle.
-     */
     private void dessinerFlecheSimple(Graphics2D g2d, Point p1, Point p2) 
     {
         int tailleFleche = 10;
@@ -312,10 +296,5 @@ public class PanneauDiagramme extends JPanel
     {
         this.blocsClasses = blocs;
         this.repaint(); 
-    }
-
-    public void setBlocsClasses(List<BlocClasse> blocsVue) 
-    {
-        this.blocsClasses = blocsVue;
     }
 }

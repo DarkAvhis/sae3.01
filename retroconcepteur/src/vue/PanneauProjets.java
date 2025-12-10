@@ -10,12 +10,10 @@ public class PanneauProjets extends JPanel
 {
     private FenetrePrincipale fenetrePrincipale;
     private String cheminDossiers;
-    private Controleur controleur;
 
     public PanneauProjets(FenetrePrincipale fenetrePrincipale, Controleur controleur) 
     {
         this.fenetrePrincipale = fenetrePrincipale;
-        this.controleur = controleur;
         
         this.cheminDossiers = "src";
 

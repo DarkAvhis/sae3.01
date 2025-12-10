@@ -1,6 +1,6 @@
 package src;
 
-import modele.AnalyseIHMControleur; // Import de la classe complète du modèle
+import modele.AnalyseIHMControleur;
 import modele.AttributObjet;
 import modele.MethodeObjet;
 import modele.ClasseObjet;
@@ -14,9 +14,7 @@ import vue.BlocClasse;
 import vue.LiaisonVue;
 import vue.LiaisonVue.TypeLiaison;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import javax.swing.SwingUtilities;
 
@@ -25,12 +23,9 @@ public class Controleur
     // Remplacement d'AnalyseurUML par le contrôleur de la couche Modèle pour une analyse complète
     private AnalyseIHMControleur metierComplet; 
     private FenetrePrincipale vuePrincipale;
-    private HashMap<String, ClasseObjet> classesChargees; // Conservé pour la référence au modèle
-
     public Controleur()
     {
         this.metierComplet = new AnalyseIHMControleur(); 
-        this.classesChargees = new HashMap<>();
     }
     
     public void demarrerApplication()
@@ -109,7 +104,7 @@ public class Controleur
             // IMPORTANT : L'origine de la flèche (début) est la classe Fille/Concrète
             String nomOrig = liaison.getClasseFille().getNom(); 
             // La destination de la flèche (pointe) est la classe Mère/Interface
-            String nomDest = liaison.getClasseMere().getNom();  
+            String nomDest = liaison.getClasseMere().getNom();
             
             liaisonsVue.add(new LiaisonVue(nomOrig, nomDest, type)); 
         }

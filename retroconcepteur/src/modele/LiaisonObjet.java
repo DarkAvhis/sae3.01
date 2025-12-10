@@ -1,6 +1,5 @@
 package modele;
 
-
 /**
  * Représente une liaison générique entre deux classes dans un diagramme UML.
  * Cette classe sert de superclasse pour les relations comme :
@@ -35,7 +34,7 @@ public class LiaisonObjet
      * @param classeMere  Classe source (mere ou interface)
      * @param classeFille Classe cible  (fille ou classe concrète)
      */
-	public LiaisonObjet(String nomAttribut, ClasseObjet classeMere, ClasseObjet classeFille) 
+	public LiaisonObjet(String nomAttribut, ClasseObjet classeMere, ClasseObjet classeFille)
 	{
 		this.nomAttribut = nomAttribut ;
 		this.classeMere  = classeMere  ;
@@ -53,16 +52,16 @@ public class LiaisonObjet
 	// ----------------- Getters -----------------
 
     /** @return le nom de la liaison */
-    public String getNomAttribut()      { return nomAttribut; }
+    public String getNomAttribut()      { return this.nomAttribut; }
 
     /** @return la classe enfant ou classe concrète */
-    public ClasseObjet getClasseFille() { return classeFille; }
+    public ClasseObjet getClasseFille() { return this.classeFille; }
 
     /** @return la classe parent ou interface */
-    public ClasseObjet getClasseMere() { return  classeMere;  }
+    public ClasseObjet getClasseMere() { return  this.classeMere;  }
 
     /** @return le numéro unique de la liaison */
-    public int getNum()                { return  num;         }
+    public int getNum()                { return  this.num;         }
 
 	// ----------------- Setters -----------------
 
@@ -77,6 +76,5 @@ public class LiaisonObjet
 
     /** @param num nouveau numéro unique de la liaison */
     public void setNum(int num)                         { this.num = num;                 }
-
 	
 }

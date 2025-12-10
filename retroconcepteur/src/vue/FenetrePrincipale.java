@@ -7,12 +7,10 @@ import src.Controleur;
 
 public class FenetrePrincipale extends JFrame 
 {
-
 	private Controleur controleur;
 	private PanneauProjets panneauProjets;
 	private PanneauDiagramme panneauDiagramme;
 
-	// Mise à jour : le constructeur prend maintenant le contrôleur
 	public FenetrePrincipale(Controleur controleur) 
 	{
 		this.controleur = controleur;
@@ -26,7 +24,12 @@ public class FenetrePrincipale extends JFrame
 		this.setResizable(true);
 
 		this.panneauProjets   = new PanneauProjets(this, controleur);
-		this.panneauDiagramme = new PanneauDiagramme(controleur);  
+		this.panneauDiagramme = new PanneauDiagramme(controleur); 
+		
+		// CORRECTION : Encapsulation de panneauDiagramme dans un JScrollPane
+		JScrollPane scrollDiagramme = new JScrollPane(this.panneauDiagramme);
+		scrollDiagramme.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollDiagramme.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		this.setLayout(new BorderLayout());
 		
@@ -34,16 +37,15 @@ public class FenetrePrincipale extends JFrame
 			JSplitPane.HORIZONTAL_SPLIT,
 			true,
 			this.panneauProjets,
-			this.panneauDiagramme
+			scrollDiagramme // <-- CORRECTION : Utilisation du JScrollPane
 		);
 		splitPane.setDividerLocation(250);
 		splitPane.setOneTouchExpandable(true);
 
 		this.add(splitPane, BorderLayout.CENTER);
-		this.add(new BarreMenus(controleur), BorderLayout.NORTH); // Changement ici
+		this.add(new BarreMenus(controleur), BorderLayout.NORTH); 
 	}
 
-	// Cette méthode reste, mais appellera maintenant le Contrôleur
 	public void chargerProjet(String cheminProjet) 
 	{
 		this.controleur.analyserEtAfficherDiagramme(cheminProjet); 

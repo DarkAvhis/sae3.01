@@ -7,7 +7,6 @@ import src.Controleur;
 
 public class BarreMenus extends JMenuBar implements ActionListener
 {
-    private Controleur controleur;
 
     // Références aux items pour les reconnaître dans actionPerformed
     private JMenuItem nouvelleItem;
@@ -29,8 +28,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
     public BarreMenus(Controleur controleur) 
     {
-        this.controleur = controleur;
-
+        
         this.add(creerMenuFichier());
         this.add(creerMenuEdition());
         this.add(creerMenuAffichage());
