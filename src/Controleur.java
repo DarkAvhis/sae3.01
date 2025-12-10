@@ -29,18 +29,13 @@ public class Controleur
 
     public Controleur()
     {
-        this.metierComplet = new AnalyseIHMControleur(); 
+        this.metierComplet   = new AnalyseIHMControleur(); 
         this.classesChargees = new HashMap<>();
+        this.vuePrincipale = new FenetrePrincipale(this);
+        this.vuePrincipale.setVisible(true);
     }
     
-    public void demarrerApplication()
-    {
-        SwingUtilities.invokeLater(() -> 
-        {
-            this.vuePrincipale = new FenetrePrincipale(this);
-            this.vuePrincipale.setVisible(true);
-        });
-    }
+   
 
     /**
      * Analyse un dossier projet et met à jour l'affichage du diagramme.
@@ -96,6 +91,42 @@ public class Controleur
             this.vuePrincipale.getPanneauDiagramme().repaint();
         }
     }
+
+    public void sauvegarde()
+    {
+
+    }
+
+    public void supprimerClasseSelectionnee()
+    {
+        if (this.vuePrincipale == null) return;
+
+        BlocClasse bloc = this.vuePrincipale.getPanneauDiagramme().getBlocsClasseSelectionnee();
+
+        if (bloc == null)
+        {
+            javax.swing.JOptionPane.showMessageDialog(null,
+                "Aucune classe sélectionnée.",
+                "Suppression impossible",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String nomClasse = bloc.getNom();
+        this.metierComplet.supprimerClasse(nomClasse);
+
+        // Vue
+        var panneau = this.vuePrincipale.getPanneauDiagramme();
+        panneau.getBlocsClasses().remove(bloc);
+
+        panneau.getLiaisonsVue().removeIf(l ->
+            l.getNomClasseOrig().equals(nomClasse) ||
+            l.getNomClasseDest().equals(nomClasse)
+        );
+
+        panneau.repaint();
+    }
+
 
     /**
      * Convertit une liste de LiaisonsObjet (Association, Héritage ou Implémentation) 
@@ -154,7 +185,6 @@ public class Controleur
 
     public static void main(String[] args)
     {
-        Controleur controleur = new Controleur();
-        controleur.demarrerApplication();
+        new Controleur();
     }
 }

@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import src.Controleur;
 import vue.LiaisonVue;
@@ -40,6 +41,10 @@ public class PanneauDiagramme extends JPanel
         this.setBorder(BorderFactory.createTitledBorder("Diagramme UML"));
 
         this.ajouterListenersInteraction();
+    }
+
+    public List<LiaisonVue> getLiaisonsVue() {
+        return liaisonsVue;
     }
 
     // NOUVEAU SETTER pour les liaisons
@@ -318,4 +323,18 @@ public class PanneauDiagramme extends JPanel
     {
         this.blocsClasses = blocsVue;
     }
+
+    public List<BlocClasse> getBlocsClasses() {    return blocsClasses;   }
+
+    public BlocClasse getBlocsClasseSelectionnee()
+    {
+        for (BlocClasse bloc : blocsClasses)
+        {
+            if (bloc.estSelectionne())
+                return bloc;
+        }
+        return null; 
+    }
+
+    
 }

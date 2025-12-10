@@ -152,6 +152,12 @@ public class AnalyseIHMControleur
         // 3. Transférer tous les objets InterfaceObjet rassemblés vers la liste finale
         this.implementations.addAll(regroupement.values());
     }
+    
+    public void supprimerClasse( String classe )
+    {
+        if( classe == null ) return ; 
+        this.classes.remove(classe) ; 
+    }
 
 // ...
     

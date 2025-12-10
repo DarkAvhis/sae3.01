@@ -56,7 +56,47 @@ public class PanneauProjets extends JPanel
         this.add(boutonActualiser, BorderLayout.SOUTH);
     }
 
-    private void chargerProjets(JPanel panelProjets) 
+    //Permet d'ajouter le projet
+    public void ajouterProjet(String cheminProjet)
+    {
+        File projet = new File(cheminProjet);
+
+        // Vérifier que le chemin existe et est un dossier
+        if (!projet.exists() || !projet.isDirectory())
+            return;
+
+        // Récupérer JScrollPane → viewport → panelProjets
+        JScrollPane scrollPane   = (JScrollPane) this.getComponent(1);
+        JPanel      panelProjets = (JPanel) scrollPane.getViewport().getView();
+
+        // 🔍 Vérifier si le projet existe déjà dans le panel
+        for (Component comp : panelProjets.getComponents()) 
+        {
+            if (comp instanceof JButton) 
+            {
+                JButton btn = (JButton) comp;
+
+                // Ici je suppose que le texte du bouton = nom du dossier
+                // (ou tu peux mettre le chemin complet dans setName())
+                if (btn.getText().equals(projet.getName())) 
+                    return; // 👉 Le projet existe déjà, donc on ne l'ajoute pas
+            }
+        }
+
+        // Créer le bouton
+        JButton bouton = creerBoutonProjet(projet);
+
+        // Ajouter au panel
+        panelProjets.add(bouton);
+        panelProjets.add(Box.createVerticalStrut(5));
+
+        // Rafraîchir
+        panelProjets.revalidate();
+        panelProjets.repaint();
+    }
+
+
+    public void chargerProjets(JPanel panelProjets) 
     {
         File dossier = new File(cheminDossiers);
 
@@ -84,7 +124,7 @@ public class PanneauProjets extends JPanel
         }
     }
 
-    private JButton creerBoutonProjet(File projet) 
+    public JButton creerBoutonProjet(File projet) 
     {
         JButton bouton = new JButton(projet.getName());
 
