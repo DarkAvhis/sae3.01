@@ -187,7 +187,8 @@ public class AnalyseurUML
                         if (ligneBrute.contains("(") && ligneBrute.contains(")")) {
                             String args = ligneBrute.substring(ligneBrute.indexOf('(') + 1, ligneBrute.lastIndexOf(')'));
                             args = args.trim();
-                            if (!args.isEmpty()) {
+                            if (!args.isEmpty()) 
+                            {
                                 List<String> params = decoupage(args);
                                 for (String p : params) {
                                     String trimmed = p.trim();
@@ -262,7 +263,8 @@ public class AnalyseurUML
         // --- 3. CRÉATION DE L'OBJET FINAL ---
         
         // Si c'est une interface, on force une liste d'attributs vide (la logique les a déjà retirés sauf s'ils sont des constantes)
-        if (estInterface) {
+        if (estInterface) 
+        {
             // Dans ce contexte, on ne touche pas à la liste 'attributs' si des constantes ont été trouvées,
             // pour permettre leur affichage.
         }
@@ -270,10 +272,12 @@ public class AnalyseurUML
         ClasseObjet nouvelleClasse = new ClasseObjet(attributs, methodes, nomEntite, specifique);
 
         // Enregistrement des relations pour le contrôleur
-        if (estHeritier && nomParent != null) {
+        if (estHeritier && nomParent != null) 
+        {
             lstIntentionHeritage.add(new String[]{nomEntite, nomParent});
         }
-        for (String iface : interfacesDetectees) {
+        for (String iface : interfacesDetectees) 
+        {
             lstInterfaces.add(new String[]{nomEntite, iface});
         }
 
@@ -423,9 +427,12 @@ public class AnalyseurUML
         File dossier = new File(cheminDossier);
         File[] tousLesFichiers = dossier.listFiles();
         ArrayList<File> fichiersJava = new ArrayList<>();
-        if (tousLesFichiers != null) {
-            for (File f : tousLesFichiers) {
-                if (f.getName().endsWith(".java")) {
+        if (tousLesFichiers != null) 
+            {
+            for (File f : tousLesFichiers) 
+            {
+                if (f.getName().endsWith(".java")) 
+                {
                     fichiersJava.add(f);
                 }
             }
@@ -435,58 +442,87 @@ public class AnalyseurUML
 
     // -------------------- Methodes d'aide pour le parsing sans split vu que on a pas compris quand l'utiliser ou pas --------------------
 
-    private List<String> separerMots(String s) {
+    private List<String> separerMots(String s) 
+    {
         List<String> tokens = new ArrayList<>();
         String token = "";
-        for (int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) 
+            {
             char c = s.charAt(i);
-            if (Character.isWhitespace(c)) {
-                if (!token.isEmpty()) {
+            if (Character.isWhitespace(c)) 
+            {
+                if (!token.isEmpty()) 
+                {
                     tokens.add(token);
                     token = "";
                 }
-            } else {
+            } 
+            else 
+            {
                 token += c; 
             }
         }
-        if (!token.isEmpty()) tokens.add(token);
+        if (!token.isEmpty()) 
+        {
+            tokens.add(token);
+        }
+        
         return tokens;
     }
 
-    private int indexEspace(String s) {
+    private int indexEspace(String s) 
+    {
         for (int i = 0; i < s.length(); i++) if (Character.isWhitespace(s.charAt(i))) return i;
         return -1;
     }
 
-    private int dernierIndexEspace(String s) {
+    private int dernierIndexEspace(String s) 
+    {
         for (int i = s.length() - 1; i >= 0; i--) if (Character.isWhitespace(s.charAt(i))) return i;
         return -1;
     }
 
-    private boolean aModifierMotCle(String s) {
+    private boolean aModifierMotCle(String s) 
+    {
         return s.equals("public") || s.equals("private") || s.equals("protected")
                 || s.equals("static") || s.equals("final") || s.equals("transient") || s.equals("volatile");
     }
 
-    private boolean aMethodeModif(String s) {
+    private boolean aMethodeModif(String s) 
+    {
         return s.equals("public") || s.equals("private") || s.equals("protected")
                 || s.equals("static") || s.equals("final") || s.equals("abstract") || s.equals("synchronized") || s.equals("default");
     }
 
-    private boolean aVisibilite(String s) {
+    private boolean aVisibilite(String s) 
+    {
         return s.equals("public") || s.equals("private") || s.equals("protected");
     }
 
     /**
-     * Lit le premier identifiant utile dans la chaîne (arrêt sur espace, '{', '<', ',', '(' ).
+     * Lit le premier identifiant utile dans la chaîne (arrêt sur espace, '
+     * {', '<', ',', '(' ).
      */
-    private String lireNom(String s) {
+    private String lireNom(String s) 
+    {
         s = s.trim();
         if (s.isEmpty()) return "";
+
         String id = "";
-        for (int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) 
+        {
             char c = s.charAt(i);
-            if (Character.isWhitespace(c) || c == '{' || c == '<' || c == ',' || c == '(') break;
+
+            // Si on rencontre un séparateur, on s'arrête
+            if (Character.isWhitespace(c) || 
+                c == '{' || 
+                c == '<' || 
+                c == ',' || 
+                c == '(') 
+            {
+                break;
+            }
+
             id += c; // concaténation volontaire
         }
         return id;
@@ -496,22 +532,31 @@ public class AnalyseurUML
      * Split par virgules au niveau "top-level" en ignorant les virgules à l'intérieur de < >.
      * Construit les fragments via concaténation (+=) au lieu de StringBuilder.
      */
-    private List<String> decoupage(String s) {
+    private List<String> decoupage(String s) 
+    {
         List<String> parts = new ArrayList<>();
         String part = "";
         int depthAngle = 0;
-        for (int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) 
+            {
             char c = s.charAt(i);
-            if (c == '<') {
+            if (c == '<') 
+            {
                 depthAngle++;
                 part += c;
-            } else if (c == '>') {
+            } 
+            else if (c == '>') 
+            {
                 if (depthAngle > 0) depthAngle--;
                 part += c;
-            } else if (c == ',' && depthAngle == 0) {
+            } 
+            else if (c == ',' && depthAngle == 0) 
+            {
                 parts.add(part);
                 part = "";
-            } else {
+            } 
+            else 
+            {
                 part += c;
             }
         }
