@@ -1,3 +1,5 @@
+import testFinal.Point;
+
 public class Disque 
 {
 	private double rayon;

@@ -58,7 +58,7 @@ public class AssociationObjet extends LiaisonObjet
         String multD   = (this.multiDest  != null) ? this.multiDest.toString() : "?";
 
         return String.format("Association %d : %s de %s(%s) vers %s(%s)",
-                             this.getNum(), sens, origine, multO, dest, multD);
+                             this.getNum(), sens, origine, multD, dest, multO);
     }
      
 }
