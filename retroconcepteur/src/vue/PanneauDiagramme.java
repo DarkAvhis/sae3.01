@@ -8,6 +8,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Dimension; // Import nécessaire pour Dimension
 
 import java.awt.event.*;
 
@@ -20,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import src.Controleur;
+import vue.LiaisonVue.TypeLiaison;
 
 public class PanneauDiagramme extends JPanel 
 {
@@ -31,31 +35,14 @@ public class PanneauDiagramme extends JPanel
         this.blocsClasses = new ArrayList<>();
         this.liaisonsVue = new ArrayList<>(); 
         
-        // Définit une taille préférée pour que le JScrollPane fonctionne
-        this.setPreferredSize(new java.awt.Dimension(2000, 2000));
+        // Taille minimale pour que le JScrollPane soit utilisable
+        this.setPreferredSize(new java.awt.Dimension(1000, 800)); 
 
         this.setLayout(null);
         this.setBackground(new Color(255, 255, 255));
         this.setBorder(BorderFactory.createTitledBorder("Diagramme UML"));
 
         this.ajouterListenersInteraction();
-    }
-
-    public List<LiaisonVue> getLiaisonsVue() {
-        return liaisonsVue;
-    }
-
-    // NOUVEAU SETTER pour les liaisons
-    public void setLiaisonsVue(List<LiaisonVue> liaisonsVue) 
-    {
-        this.liaisonsVue = liaisonsVue;
-        this.repaint(); // Redessine après la mise à jour des liaisons
-    }
-    
-    // NOUVEAU SETTER pour les BlocsClasses (pour que le contrôleur mette à jour les blocs)
-    public void setBlocsClasses(List<BlocClasse> blocsVue) 
-    {
-        this.blocsClasses = blocsVue;
     }
 
 
@@ -101,6 +88,7 @@ public class PanneauDiagramme extends JPanel
                 blocSelectionne.setX(e.getX() - offsetX);
                 blocSelectionne.setY(e.getY() - offsetY);
 
+                calculerTailleDynamique(); // NOUVEAU : Recalcule la taille après déplacement
                 repaint(); 
             }
         }
@@ -117,10 +105,44 @@ public class PanneauDiagramme extends JPanel
     private void ajouterListenersInteraction() 
     {
         GereSourisInteraction adapter = new GereSourisInteraction();
-
         this.addMouseListener(adapter); 
         this.addMouseMotionListener(adapter); 
     }
+
+    /**
+     * Calcule et définit la taille préférée du panneau pour que le JScrollPane fonctionne,
+     * en se basant sur les positions maximales des blocs.
+     */
+    private void calculerTailleDynamique() 
+    {
+        int maxX = 0;
+        int maxY = 0;
+        final int PADDING = 100; // Marge de sécurité
+
+        for (BlocClasse bloc : blocsClasses) 
+        {
+            // maxX = position du coin supérieur gauche + largeur
+            maxX = Math.max(maxX, bloc.getX() + bloc.getLargeur());
+            maxY = Math.max(maxY, bloc.getY() + bloc.getHauteur());
+        }
+
+        // Maintien d'une taille minimale de 1000x800 pour le panneau vide
+        int requiredWidth = Math.max(maxX + PADDING, 1000); 
+        int requiredHeight = Math.max(maxY + PADDING, 800); 
+
+        Dimension currentSize = getPreferredSize();
+
+        if (requiredWidth > currentSize.width || requiredHeight > currentSize.height) 
+        {
+            // Met à jour la taille préférée
+            setPreferredSize(new java.awt.Dimension(requiredWidth, requiredHeight));
+            
+            // Notifie le parent (JScrollPane) que la taille a changé et qu'il doit réévaluer les barres
+            revalidate(); 
+        }
+    }
+
+    // --- LOGIQUE DE DESSIN ---
 
     @Override
     protected void paintComponent(Graphics g) 
@@ -141,10 +163,10 @@ public class PanneauDiagramme extends JPanel
     {
         if (liaisonsVue == null || blocsClasses == null) return;
 
+        g2d.setFont(new Font("Arial", Font.PLAIN, 10)); // Police pour les multiplicités
+
         for (LiaisonVue liaison : liaisonsVue)
         {
-            // Trouver les BlocsClasse correspondants par nom
-            // Note: Optional est utilisé par le stream, mais la vérification isPresent() est faite après.
             Optional<BlocClasse> blocOrig = blocsClasses.stream()
                 .filter(b -> b.getNom().equals(liaison.getNomClasseOrig()))
                 .findFirst();
@@ -155,40 +177,68 @@ public class PanneauDiagramme extends JPanel
 
             if (blocOrig.isPresent() && blocDest.isPresent())
             {
-                // p1 = Origine de la flèche (Fille)
                 Point p1 = calculerPointConnexion(blocOrig.get(), blocDest.get()); 
-                // p2 = Destination de la flèche (Mère/Interface)
                 Point p2 = calculerPointConnexion(blocDest.get(), blocOrig.get()); 
                 
                 g2d.setColor(Color.BLACK);
-                
                 Stroke oldStroke = g2d.getStroke();
                 
                 switch (liaison.getType())
                 {
                     case HERITAGE:
-                        dessinerFlecheHeritage(g2d, p1, p2, false); // Ligne pleine
+                        dessinerFlecheHeritage(g2d, p1, p2, false); 
                         break;
                     
                     case IMPLEMENTATION:
-                        dessinerFlecheHeritage(g2d, p1, p2, true); // Ligne pointillée
+                        dessinerFlecheHeritage(g2d, p1, p2, true); 
                         break;
                         
                     case ASSOCIATION_UNIDI:
-                        g2d.setStroke(new BasicStroke(1));
-                        g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
-                        dessinerFlecheSimple(g2d, p1, p2); 
-                        break;
-                        
                     case ASSOCIATION_BIDI:
                         g2d.setStroke(new BasicStroke(1));
                         g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
+                        
+                        // Multiplicités (seulement pour les associations)
+                        if (!liaison.getMultipliciteOrig().isEmpty()) {
+                            drawMultiplicity(g2d, p1, p2, liaison.getMultipliciteOrig(), true);
+                        }
+                        if (!liaison.getMultipliciteDest().isEmpty()) {
+                            drawMultiplicity(g2d, p1, p2, liaison.getMultipliciteDest(), false);
+                        }
+                        
+                        if (liaison.getType() == TypeLiaison.ASSOCIATION_UNIDI) {
+                            dessinerFlecheSimple(g2d, p1, p2); 
+                        }
                         break;
                 }
                 
                 g2d.setStroke(oldStroke); 
             }
         }
+    }
+
+    private void drawMultiplicity(Graphics2D g2d, Point pStart, Point pEnd, String multiplicity, boolean isSource) {
+        
+        Point pAnchor = isSource ? pStart : pEnd;
+        
+        int offsetFromAnchor = 15; 
+        int offsetPerpendicular = 10; 
+        
+        double angle = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
+        double perpAngle = angle + Math.PI / 2;
+        
+        int xLine = (int) (pAnchor.x + offsetFromAnchor * Math.cos(angle));
+        int yLine = (int) (pAnchor.y + offsetFromAnchor * Math.sin(angle));
+        
+        int xText = (int) (xLine + offsetPerpendicular * Math.cos(perpAngle));
+        int yText = (int) (yLine + offsetPerpendicular * Math.sin(perpAngle));
+
+        FontMetrics fm = g2d.getFontMetrics();
+        int textWidth = fm.stringWidth(multiplicity);
+        
+        xText -= (int) (textWidth * 0.5); 
+        
+        g2d.drawString(multiplicity, xText, yText);
     }
     
     private void dessinerFlecheHeritage(Graphics2D g2d, Point p1, Point p2, boolean isImplementation) 
@@ -248,62 +298,62 @@ public class PanneauDiagramme extends JPanel
         g2d.drawLine(p2.x, p2.y, x4, y4);
     }
     
-    /**
-     * Calcule le point sur la bordure du blocOrigine le plus proche du centre du blocCible.
-     */
     private Point calculerPointConnexion(BlocClasse blocOrigine, BlocClasse blocCible)
     {
+        // ... (Logique inchangée pour calculer le point de connexion)
         int x1 = blocOrigine.getX();
         int y1 = blocOrigine.getY();
         int w1 = blocOrigine.getLargeur();
         int h1 = blocOrigine.getHauteur();
         
-        // Centres
         int cX1 = x1 + w1 / 2;
         int cY1 = y1 + h1 / 2;
         int cX2 = blocCible.getX() + blocCible.getLargeur() / 2;
         int cY2 = blocCible.getY() + blocCible.getHauteur() / 2;
         
-        // Angle entre les centres
         double angle = Math.atan2(cY2 - cY1, cX2 - cX1);
         double angleDeg = Math.toDegrees(angle);
         if (angleDeg < 0) angleDeg += 360;
 
         // Détermination du côté touché
-        
-        // Droite (0 / 360)
         if ((angleDeg >= 315 && angleDeg <= 360) || (angleDeg >= 0 && angleDeg < 45))
         {
             return new Point(x1 + w1, cY1);
         }
-        // Bas (90)
         else if (angleDeg >= 45 && angleDeg < 135)
         {
             return new Point(cX1, y1 + h1);
         }
-        // Gauche (180)
         else if (angleDeg >= 135 && angleDeg < 225)
         {
             return new Point(x1, cY1);
         }
-        // Haut (270)
         else if (angleDeg >= 225 && angleDeg < 315)
         {
             return new Point(cX1, y1);
         }
         
-        // Cas de repli (centre)
         return new Point(cX1, cY1);
     }
 
 
+    // --- GETTERS & SETTERS UTILISÉS PAR LE CONTRÔLEUR ---
+
     public void afficherDiagramme(List<BlocClasse> blocs) 
     {
         this.blocsClasses = blocs;
-        this.repaint(); 
+        // Le repaint est maintenant géré par setLiaisonsVue
     }
 
-    public List<BlocClasse> getBlocsClasses() {    return blocsClasses;   }
+    public List<LiaisonVue> getLiaisonsVue() { return liaisonsVue; }
+
+    public void setLiaisonsVue(List<LiaisonVue> liaisonsVue) 
+    {
+        this.liaisonsVue = liaisonsVue;
+        this.repaint();
+    }
+
+    public List<BlocClasse> getBlocsClasses() { return blocsClasses; }
 
     public BlocClasse getBlocsClasseSelectionnee()
     {
@@ -313,6 +363,14 @@ public class PanneauDiagramme extends JPanel
                 return bloc;
         }
         return null; 
+    }    
+
+    // NOUVEAU SETTER pour les BlocsClasses (appelle le calcul de taille)
+    public void setBlocsClasses(List<BlocClasse> blocsVue) 
+    {
+        this.blocsClasses = blocsVue;
+        // Met à jour la taille du panneau pour le JScrollPane
+        calculerTailleDynamique(); 
     }
 
     

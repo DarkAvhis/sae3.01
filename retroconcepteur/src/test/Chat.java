@@ -34,7 +34,7 @@ public class Chat extends Animal
         System.out.println(getNom() + " miaule: " + parler());
     }
 
-    public static Chat creerChienUnitaire()
+    public static Chat creerChatUnitaire()
     {
         return new Chat("Rex", 1, "Inconnue");
     }
