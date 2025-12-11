@@ -181,12 +181,10 @@ public class ClasseObjet
 		final String ANSI_SOUSTITRE = "\u001B[4m";
 		final String ANSI_RESET     = "\u001B[0m";
 		
-		// NOUVEAUTÉ : Liste des types de référence standards à NE PAS masquer
-		// Ces types sont considérés comme des types de base (primitifs) en UML même s'ils commencent par une majuscule.
+		// Liste des types de référence standards à NE PAS masquer (String, Integer, etc.)
 		final List<String> typesNonAssociation = Arrays.asList(
 			"String", "Integer", "Double", "Boolean", "Character", "Long", "Float", "Short", "Byte"
 		);
-		// ---------------------------------------------------------------------
 		
 		String sRet = "";
 
@@ -210,20 +208,20 @@ public class ClasseObjet
 		{
 			String typeAttribut = att.getType().trim();
 
-			// LOGIQUE DE MASQUAGE AFFINÉE (pour masquer les attributs d'association comme 'centre: Point')
+			// LOGIQUE DE MASQUAGE AFFINÉE (pour masquer les attributs d'association)
 			
 			// 1. Vérifier si le type commence par une Majuscule (potentiellement une classe utilisateur)
 			boolean commenceParMaj = !typeAttribut.isEmpty() && Character.isUpperCase(typeAttribut.charAt(0));
 			
 			// 2. Définir si c'est un attribut d'association (à masquer)
 			boolean estAssociation = commenceParMaj && 
-									!typeAttribut.contains("<") &&         // Pas une List<>
-									!typeAttribut.endsWith("[]") &&        // Pas un Tableau
+									!typeAttribut.contains("<") &&         // Pas une List<> (contenant <>)
+									// L'exclusion !typeAttribut.endsWith("[]") a été supprimée ici !
 									!typesNonAssociation.contains(typeAttribut); // Pas un type standard (String)
 			
 			if (estAssociation) 
 			{
-				// Si c'est un attribut d'association, on le masque dans l'affichage UML de la classe.
+				// Si c'est un attribut d'association (simple objet OU tableau d'objets), on le masque.
 				continue; 
 			}
 			// FIN LOGIQUE DE MASQUAGE AFFINÉE
