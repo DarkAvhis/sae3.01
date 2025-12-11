@@ -5,6 +5,7 @@ public class Point
     private String nom;
     private int    x;
     private int    y;
+    private Disque[] Disques ;
     
     public Point(String nom, int x, int y) 
     {

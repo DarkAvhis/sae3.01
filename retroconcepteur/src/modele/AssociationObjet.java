@@ -25,7 +25,7 @@ public class AssociationObjet extends LiaisonObjet
         super(nomAttribut, classeMere, classeFille);
         this.multiDest          = multiDest;
         this.multiOrig          = multiOrig;
-        this.estUnidirectionnel = unidirectionnel;         
+        this.estUnidirectionnel = unidirectionnel;      
     }
 
     /*-------------------------------------- */

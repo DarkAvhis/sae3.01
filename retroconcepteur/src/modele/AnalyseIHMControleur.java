@@ -72,6 +72,7 @@ public class AnalyseIHMControleur
         // 3. Résolution des liens
         resoudreHeritage();
         resoudreImplementation();
+        renumeroterLiaisonsFinales();
 
         return true;
     }
@@ -113,7 +114,7 @@ public class AnalyseIHMControleur
     }
     
     /**
-     * NOUVEAU: Résout les implémentations d'interfaces en objets InterfaceObjet réels.
+     * Résout les implémentations d'interfaces en objets InterfaceObjet réels.
      */
     // ... dans AnalyseIHMControleur.java
 
@@ -157,6 +158,26 @@ public class AnalyseIHMControleur
     {
         if( classe == null ) return ; 
         this.classes.remove(classe) ; 
+    }
+
+    private void renumeroterLiaisonsFinales()
+    {
+        // Réinitialiser le compteur statique pour éviter les conflits dans les logs ou les numéros futurs.
+        LiaisonObjet.reinitialiserCompteur(); 
+        
+        // Rassembler toutes les liaisons finales à renuméroter
+        List<LiaisonObjet> toutesLesLiaisons = new ArrayList<>();
+        toutesLesLiaisons.addAll(this.associations);
+        toutesLesLiaisons.addAll(this.heritages);
+        toutesLesLiaisons.addAll(this.implementations);
+        
+        int nouveauCompteur = 1;
+        
+        // On renumérote chaque liaison dans l'ordre pour un affichage propre
+        for (LiaisonObjet liaison : toutesLesLiaisons)
+        {
+            liaison.setNum(nouveauCompteur++);
+        }
     }
 
 // ...

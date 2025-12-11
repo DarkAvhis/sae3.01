@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
@@ -379,10 +380,18 @@ public class AnalyseurUML
 
     // --- Les méthodes detecterAssociations et ClassesDuDossier sont inchangées mais utilisent maintenant separerMots si besoin ---
     
+    // Dans modele/AnalyseurUML.java (dans la méthode detecterAssociations)
+
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses)
     {
-        List<AssociationObjet> associations = new ArrayList<>();
+        List<AssociationObjet> associationsFinales = new ArrayList<>();
         
+        // ÉTAPE 1 : Collecte de toutes les associations unidirectionnelles potentielles
+        List<AssociationObjet> associationsUnidirectionnelles = new ArrayList<>();
+        // Set pour suivre les associations unidirectionnelles qui ont été incluses dans une fusion
+        HashSet<AssociationObjet> associationsUsedInFusion = new HashSet<>();
+
+        // ------------------ PREMIÈRE BOUCLE DE COLLECTE (inchangée) ------------------
         for (ClasseObjet classeOrigine : classes)
         {
             if (classeOrigine.getattributs() == null) continue;
@@ -392,17 +401,22 @@ public class AnalyseurUML
                 String typeAttribut = attribut.getType();
                 String typeCible = typeAttribut;
                 MultipliciteObjet multCible = new MultipliciteObjet(1, 1); 
-                MultipliciteObjet multOrigine = new MultipliciteObjet(1, 1);
+                MultipliciteObjet multOrigine = new MultipliciteObjet(1, 1); 
                 boolean estCollection = false;
                 
-                if (typeAttribut.contains("<") && typeAttribut.contains(">")) {
+                // Logique de détection Collection/Tableau
+                if (typeAttribut.contains("<") && typeAttribut.contains(">")) 
+                {
                     int idx1 = typeAttribut.indexOf('<');
                     int idx2 = typeAttribut.indexOf('>', idx1 + 1);
-                    if (idx1 != -1 && idx2 != -1 && idx2 > idx1) {
+                    if (idx1 != -1 && idx2 != -1 && idx2 > idx1)
+                    {
                         typeCible = typeAttribut.substring(idx1 + 1, idx2).trim();
                     }
                     estCollection = true;
-                } else if (typeAttribut.endsWith("[]")) {
+                }
+                else if (typeAttribut.endsWith("[]")) 
+                {
                     typeCible = typeAttribut.replace("[]", "").trim();
                     estCollection = true;
                 }
@@ -412,14 +426,100 @@ public class AnalyseurUML
                 if (mapClasses.containsKey(typeCible) && !typeCible.equals(classeOrigine.getNom()))
                 {
                     ClasseObjet classeCible = mapClasses.get(typeCible);
-                    AssociationObjet association = new AssociationObjet(
+                    
+                    // CRÉATION DE L'ASSOCIATION POTENTIELLE A -> B
+                    AssociationObjet associationPotentielle = new AssociationObjet(
                             classeCible, classeOrigine, multCible, multOrigine, attribut.getNom(), true
                     );
-                    associations.add(association);
+                    associationsUnidirectionnelles.add(associationPotentielle);
                 }
             }
         }
-        return associations;
+        
+        // ÉTAPE 2 : Fusion des associations bidirectionnelles (A <-> B)
+        
+        // Utiliser un Set pour s'assurer que l'on ne crée qu'une seule fusion par paire A/B, 
+        // en tenant compte des multiplicités.
+        HashSet<String> pairesDeClassesFusionnees = new HashSet<>();
+
+        for (AssociationObjet assoOrigine : associationsUnidirectionnelles)
+        {
+            // Si cette association a déjà été marquée comme utilisée, on passe
+            if (associationsUsedInFusion.contains(assoOrigine)) continue;
+
+            // Récupérer les informations de A -> B
+            ClasseObjet classeA = assoOrigine.getClasseFille(); // A
+            ClasseObjet classeB = assoOrigine.getClasseMere();  // B
+            
+            // Créer une clé pour la paire non ordonnée
+            String nomA = classeA.getNom();
+            String nomB = classeB.getNom();
+            // Utiliser l'ordre alphabétique pour la clé de la paire
+            String clePaire = (nomA.compareTo(nomB) < 0) ? nomA + ":" + nomB : nomB + ":" + nomA;
+            
+            // Si une fusion pour cette paire de classes a déjà été ajoutée, on passe (pour la gestion des liens multiples comme centre/points)
+            if (pairesDeClassesFusionnees.contains(clePaire))
+            {
+                 continue;
+            }
+            
+            // 2. Chercher B -> A dans le reste de la liste
+            AssociationObjet assoInverse = null;
+            for (AssociationObjet a : associationsUnidirectionnelles)
+            {
+                // Vérifier si c'est l'inverse (B -> A) ET si elle n'a pas déjà été utilisée
+                if (!associationsUsedInFusion.contains(a) && 
+                    a.getClasseFille() == classeB && a.getClasseMere() == classeA)
+                {
+                    assoInverse = a;
+                    break;
+                }
+            }
+            
+            if (assoInverse != null)
+            {
+                // --- FUSION BIDIRECTIONNELLE TROUVÉE : A -> B ET B -> A ---
+                
+                // Marquer les deux associations comme utilisées
+                associationsUsedInFusion.add(assoOrigine);
+                associationsUsedInFusion.add(assoInverse);
+                
+                // Marquer la paire de classes comme fusionnée
+                pairesDeClassesFusionnees.add(clePaire);
+
+                // Rôles :
+                // La multiplicité sur le côté A vient de la destination de B->A (assoInverse)
+                // La multiplicité sur le côté B vient de la destination de A->B (assoOrigine)
+                
+                MultipliciteObjet multA_role = assoInverse.getMultDest(); 
+                MultipliciteObjet multB_role = assoOrigine.getMultDest(); 
+                
+                // Créer la nouvelle association bidirectionnelle
+                AssociationObjet assoFinale = new AssociationObjet(
+                        classeB,        // classeMere (Destination B)
+                        classeA,        // classeFille (Origine A)
+                        multB_role,     // multiDest (Pour B)
+                        multA_role,     // multiOrig (Pour A)
+                        null,           // Nom de l'attribut (omettable)
+                        false           // NON unidirectionnelle -> BIDIRECTIONNELLE
+                );
+                associationsFinales.add(assoFinale);
+            }
+        }
+        
+        // ÉTAPE 3 : Ajout des associations unidirectionnelles restantes
+        
+        for (AssociationObjet asso : associationsUnidirectionnelles)
+        {
+            // Si l'association n'a pas été utilisée pour former un lien bidirectionnel, on l'ajoute.
+            if (!associationsUsedInFusion.contains(asso))
+            {
+                associationsFinales.add(asso);
+            }
+        }
+
+        // Retourner la liste finale
+        return associationsFinales;
     }
 
     public ArrayList<File> ClassesDuDossier(String cheminDossier)

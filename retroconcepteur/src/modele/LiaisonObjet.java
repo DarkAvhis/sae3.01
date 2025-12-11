@@ -63,6 +63,8 @@ public class LiaisonObjet
     /** @return le numéro unique de la liaison */
     public int getNum()                { return  this.num;         }
 
+    public static void reinitialiserCompteur() {nbLiaisons = 0;}
+
 	// ----------------- Setters -----------------
 
     /** @param nomAttribut nouveau nom de la liaison */

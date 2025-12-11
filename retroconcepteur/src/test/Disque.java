@@ -3,11 +3,12 @@ package test;
 public class Disque 
 {
     private double rayon;
-    private Point centre;
     private boolean actif;
     private String couleur;
     private static int compteur;
     private Point[] points;
+    private Chien[] chiens;
+    private Chat[] chats;
 
     public Disque(double rayon, Point centre) 
     {

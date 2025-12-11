@@ -4,6 +4,8 @@ public class Chat extends Animal
 {
     private String race;
     private static final String ESPECE = "Canis familiaris";
+    private Chien[] chien ;
+    private Disque[] disques;
 
     public Chat(String nom, int age, String race)
     {
