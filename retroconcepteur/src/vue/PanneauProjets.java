@@ -1,15 +1,22 @@
 package vue;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.*;
 
 import src.Controleur;
 
-public class PanneauProjets extends JPanel
+public class PanneauProjets extends JPanel implements ActionListener 
 {
     private FenetrePrincipale fenetrePrincipale;
     private String cheminDossiers;
+    private JButton boutonAttributs ; 
+    private JButton boutonMethodes  ; 
+    private JButton boutonActualiser ; 
+    private JPanel panelProjets ; 
+    private JLabel titreLabel ; 
 
     public PanneauProjets(FenetrePrincipale fenetrePrincipale, Controleur controleur) 
     {
@@ -22,16 +29,17 @@ public class PanneauProjets extends JPanel
         this.setBorder(BorderFactory.createTitledBorder("test"));
 
         // Titre
-        JLabel titreLabel = new JLabel("Liste des Projets");
+        titreLabel = new JLabel("Liste des Projets");
         titreLabel.setFont(new Font("Arial", Font.BOLD, 14));
         titreLabel.setHorizontalAlignment(JLabel.CENTER);
         
         this.add(titreLabel, BorderLayout.NORTH);
 
         // Panel scrollable
-        JPanel panelProjets = new JPanel();
+        panelProjets = new JPanel();
         panelProjets.setLayout(new BoxLayout(panelProjets, BoxLayout.Y_AXIS));
         panelProjets.setBackground(new Color(245, 245, 245));
+
 
         this.chargerProjets(panelProjets);
 
@@ -42,17 +50,38 @@ public class PanneauProjets extends JPanel
         this.add(scrollPane, BorderLayout.CENTER);
 
         //actualiser la liste
-        JButton boutonActualiser = new JButton("Actualiser");
-        boutonActualiser.addActionListener(e -> 
+        JPanel panelBouton = new JPanel( new BorderLayout());
+        panelBouton.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        panelBouton.setBackground(new Color(245, 245, 245));
+
+        // Empêche BorderLayout.SOUTH de compresser le panel
+        panelBouton.setPreferredSize(new Dimension(100, 100));
+
+        boutonAttributs  = new JButton("Attributs");
+        boutonMethodes   = new JButton("Méthodes");
+        boutonActualiser = new JButton("Actualiser");
+ 
+        panelBouton.add(boutonAttributs  , BorderLayout.NORTH);
+        panelBouton.add(boutonMethodes   , BorderLayout.CENTER);
+        panelBouton.add(boutonActualiser , BorderLayout.SOUTH);
+
+        this.boutonActualiser.addActionListener(this); 
+
+        this.add( panelBouton , BorderLayout.SOUTH ); 
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        
+        if( e.getSource() == boutonActualiser )
         {
             panelProjets.removeAll();
             this.chargerProjets(panelProjets);
             panelProjets.revalidate();
             panelProjets.repaint();
-        });
-
-        this.add(boutonActualiser, BorderLayout.SOUTH);
+        }
     }
+
 
     //Permet d'ajouter le projet
     public void ajouterProjet(String cheminProjet)
@@ -139,4 +168,8 @@ public class PanneauProjets extends JPanel
 
         return bouton;
     }
+
+
+
+    
 }

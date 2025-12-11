@@ -20,15 +20,12 @@ public class BarreMenus extends JMenuBar implements ActionListener
     private JMenuItem retablirClasse;
     private JMenuItem supprimerClasse;
 
-    private JCheckBoxMenuItem afficherAttributsClasse;
-    private JCheckBoxMenuItem afficherMethodesClasse;
     private JMenuItem         alignerClasse;
     private JMenuItem         optimiserClasse;
 
     private JMenuItem aProposClasse;
 
     private PanneauProjets panneauProjets;
-    
     private Controleur controleur;
 
     public BarreMenus(Controleur controleur, PanneauProjets panneauProjets) 
@@ -89,19 +86,12 @@ public class BarreMenus extends JMenuBar implements ActionListener
     {
         JMenu menu = new JMenu("Affichage");
 
-        this.afficherAttributsClasse = new JCheckBoxMenuItem("Afficher attributs",false);
-        this.afficherMethodesClasse  = new JCheckBoxMenuItem("Afficher méthodes", false);
         this.alignerClasse           = new JMenuItem        ("Aligner les symboles"       );
         this.optimiserClasse         = new JMenuItem        ("Optimiser les positions"    );
 
-        afficherAttributsClasse.addActionListener(this);
-        afficherMethodesClasse .addActionListener(this);
         alignerClasse          .addActionListener(this);
         optimiserClasse        .addActionListener(this);
 
-        menu.add(afficherAttributsClasse);
-        menu.add(afficherMethodesClasse );
-        menu.addSeparator(            );
         menu.add(alignerClasse          );
         menu.add(optimiserClasse        );
 
@@ -133,8 +123,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
         else if (src == retablirClasse )   actionRetablir ();
         else if (src == supprimerClasse)   actionSupprimer();
 
-        else if (src == afficherAttributsClasse) actionAffichageAttributs();
-        else if (src == afficherMethodesClasse ) actionAffichageMethodes ();
         else if (src == alignerClasse          ) actionAligner           ();
         else if (src == optimiserClasse        ) actionOptimiser         ();
         else if (src == aProposClasse          ) actionAPropos           ();
@@ -212,15 +200,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
         
     }
 
-    public void actionAffichageAttributs() 
-    { 
-        /* À implémenter */ 
-    }
-
-    public void actionAffichageMethodes()  
-    { 
-        /* À implémenter */ 
-    }
 
     public void actionAligner()    
     { 

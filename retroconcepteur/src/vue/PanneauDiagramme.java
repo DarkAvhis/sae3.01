@@ -45,7 +45,27 @@ public class PanneauDiagramme extends JPanel
         this.ajouterListenersInteraction();
     }
 
+<<<<<<< HEAD
     // --- LOGIQUE DE LA SOURIS (DÉPLACEMENT ET SÉLECTION) ---
+=======
+    public List<LiaisonVue> getLiaisonsVue() {
+        return liaisonsVue;
+    }
+
+    // NOUVEAU SETTER pour les liaisons
+    public void setLiaisonsVue(List<LiaisonVue> liaisonsVue) 
+    {
+        this.liaisonsVue = liaisonsVue;
+        this.repaint(); // Redessine après la mise à jour des liaisons
+    }
+    
+    // NOUVEAU SETTER pour les BlocsClasses (pour que le contrôleur mette à jour les blocs)
+    public void setBlocsClasses(List<BlocClasse> blocsVue) 
+    {
+        this.blocsClasses = blocsVue;
+    }
+
+>>>>>>> 1a75af4ce57beff2f58b25a2b33006f7002ea172
 
     private class GereSourisInteraction extends MouseAdapter 
     {
@@ -168,6 +188,11 @@ public class PanneauDiagramme extends JPanel
 
         for (LiaisonVue liaison : liaisonsVue)
         {
+<<<<<<< HEAD
+=======
+            // Trouver les BlocsClasse correspondants par nom
+            // Note: Optional est utilisé par le stream, mais la vérification isPresent() est faite après.
+>>>>>>> 1a75af4ce57beff2f58b25a2b33006f7002ea172
             Optional<BlocClasse> blocOrig = blocsClasses.stream()
                 .filter(b -> b.getNom().equals(liaison.getNomClasseOrig()))
                 .findFirst();
@@ -364,6 +389,7 @@ public class PanneauDiagramme extends JPanel
                 return bloc;
         }
         return null; 
+<<<<<<< HEAD
     }    
 
     // NOUVEAU SETTER pour les BlocsClasses (appelle le calcul de taille)
@@ -372,5 +398,9 @@ public class PanneauDiagramme extends JPanel
         this.blocsClasses = blocsVue;
         // Met à jour la taille du panneau pour le JScrollPane
         calculerTailleDynamique(); 
+=======
+>>>>>>> 1a75af4ce57beff2f58b25a2b33006f7002ea172
     }
+
+    
 }

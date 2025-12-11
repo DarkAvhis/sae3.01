@@ -26,7 +26,7 @@ public class FenetrePrincipale extends JFrame
 
 		this.panneauProjets   = new PanneauProjets(this, controleur);
 		this.panneauDiagramme = new PanneauDiagramme(controleur);  
-		this.barreMenus       = new BarreMenus(controleur, panneauProjets);
+		this.barreMenus       = new BarreMenus(controleur, panneauProjets);//
 
 		JScrollPane scrollDiagramme = new JScrollPane(this.panneauDiagramme);
 
@@ -36,7 +36,7 @@ public class FenetrePrincipale extends JFrame
 			JSplitPane.HORIZONTAL_SPLIT,
 			true,
 			this.panneauProjets,
-			scrollDiagramme
+			scrollDiagramme // <-- CORRECTION : Utilisation du JScrollPane
 		);
 		splitPane.setDividerLocation(250);
 		splitPane.setOneTouchExpandable(true);
