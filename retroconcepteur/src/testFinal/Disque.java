@@ -1,7 +1,7 @@
 // Fichier : testFinal/Disque.java
 package testFinal;
 
-public class Disque implements ISurface
+public class Disque  implements ISurface
 {
     // ------------------------------------------------
     // Attributs (variables d'instance)
