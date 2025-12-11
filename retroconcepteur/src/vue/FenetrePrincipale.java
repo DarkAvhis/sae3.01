@@ -30,8 +30,6 @@ public class FenetrePrincipale extends JFrame
 
 		JScrollPane scrollDiagramme = new JScrollPane(this.panneauDiagramme);
 
-		JScrollPane scrollDiagramme = new JScrollPane(this.panneauDiagramme);
-
 		this.setLayout(new BorderLayout());
 		
 		JSplitPane splitPane = new JSplitPane(

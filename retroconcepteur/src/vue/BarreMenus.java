@@ -28,8 +28,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
     private JMenuItem aProposClasse;
 
     private PanneauProjets panneauProjets;
-    private Controleur controleur;
-
+    
     private Controleur controleur;
 
     public BarreMenus(Controleur controleur, PanneauProjets panneauProjets) 

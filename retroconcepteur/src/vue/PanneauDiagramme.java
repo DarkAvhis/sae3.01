@@ -308,4 +308,10 @@ public class PanneauDiagramme extends JPanel
         }
         return null; 
     }    
+
+    public void setBlocsClasses(List<BlocClasse> blocsClasses) 
+    {
+        this.blocsClasses = blocsClasses;
+        this.repaint(); 
+    }
 }
