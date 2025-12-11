@@ -11,16 +11,18 @@ public class FenetrePrincipale extends JFrame
 	private PanneauProjets panneauProjets;
 	private PanneauDiagramme panneauDiagramme;
 
-	private BarreMenus barreMenus;//
+	private BarreMenus barreMenus;
 
 	// Mise à jour : le constructeur prend maintenant le contrôleur
 	public FenetrePrincipale(Controleur controleur) 
 	{
 		this.controleur = controleur;
 
+		Dimension tailleEcran = Toolkit.getDefaultToolkit().getScreenSize();
+
 		this.setTitle("Générateur de diagramme UML"); 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(1400, 800);
+		this.setSize(tailleEcran.width, tailleEcran.height);
 		this.setLocationRelativeTo(null);
 		this.setResizable(true);
 
