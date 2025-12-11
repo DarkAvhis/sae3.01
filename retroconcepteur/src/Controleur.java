@@ -17,64 +17,57 @@ import vue.LiaisonVue.TypeLiaison;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator; 
 import javax.swing.SwingUtilities;
 
 public class Controleur
 {
-    // Remplacement d'AnalyseurUML par le contrôleur de la couche Modèle pour une analyse complète
     private AnalyseIHMControleur metierComplet; 
     private FenetrePrincipale vuePrincipale;
 
-    private static final int ITERATIONS = 10; // Nombre d'itérations pour l'optimisation
-    private static final int W_NODE_SPACING = 50; // Espacement horizontal entre les nœuds
-    private static final int H_LAYER_SPACING = 150; // Espacement vertical entre les couches
+    // --- Constantes pour le Layout Hiérarchique ---
+    private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
+    private static final int W_NODE_SPACING  = 100; // Espacement horizontal minimum entre les blocs (votre demande)
+    private static final int Y_ANCHOR = 50; // Ancrage Y
+    private static final int X_ANCHOR = 50; // Ancrage X
+    private static final int ITERATIONS = 10; // Nombre d'itérations pour la minimisation des croisements
 
     public Controleur()
     {
-        this.metierComplet   = new AnalyseIHMControleur(); 
+        this.metierComplet   = new AnalyseIHMControleur();
         this.vuePrincipale = new FenetrePrincipale(this);
         this.vuePrincipale.setVisible(true);
-    }
-    
-   
+    }  
 
     public void analyserEtAfficherDiagramme(String cheminProjet)
     {
-        if (!this.metierComplet.analyserDossier(cheminProjet)) 
-        {
+        if (!this.metierComplet.analyserDossier(cheminProjet)) {
             return;
         }
 
-        // 1. Récupération des données du Modèle
         List<ClasseObjet> classes = this.metierComplet.getClasses();
         List<AssociationObjet> associations = this.metierComplet.getAssociations();
         List<HeritageObjet> heritages = this.metierComplet.getHeritages();
         List<InterfaceObjet> implementations = this.metierComplet.getImplementations(); 
 
-        // --- 2. Préparation des Liaisons de Vue (pour le calcul et le dessin) ---
         List<LiaisonVue> toutesLiaisonsVue = new ArrayList<>();
         toutesLiaisonsVue.addAll(convertirLiaisons(associations, TypeLiaison.ASSOCIATION_UNIDI)); 
         toutesLiaisonsVue.addAll(convertirLiaisons(heritages, TypeLiaison.HERITAGE));
         toutesLiaisonsVue.addAll(convertirLiaisons(implementations, TypeLiaison.IMPLEMENTATION));
 
-        // --- 3. Calcul des Positions Optimales ---
-        // On crée des blocs temporaires pour avoir les tailles exactes (largeur/hauteur)
         List<BlocClasse> blocsAvecTailles = new ArrayList<>();
         for (ClasseObjet c : classes) {
             List<String> attrVue = this.convertirAttributs(c.getattributs(), c);
             List<String> methVue = this.convertirMethodes(c.getMethodes(), c);
-            // x=0, y=0 sont arbitraires ici
             blocsAvecTailles.add(new BlocClasse(c.getNom(), 0, 0, attrVue, methVue)); 
         }
         
+        // --- Calcul des Positions Optimales (Hiérarchique) ---
         HashMap<String, Point> positionsOptimales = calculerPositionsOptimales(classes, toutesLiaisonsVue, blocsAvecTailles);
 
-
-        // --- 4. Construction des Blocs de Vue avec les Positions Calculées ---
         List<BlocClasse> blocsVue = new ArrayList<>();
         
         for (ClasseObjet c : classes)
@@ -84,7 +77,6 @@ public class Controleur
             List<String> attrVue = this.convertirAttributs(c.getattributs(), c);
             List<String> methVue = this.convertirMethodes(c.getMethodes(), c);
             
-            // Utilisation des positions calculées
             BlocClasse bloc = new BlocClasse(c.getNom(), pos.x, pos.y, attrVue, methVue);
             
             if (c.getNom().contains("Interface")) {
@@ -94,7 +86,6 @@ public class Controleur
             blocsVue.add(bloc);
         }
 
-        // 5. Affichage (envoi à la Vue)
         if (this.vuePrincipale != null)
         {
             this.vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocsVue);
@@ -105,112 +96,100 @@ public class Controleur
 
     /**
      * Calcule les positions optimales en utilisant un algorithme hiérarchique simplifié (Sugiyama-style).
-     * @return Une Map contenant le nom de la classe et sa position calculée.
      */
     private HashMap<String, Point> calculerPositionsOptimales(List<ClasseObjet> classes, List<LiaisonVue> liaisons, List<BlocClasse> blocsAvecTailles)
     {
         HashMap<String, BlocClasse> blocMap = new HashMap<>();
-        HashMap<String, ClasseObjet> classeMap = new HashMap<>();
         
         // Map de référence pour la taille et l'objet
-        for (BlocClasse bloc : blocsAvecTailles) 
-        {
+        for (BlocClasse bloc : blocsAvecTailles) {
              blocMap.put(bloc.getNom(), bloc);
         }
 
-        for (ClasseObjet classe : classes) 
-        {
-             classeMap.put(classe.getNom(), classe);
-        }
-
         // --- PHASE 1: ASSIGNATION DES COUCHES (Ranking) ---
-        // Déterminer la couche (Y-coord) de chaque classe
         HashMap<String, Integer> couches = assignerCouches(classes, liaisons);
 
         // Grouper les classes par couche
         HashMap<Integer, List<String>> classesParCouche = new HashMap<>();
-        for (ClasseObjet classe : classes) 
-        {
+        for (ClasseObjet classe : classes) {
             int couche = couches.get(classe.getNom());
             classesParCouche.computeIfAbsent(couche, k -> new ArrayList<>()).add(classe.getNom());
         }
 
         // --- PHASE 2: MINIMISATION DES CROISEMENTS (Ordering - Barycentre) ---
-        // Ordonner les nœuds dans chaque couche pour minimiser les croisements.
-        // On itère sur les couches du bas vers le haut pour une meilleure convergence.
         List<Integer> indexCouches = new ArrayList<>(classesParCouche.keySet());
         Collections.sort(indexCouches); 
 
-        for (int iter = 0; iter < ITERATIONS; iter++) 
-        {
-            // Alterner l'ordre des couches
-            for (int i = 0; i < indexCouches.size() - 1; i++)
-            {
+        for (int iter = 0; iter < ITERATIONS; iter++) {
+            for (int i = 0; i < indexCouches.size(); i++) {
                 int coucheCourante = indexCouches.get(i);
-                int coucheSuivante = indexCouches.get(i + 1);
                 
-                // Calculer les barycentres de la couche suivante
-                minimiserCroisements(coucheCourante, classesParCouche.get(coucheCourante), classesParCouche.get(coucheSuivante), liaisons, blocMap, true);
+                if (i + 1 < indexCouches.size()) { 
+                    int coucheSuivante = indexCouches.get(i + 1);
+                    minimiserCroisements(coucheCourante, classesParCouche.get(coucheCourante), classesParCouche.get(coucheSuivante), liaisons, blocMap, true);
+                }
                 
-                // Calculer les barycentres de la couche courante (en regardant la couche précédente)
-                minimiserCroisements(coucheSuivante, classesParCouche.get(coucheSuivante), classesParCouche.get(coucheCourante), liaisons, blocMap, false);
+                if (i > 0) { 
+                    int couchePrecedente = indexCouches.get(i - 1);
+                    minimiserCroisements(coucheCourante, classesParCouche.get(coucheCourante), classesParCouche.get(couchePrecedente), liaisons, blocMap, false);
+                }
             }
         }
 
 
         // --- PHASE 3: ASSIGNATION DES COORDONNÉES (Placement) ---
         HashMap<String, Point> positions = new HashMap<>();
-        int y_courant = 50; 
+        int y_courant = Y_ANCHOR; // ANCRE Y
         
-        for (int couche : indexCouches)
-        {
+        for (int couche : indexCouches) {
             List<String> nomsCouche = classesParCouche.get(couche);
             
-            // Calculer les positions X de manière séquentielle
-            int x_courant = 50;
-
-            for (String nom : nomsCouche) 
-            {
+            int x_courant = X_ANCHOR; // ANCRE X
+            int max_height_couche = 0;
+            
+            // Placer les nœuds
+            for (int i = 0; i < nomsCouche.size(); i++) {
+                String nom = nomsCouche.get(i);
                 BlocClasse bloc = blocMap.get(nom);
 
                 // Appliquer les coordonnées finales
-                positions.put(nom, new Point(x_courant + bloc.getLargeur() / 2, y_courant + bloc.getHauteur() / 2));
+                positions.put(nom, new Point(x_courant, y_courant));
                 
-                x_courant += bloc.getLargeur() + W_NODE_SPACING;
+                // Mettre à jour les compteurs
+                x_courant += bloc.getLargeur() + W_NODE_SPACING; // Espacement de 100px
+                max_height_couche = Math.max(max_height_couche, bloc.getHauteur());
+                
+                // ANCRAGE DE LA TOUTE PREMIÈRE CLASSE EN (50, 50)
+                if (couche == indexCouches.get(0) && i == 0) {
+                     positions.put(nom, new Point(X_ANCHOR, Y_ANCHOR));
+                }
             }
-            y_courant += H_LAYER_SPACING; // Espacement entre couches
+            
+            // Passer à la couche suivante : Y_courant + hauteur max de cette couche + espacement
+            y_courant += max_height_couche + H_LAYER_SPACING;
         }
         
         return positions;
     }
     
-    // Helper 1: Détermine la couche Y de chaque classe (très simplifié)
-    private HashMap<String, Integer> assignerCouches(List<ClasseObjet> classes, List<LiaisonVue> liaisons) 
-    {
+    // Helper 1: Détermine la couche Y de chaque classe (ranking)
+    private HashMap<String, Integer> assignerCouches(List<ClasseObjet> classes, List<LiaisonVue> liaisons) {
         HashMap<String, Integer> couches = new HashMap<>();
-        // Initialiser toutes les couches à 0
         classes.forEach(c -> couches.put(c.getNom(), 0));
 
-        // Répéter l'affectation jusqu'à ce qu'il n'y ait plus de changement
         boolean changed = true;
-        while (changed) 
-        {
+        while (changed) {
             changed = false;
-            for (LiaisonVue liaison : liaisons) 
-            {
-                // Seulement les relations dirigées (Héritage, Implémentation) sont critiques pour le layering
-                if (liaison.getType() == TypeLiaison.HERITAGE || liaison.getType() == TypeLiaison.IMPLEMENTATION) 
-                {
+            for (LiaisonVue liaison : liaisons) {
+                if (liaison.getType() == TypeLiaison.HERITAGE || liaison.getType() == TypeLiaison.IMPLEMENTATION) {
                     
-                    String parent = liaison.getNomClasseDest(); // Parent/Interface (Doit être dans une couche supérieure/plus petite valeur)
-                    String enfant = liaison.getNomClasseOrig(); // Enfant/Concrète (Doit être dans une couche inférieure/plus grande valeur)
+                    String parent = liaison.getNomClasseDest(); 
+                    String enfant = liaison.getNomClasseOrig(); 
                     
                     int coucheParent = couches.getOrDefault(parent, 0);
                     int coucheEnfant = couches.getOrDefault(enfant, 0);
 
-                    if (coucheEnfant <= coucheParent) 
-                    {
-                        // L'enfant doit être dans une couche strictement inférieure/plus grande
+                    if (coucheEnfant <= coucheParent) {
                         couches.put(enfant, coucheParent + 1);
                         changed = true;
                     }
@@ -220,10 +199,9 @@ public class Controleur
         return couches;
     }
     
-    // Helper 2: Minimise les croisements en utilisant l'heuristique du Barycentre
+    // Helper 2: Minimise les croisements (barycentre)
     private void minimiserCroisements(int coucheCouranteIndex, List<String> nomsCoucheCourante, List<String> nomsCoucheFixe, List<LiaisonVue> liaisons, HashMap<String, BlocClasse> blocMap, boolean forward) 
     {
-        // 1. Calculer le barycentre de chaque nœud de la couche courante
         HashMap<String, Double> barycentres = new HashMap<>();
 
         for (String nomCourant : nomsCoucheCourante) {
@@ -232,15 +210,15 @@ public class Controleur
 
             for (LiaisonVue liaison : liaisons) {
                 String nomVoisin = null;
-                // Identifier la direction et le voisin dans la couche fixe
+                
                 if (forward && liaison.getNomClasseOrig().equals(nomCourant) && nomsCoucheFixe.contains(liaison.getNomClasseDest())) {
                     nomVoisin = liaison.getNomClasseDest();
-                } else if (!forward && liaison.getNomClasseDest().equals(nomCourant) && nomsCoucheFixe.contains(liaison.getNomClasseOrig())) {
+                } 
+                else if (!forward && liaison.getNomClasseDest().equals(nomCourant) && nomsCoucheFixe.contains(liaison.getNomClasseOrig())) {
                     nomVoisin = liaison.getNomClasseOrig();
                 }
                 
                 if (nomVoisin != null) {
-                    // Trouver la position X (indice) du voisin dans la couche fixe
                     int indexVoisin = nomsCoucheFixe.indexOf(nomVoisin);
                     positionFixeTotale += indexVoisin;
                     voisins++;
@@ -250,15 +228,14 @@ public class Controleur
             if (voisins > 0) {
                 barycentres.put(nomCourant, positionFixeTotale / voisins);
             } else {
-                // Nœud sans voisin dans la couche fixe : laisser sa position X actuelle (indice)
                 barycentres.put(nomCourant, (double) nomsCoucheCourante.indexOf(nomCourant));
             }
         }
 
-        // 2. Trier la couche courante en fonction des barycentres
         Collections.sort(nomsCoucheCourante, Comparator.comparingDouble(barycentres::get));
     }
-
+    
+    // ... (Reste des méthodes auxiliaires et main inchangés) ...
 
     public void sauvegarde() 
     {
@@ -270,7 +247,6 @@ public class Controleur
     public void supprimerClasseSelectionnee()
     {
         if (this.vuePrincipale == null) return;
-
         BlocClasse bloc = this.vuePrincipale.getPanneauDiagramme().getBlocsClasseSelectionnee();
         // ... (Logique de suppression inchangée) ...
     }

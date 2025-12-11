@@ -23,7 +23,7 @@ public class HeritageObjet extends LiaisonObjet
      */
     public String toString() 
     {
-        return classeFille.getNom() + " hérite de " + classeMere.getNom();
+        return String.format("%-10s", classeFille.getNom()) + " hérite de " + classeMere.getNom();
     }
      
 }

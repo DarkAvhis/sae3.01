@@ -67,7 +67,7 @@ public class InterfaceObjet extends LiaisonObjet
             }
         }
 
-        return nomFille + " implémente " + sRet;
+        return String.format("%-10s", nomFille) + " implémente " + sRet;
     }
      
 }

@@ -235,7 +235,7 @@ public class AnalyseIHMControleur
             System.out.println("\n=== HÉRITAGE (ETAPE 4) ===");
 			for (HeritageObjet heri : controleur.getHeritages())
             {
-                System.out.println(heri);
+                System.out.println(heri.toString());
             }
 
             System.out.println("\n=== IMPLÉMENTATION (ETAPE 4) ===");
