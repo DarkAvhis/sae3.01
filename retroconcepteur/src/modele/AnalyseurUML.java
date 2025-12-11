@@ -10,6 +10,7 @@ import java.util.Scanner;
 /**
  * Classe utilitaire responsable de l'analyse syntaxique (parsing) manuelle des fichiers Java.
  * Version modifiée : n'utilise plus String.split(...) — parsing manuel à la place.
+ * Les helper builders ont été remplacés par des concaténations (+=) comme demandé.
  */
 public class AnalyseurUML
 {
@@ -117,7 +118,7 @@ public class AnalyseurUML
                             if (estInterface || estRecord) {
                                 int idxDebut = ligneBrute.indexOf(motCle) + motCle.length();
                                 String suite = ligneBrute.substring(idxDebut).trim();
-                                String nom = readIdentifier(suite);
+                                String nom = lireNom(suite);
                                 if (!nom.isEmpty()) nomEntite = nom;
                             }
                             break;
@@ -131,7 +132,7 @@ public class AnalyseurUML
                         int idxExtends = ligneBrute.indexOf("extends") + 7;
                         String suite = ligneBrute.substring(idxExtends).trim();
                         // Lire le premier identifiant utile (manuellement)
-                        String possibleParent = readIdentifier(suite);
+                        String possibleParent = lireNom(suite);
                         if (!possibleParent.isEmpty()) nomParent = possibleParent;
                     }
 
@@ -160,7 +161,7 @@ public class AnalyseurUML
                             if (!interBrute.isEmpty())
                             {
                                 // Nettoyage des génériques (<) et espaces
-                                int idxSpace = indexOfWhitespace(interBrute);
+                                int idxSpace = indexEspace(interBrute);
                                 int idxChevron = interBrute.indexOf('<');
                                 int idxFinNom = interBrute.length();
 
@@ -187,19 +188,18 @@ public class AnalyseurUML
                             String args = ligneBrute.substring(ligneBrute.indexOf('(') + 1, ligneBrute.lastIndexOf(')'));
                             args = args.trim();
                             if (!args.isEmpty()) {
-                                List<String> params = splitTopLevelCommas(args);
+                                List<String> params = decoupage(args);
                                 for (String p : params) {
                                     String trimmed = p.trim();
-                                    List<String> tokens = tokenizeWhitespace(trimmed);
+                                    List<String> tokens = separerMots(trimmed);
                                     if (tokens.size() >= 2) {
                                         // type peut être composé (ex: List<String>), on prend tout sauf le dernier token
                                         String nom = tokens.get(tokens.size() - 1);
-                                        StringBuilder typeBuilder = new StringBuilder();
+                                        String type = "";
                                         for (int i = 0; i < tokens.size() - 1; i++) {
-                                            if (i > 0) typeBuilder.append(' ');
-                                            typeBuilder.append(tokens.get(i));
+                                            if (i > 0) type += ' ';
+                                            type += tokens.get(i);
                                         }
-                                        String type = typeBuilder.toString();
 
                                         attributs.add(new AttributObjet(nom, "instance", type, "private", false, true));
                                         HashMap<String, String> emptyParams = new HashMap<>();
@@ -244,7 +244,7 @@ public class AnalyseurUML
                         {
                             extraireAttribut(ligneBrute, estStatique, estFinal, attributs); 
                         }
-                        // Détection Méthode : contient '('
+                        // Détection Méthode : contient '(''
                         else if (aVisibilite && ligneBrute.contains("(") && !ligneBrute.contains("class "))
                         {
                             extraireMethode(ligneBrute, estStatique, nomEntite, methodes);
@@ -292,12 +292,12 @@ public class AnalyseurUML
             ligne = ligne.replace(";", "").trim();
         }
 
-        List<String> parts = tokenizeWhitespace(ligne);
+        List<String> parts = separerMots(ligne);
         
         // 2. Filtrer les mots-clés pour ne garder que Type et Nom
         List<String> motsUtiles = new ArrayList<>();
         for (String p : parts) {
-            if (!isKeywordModifier(p)) {
+            if (!aModifierMotCle(p)) {
                 motsUtiles.add(p);
             }
         }
@@ -307,7 +307,7 @@ public class AnalyseurUML
             String nom = motsUtiles.get(motsUtiles.size() - 1); 
             
             String visibilite = parts.size() > 0 ? parts.get(0) : ""; 
-            if (!isVisibility(visibilite)) {
+            if (!aVisibilite(visibilite)) {
                  visibilite = "public"; // Cas des constantes d'interface ou visibilité omise
             }
 
@@ -328,7 +328,7 @@ public class AnalyseurUML
         if (idxParenthOuvrante == -1 || idxParenthFermante == -1) return;
 
         String signature = ligne.substring(0, idxParenthOuvrante).trim();
-        List<String> parts = tokenizeWhitespace(signature);
+        List<String> parts = separerMots(signature);
         
         if (parts.isEmpty()) return;
 
@@ -341,7 +341,7 @@ public class AnalyseurUML
         } else { 
             List<String> motsUtiles = new ArrayList<>();
             for (String p : parts) {
-                if (!isMethodModifier(p)) {
+                if (!aMethodeModif(p)) {
                     motsUtiles.add(p);
                 }
             }
@@ -355,12 +355,12 @@ public class AnalyseurUML
         HashMap<String, String> params = new HashMap<>();
         
         if (!paramsStr.isEmpty()) {
-            List<String> paramList = splitTopLevelCommas(paramsStr);
+            List<String> paramList = decoupage(paramsStr);
 
             for (String param : paramList) {
                 String p = param.trim();
                 if (!p.isEmpty()) {
-                    int spaceIndex = lastIndexOfWhitespace(p);
+                    int spaceIndex = dernierIndexEspace(p);
                     if (spaceIndex > 0) {
                         String pType = p.substring(0, spaceIndex).trim();
                         String pNom = p.substring(spaceIndex + 1).trim();
@@ -373,7 +373,7 @@ public class AnalyseurUML
         methodes.add(new MethodeObjet(nomMethode, params, typeRetour, visibilite, estStatique));
     }
 
-    // --- Les méthodes detecterAssociations et ClassesDuDossier sont inchangées mais utilisent maintenant tokenizeWhitespace si besoin ---
+    // --- Les méthodes detecterAssociations et ClassesDuDossier sont inchangées mais utilisent maintenant separerMots si besoin ---
     
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses)
     {
@@ -433,88 +433,89 @@ public class AnalyseurUML
         return fichiersJava;
     }
 
-    // -------------------- Helpers: parsing sans split --------------------
+    // -------------------- Methodes d'aide pour le parsing sans split vu que on a pas compris quand l'utiliser ou pas --------------------
 
-    private List<String> tokenizeWhitespace(String s) {
+    private List<String> separerMots(String s) {
         List<String> tokens = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
+        String token = "";
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (Character.isWhitespace(c)) {
-                if (sb.length() > 0) {
-                    tokens.add(sb.toString());
-                    sb.setLength(0);
+                if (!token.isEmpty()) {
+                    tokens.add(token);
+                    token = "";
                 }
             } else {
-                sb.append(c);
+                token += c; 
             }
         }
-        if (sb.length() > 0) tokens.add(sb.toString());
+        if (!token.isEmpty()) tokens.add(token);
         return tokens;
     }
 
-    private int indexOfWhitespace(String s) {
+    private int indexEspace(String s) {
         for (int i = 0; i < s.length(); i++) if (Character.isWhitespace(s.charAt(i))) return i;
         return -1;
     }
 
-    private int lastIndexOfWhitespace(String s) {
+    private int dernierIndexEspace(String s) {
         for (int i = s.length() - 1; i >= 0; i--) if (Character.isWhitespace(s.charAt(i))) return i;
         return -1;
     }
 
-    private boolean isKeywordModifier(String s) {
+    private boolean aModifierMotCle(String s) {
         return s.equals("public") || s.equals("private") || s.equals("protected")
                 || s.equals("static") || s.equals("final") || s.equals("transient") || s.equals("volatile");
     }
 
-    private boolean isMethodModifier(String s) {
+    private boolean aMethodeModif(String s) {
         return s.equals("public") || s.equals("private") || s.equals("protected")
                 || s.equals("static") || s.equals("final") || s.equals("abstract") || s.equals("synchronized") || s.equals("default");
     }
 
-    private boolean isVisibility(String s) {
+    private boolean aVisibilite(String s) {
         return s.equals("public") || s.equals("private") || s.equals("protected");
     }
 
     /**
      * Lit le premier identifiant utile dans la chaîne (arrêt sur espace, '{', '<', ',', '(' ).
      */
-    private String readIdentifier(String s) {
+    private String lireNom(String s) {
         s = s.trim();
         if (s.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
+        String id = "";
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (Character.isWhitespace(c) || c == '{' || c == '<' || c == ',' || c == '(') break;
-            sb.append(c);
+            id += c; // concaténation volontaire
         }
-        return sb.toString();
+        return id;
     }
 
     /**
      * Split par virgules au niveau "top-level" en ignorant les virgules à l'intérieur de < >.
+     * Construit les fragments via concaténation (+=) au lieu de StringBuilder.
      */
-    private List<String> splitTopLevelCommas(String s) {
+    private List<String> decoupage(String s) {
         List<String> parts = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
+        String part = "";
         int depthAngle = 0;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == '<') {
                 depthAngle++;
-                sb.append(c);
+                part += c;
             } else if (c == '>') {
                 if (depthAngle > 0) depthAngle--;
-                sb.append(c);
+                part += c;
             } else if (c == ',' && depthAngle == 0) {
-                parts.add(sb.toString());
-                sb.setLength(0);
+                parts.add(part);
+                part = "";
             } else {
-                sb.append(c);
+                part += c;
             }
         }
-        if (sb.length() > 0) parts.add(sb.toString());
+        if (!part.isEmpty()) parts.add(part);
         return parts;
     }
 }
