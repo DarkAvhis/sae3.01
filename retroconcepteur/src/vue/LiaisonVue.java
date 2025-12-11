@@ -13,17 +13,25 @@ public class LiaisonVue
     private String nomClasseDest; // Pour trouver le BlocClasse d'arrivée
     private TypeLiaison type;
     
-    // Vous pouvez ajouter d'autres informations ici si besoin (multiplicités, nom d'attribut)
+    // NOUVEAUX CHAMPS pour les multiplicités
+    private String multipliciteOrig; 
+    private String multipliciteDest;
 
-    public LiaisonVue(String nomClasseOrig, String nomClasseDest, TypeLiaison type) 
+    public LiaisonVue(String nomClasseOrig, String nomClasseDest, TypeLiaison type, String multOrig, String multDest) 
     {
         this.nomClasseOrig = nomClasseOrig;
         this.nomClasseDest = nomClasseDest;
         this.type = type;
+        this.multipliciteOrig = (multOrig != null) ? multOrig : "";
+        this.multipliciteDest = (multDest != null) ? multDest : "";
     }
 
     // Getters
     public String getNomClasseOrig() { return nomClasseOrig; }
     public String getNomClasseDest() { return nomClasseDest; }
     public TypeLiaison getType()     { return type;          }
-} 
+    
+    // NOUVEAUX GETTERS
+    public String getMultipliciteOrig() { return multipliciteOrig; }
+    public String getMultipliciteDest() { return multipliciteDest; }
+}
