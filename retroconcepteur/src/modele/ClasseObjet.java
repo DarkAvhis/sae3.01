@@ -160,12 +160,19 @@ public class ClasseObjet
 	 *
 	 * @return chaîne formatée représentant la classe (attributs + méthodes)
 	 */
-	@Override
-	public String toString() 
+// Dans modele/ClasseObjet.java (méthode toString)
+
+// ...
+
+public String toString() 
 	{
+		// Codes ANSI
+		final String ANSI_SOUSTITRE = "\u001B[4m";
+		final String ANSI_RESET     = "\u001B[0m";
+		
 		String sRet = "";
 
-		
+		// Affichage du Stéréotype et du Nom (<<interface>>, <<record>>, etc.)
 		if ( !this.specifique.equals("") ) 
 		{
 			sRet += "-------------------------------------------------------------------------------------------\n";
@@ -180,30 +187,56 @@ public class ClasseObjet
 			sRet += "-------------------------------------------------------------------------------------------\n";
 		}
 
+		// --- AFFICHAGE DES ATTRIBUTS ---
 		for (AttributObjet att : attributs) 
 		{
-			String staticFlag = att.estStatique() ? " {static}" : "";
+			String finalFlag  = att.estFinale()   ? " {gelé}" : "";
+            
+            // 1. Appliquer le formatage au nom SANS les codes ANSI
+            String nomBaseFormatte = String.format("%-15s" , att.getNom() ); 
+
+            // 2. Ajouter le soulignement ANSI SI c'est statique (UML)
+            String nomFormatte;
+            if (att.estStatique()) {
+                nomFormatte = String.format("%-10s",ANSI_SOUSTITRE + nomBaseFormatte + ANSI_RESET);
+            } else {
+                nomFormatte = nomBaseFormatte;
+            }
+            
 			sRet +=  String.format( "%-2c" , changementVisibilite(att.getVisibilite()) )   + 
-					String.format("%-15s" , att.getNom() )  + 
+					 nomFormatte  + 
 					String.format("%-15s" , retourType( att.getType() ))  + 
-					String.format("%-10s" , staticFlag ) + "\n" ; 
+					String.format("%-10s" , finalFlag) + "\n" ; 
 		}
 
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
+		// --- AFFICHAGE DES METHODES ---
 		for (MethodeObjet met : methodes)
 		{
-			String staticFlag = met.estStatique() ? "{static} " : "";
+            // Application du soulignement aux méthodes statiques
+            String nomMethodeBrut = met.getNom();
+            String methodeBaseFormatte = String.format("%-25s", nomMethodeBrut);
 
-			sRet += String.format("%-2c", changementVisibilite(met.getVisibilite())) + staticFlag +
-					String.format("%-25s", met.getNom()) + 
+            String nomMethodeFormatte;
+            if (met.estStatique()) {
+                nomMethodeFormatte = ANSI_SOUSTITRE + methodeBaseFormatte + ANSI_RESET;
+            } else {
+                nomMethodeFormatte = methodeBaseFormatte;
+            }
+            
+            String visibiliteUML = String.format("%-2c", changementVisibilite(met.getVisibilite()));
+            
+			sRet += visibiliteUML + 
+					nomMethodeFormatte + 
 					String.format("%-35s", affichageParametre(met.getParametres())) + 
 					String.format("%-15s", retourType(met.getRetourType())) + "\n"; 
 		}
 
 		sRet += "-------------------------------------------------------------------------------------------\n";
-	
-
 		return sRet;
 	}
+// ...
+
+
 }

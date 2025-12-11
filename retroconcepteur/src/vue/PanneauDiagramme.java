@@ -138,7 +138,7 @@ public class PanneauDiagramme extends JPanel
         for (LiaisonVue liaison : liaisonsVue)
         {
             // Trouver les BlocsClasse correspondants par nom
-            
+
             Optional<BlocClasse> blocOrig = blocsClasses.stream()
                 .filter(b -> b.getNom().equals(liaison.getNomClasseOrig()))
                 .findFirst();
@@ -297,11 +297,6 @@ public class PanneauDiagramme extends JPanel
         this.repaint(); 
     }
 
-    public void setBlocsClasses(List<BlocClasse> blocsVue) 
-    {
-        this.blocsClasses = blocsVue;
-    }
-
     public List<BlocClasse> getBlocsClasses() {    return blocsClasses;   }
 
     public BlocClasse getBlocsClasseSelectionnee()
@@ -312,5 +307,5 @@ public class PanneauDiagramme extends JPanel
                 return bloc;
         }
         return null; 
-    }
+    }    
 }
