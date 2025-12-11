@@ -13,11 +13,12 @@ import java.util.List;
  */
 public class AnalyseIHMControleur
 {
-    private List<ClasseObjet> classes;
-    private HashMap<String, ClasseObjet> mapClasses;
+    private List<ClasseObjet>      classes;
     private List<AssociationObjet> associations;
-    private List<HeritageObjet> heritages;
-    private List<InterfaceObjet> implementations;
+    private List<HeritageObjet>    heritages;
+    private List<InterfaceObjet>   implementations;
+    private HashMap<String, ClasseObjet> mapClasses;
+
     private AnalyseurUML analyseur;
     
     public AnalyseIHMControleur()
@@ -27,8 +28,8 @@ public class AnalyseIHMControleur
         this.heritages       = new ArrayList<>();
         this.implementations = new ArrayList<>();
 
-        this.mapClasses = new HashMap<>();
-        this.analyseur = new AnalyseurUML();
+        this.mapClasses      = new HashMap<>();
+        this.analyseur       = new AnalyseurUML();
     }
 
     /**
@@ -46,13 +47,7 @@ public class AnalyseIHMControleur
         }
 
         // Réinitialiser les données en cas d'appels multiples
-        this.classes.clear();
-        this.mapClasses.clear();
-        this.associations.clear();
-        this.heritages.clear();
-        this.implementations.clear();
-        this.analyseur.resetRelations(); // Réinitialise l'intention d'héritage
-
+        this.reinitialiser();
         List<File> fichiersJava = analyseur.ClassesDuDossier(cheminDossier);
         
         // 1. Analyse de tous les fichiers et construction du modèle
@@ -75,6 +70,7 @@ public class AnalyseIHMControleur
 
         return true;
     }
+
     
     /**
      * Convertit la liste des noms de classes (intentions) en objets HeritageObjet réels 
@@ -129,7 +125,7 @@ public class AnalyseIHMControleur
         for (String[] intention : analyseur.getInterfaces())
         {
             String nomClasseConcrète = intention[0];
-            String nomInterface = intention[1];
+            String nomInterface      = intention[1];
             
             // Résolution dans la map
             if (mapClasses.containsKey(nomClasseConcrète) && mapClasses.containsKey(nomInterface))
@@ -157,6 +153,17 @@ public class AnalyseIHMControleur
     {
         if( classe == null ) return ; 
         this.classes.remove(classe) ; 
+    }
+
+
+    public void reinitialiser()
+    {
+        this.classes.clear();
+        this.mapClasses.clear();
+        this.associations.clear();
+        this.heritages.clear();
+        this.implementations.clear();
+        this.analyseur.resetRelations();
     }
 
 // ...

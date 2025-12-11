@@ -45,7 +45,7 @@ public class LiaisonObjet
     public LiaisonObjet(String nomAttribut, ClasseObjet classeFille) 
 	{
 		this.nomAttribut = nomAttribut ;
-		this.classeFille  = classeFille  ;
+		this.classeFille = classeFille  ;
 		num              = ++nbLiaisons;
 	}
 

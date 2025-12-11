@@ -17,7 +17,7 @@ public class AnalyseurUML
     
     // Listes pour stocker les relations en attente de résolution
     private ArrayList<String[]> lstIntentionHeritage = new ArrayList<>();
-    private ArrayList<String[]> lstInterfaces = new ArrayList<>();
+    private ArrayList<String[]> lstInterfaces        = new ArrayList<>();
 
     /**
      * Réinitialise les listes de relations stockées.
@@ -48,7 +48,7 @@ public class AnalyseurUML
         
         // Listes finales
         ArrayList<AttributObjet> attributs = new ArrayList<>();
-        ArrayList<MethodeObjet> methodes = new ArrayList<>();
+        ArrayList<MethodeObjet>  methodes  = new ArrayList<>();
         
         // États de l'analyse
         String nomEntite  = nomFichier;
@@ -61,7 +61,7 @@ public class AnalyseurUML
         
         // Relations
         boolean estHeritier = false;
-        String nomParent = null;
+        String nomParent    = null;
         ArrayList<String> interfacesDetectees = new ArrayList<>();
         
         String[] tabSpecifique = { "abstract class", "interface", "enum", "record" };
@@ -138,10 +138,10 @@ public class AnalyseurUML
                 if (!enTeteTrouve)
                 {
                     boolean contientMotCle = false;
-                    if (ligneBrute.matches(".*\\bclass\\b.*")
-                        || ligneBrute.matches(".*\\binterface\\b.*")
-                        || ligneBrute.matches(".*\\brecord\\b.*")
-                        || ligneBrute.matches(".*\\benum\\b.*"))
+                    if (ligneBrute.matches(".*\\bclass\\b.*"    ) ||
+                        ligneBrute.matches(".*\\binterface\\b.*") ||
+                        ligneBrute.matches(".*\\brecord\\b.*"   ) ||
+                        ligneBrute.matches(".*\\benum\\b.*"     ))
                     {
                         contientMotCle = true;
                     }
@@ -171,6 +171,7 @@ public class AnalyseurUML
                                     int idxDebut = ligneBrute.indexOf(motCle) + motCle.length();
                                     String suite = ligneBrute.substring(idxDebut).trim();
                                     String[] tokens = suite.split("[\\s<{]+");
+
                                     if (tokens.length > 0 && !tokens[0].isEmpty())
                                     {
                                         nomEntite = tokens[0];
@@ -183,7 +184,7 @@ public class AnalyseurUML
                         // Détection Héritage (extends)
                         if (ligneBrute.contains("extends"))
                         {
-                            estHeritier = true;
+                            estHeritier    = true;
                             int idxExtends = ligneBrute.indexOf("extends") + 7;
                             String suite = ligneBrute.substring(idxExtends).trim();
                             String[] tokens = suite.split("[\\s\\{]+|implements");
@@ -252,10 +253,10 @@ public class AnalyseurUML
                 if (enTeteTrouve)
                 {
                     boolean estStatique = ligneBrute.contains("static");
-                    boolean estFinal = ligneBrute.contains("final");
-                    boolean aVisibilite = (ligneBrute.startsWith("public")
-                                           || ligneBrute.startsWith("private")
-                                           || ligneBrute.startsWith("protected"));
+                    boolean estFinal    = ligneBrute.contains("final");
+                    boolean aVisibilite = (ligneBrute.startsWith("public"   ) ||
+                                           ligneBrute.startsWith("private"  ) ||
+                                           ligneBrute.startsWith("protected"));
                     
                     // Interface
                     if (estInterface)
@@ -334,7 +335,7 @@ public class AnalyseurUML
         if (motsUtiles.size() >= 2)
         {
             String type = motsUtiles.get(motsUtiles.size() - 2);
-            String nom = motsUtiles.get(motsUtiles.size() - 1);
+            String nom  = motsUtiles.get(motsUtiles.size() - 1);
             String visibilite = parts[0];
 
             attributs.add(new AttributObjet(nom, estStatique ? "static" : "instance", type, visibilite, estStatique, estFinal));
@@ -416,9 +417,11 @@ public class AnalyseurUML
             for (AttributObjet attribut : classeOrigine.getattributs())
             {
                 String typeAttribut = attribut.getType();
-                String typeCible = typeAttribut;
-                MultipliciteObjet multCible = new MultipliciteObjet(1, 1);
+                String typeCible    = typeAttribut;
+
+                MultipliciteObjet multCible   = new MultipliciteObjet(1, 1);
                 MultipliciteObjet multOrigine = new MultipliciteObjet(1, 1);
+
                 boolean estCollection = false;
                 
                 if (typeAttribut.contains("<") && typeAttribut.contains(">"))
@@ -440,14 +443,7 @@ public class AnalyseurUML
                 if (mapClasses.containsKey(typeCible) && !typeCible.equals(classeOrigine.getNom()))
                 {
                     ClasseObjet classeCible = mapClasses.get(typeCible);
-                    AssociationObjet association = new AssociationObjet(
-                        classeCible,
-                        classeOrigine,
-                        multCible,
-                        multOrigine,
-                        attribut.getNom(),
-                        true
-                    );
+                    AssociationObjet association = new AssociationObjet(classeCible, classeOrigine, multCible, multOrigine, attribut.getNom(),true);
                     associations.add(association);
                 }
             }
