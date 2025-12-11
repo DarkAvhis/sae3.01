@@ -28,14 +28,11 @@ public class Controleur
     // Remplacement d'AnalyseurUML par le contrôleur de la couche Modèle pour une analyse complète
     private AnalyseIHMControleur metierComplet; 
     private FenetrePrincipale vuePrincipale;
-<<<<<<< HEAD
 
     private static final int ITERATIONS = 10; // Nombre d'itérations pour l'optimisation
     private static final int W_NODE_SPACING = 50; // Espacement horizontal entre les nœuds
     private static final int H_LAYER_SPACING = 150; // Espacement vertical entre les couches
 
-=======
->>>>>>> 1a75af4ce57beff2f58b25a2b33006f7002ea172
     public Controleur()
     {
         this.metierComplet   = new AnalyseIHMControleur(); 
