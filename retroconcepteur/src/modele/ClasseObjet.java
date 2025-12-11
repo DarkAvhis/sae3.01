@@ -1,7 +1,9 @@
 package modele;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -164,11 +166,27 @@ public class ClasseObjet
 
 // ...
 
-public String toString() 
+	/*-------------------------------------- */
+/* toString                              */
+/*-------------------------------------- */
+
+/**
+ * Génère une représentation textuelle de la classe sous forme UML.
+ *
+ * @return chaîne formatée représentant la classe (attributs + méthodes)
+ */
+	public String toString() 
 	{
 		// Codes ANSI
 		final String ANSI_SOUSTITRE = "\u001B[4m";
 		final String ANSI_RESET     = "\u001B[0m";
+		
+		// NOUVEAUTÉ : Liste des types de référence standards à NE PAS masquer
+		// Ces types sont considérés comme des types de base (primitifs) en UML même s'ils commencent par une majuscule.
+		final List<String> typesNonAssociation = Arrays.asList(
+			"String", "Integer", "Double", "Boolean", "Character", "Long", "Float", "Short", "Byte"
+		);
+		// ---------------------------------------------------------------------
 		
 		String sRet = "";
 
@@ -190,21 +208,41 @@ public String toString()
 		// --- AFFICHAGE DES ATTRIBUTS ---
 		for (AttributObjet att : attributs) 
 		{
-			String finalFlag  = att.estFinale()   ? " {gelé}" : "";
-            
-            // 1. Appliquer le formatage au nom SANS les codes ANSI
-            String nomBaseFormatte = String.format("%-15s" , att.getNom() ); 
+			String typeAttribut = att.getType().trim();
 
-            // 2. Ajouter le soulignement ANSI SI c'est statique (UML)
-            String nomFormatte;
-            if (att.estStatique()) {
-                nomFormatte = String.format("%-10s",ANSI_SOUSTITRE + nomBaseFormatte + ANSI_RESET);
-            } else {
-                nomFormatte = nomBaseFormatte;
-            }
-            
+			// LOGIQUE DE MASQUAGE AFFINÉE (pour masquer les attributs d'association comme 'centre: Point')
+			
+			// 1. Vérifier si le type commence par une Majuscule (potentiellement une classe utilisateur)
+			boolean commenceParMaj = !typeAttribut.isEmpty() && Character.isUpperCase(typeAttribut.charAt(0));
+			
+			// 2. Définir si c'est un attribut d'association (à masquer)
+			boolean estAssociation = commenceParMaj && 
+									!typeAttribut.contains("<") &&         // Pas une List<>
+									!typeAttribut.endsWith("[]") &&        // Pas un Tableau
+									!typesNonAssociation.contains(typeAttribut); // Pas un type standard (String)
+			
+			if (estAssociation) 
+			{
+				// Si c'est un attribut d'association, on le masque dans l'affichage UML de la classe.
+				continue; 
+			}
+			// FIN LOGIQUE DE MASQUAGE AFFINÉE
+			
+			String finalFlag  = att.estFinale()   ? " {gelé}" : "";
+			
+			// 1. Appliquer le formatage au nom SANS les codes ANSI
+			String nomBaseFormatte = String.format("%-15s" , att.getNom() ); 
+
+			// 2. Ajouter le soulignement ANSI SI c'est statique (UML)
+			String nomFormatte;
+			if (att.estStatique()) {
+				nomFormatte = String.format("%-10s",ANSI_SOUSTITRE + nomBaseFormatte + ANSI_RESET);
+			} else {
+				nomFormatte = nomBaseFormatte;
+			}
+			
 			sRet +=  String.format( "%-2c" , changementVisibilite(att.getVisibilite()) )   + 
-					 nomFormatte  + 
+					nomFormatte  + 
 					String.format("%-15s" , retourType( att.getType() ))  + 
 					String.format("%-10s" , finalFlag) + "\n" ; 
 		}
@@ -214,19 +252,19 @@ public String toString()
 		// --- AFFICHAGE DES METHODES ---
 		for (MethodeObjet met : methodes)
 		{
-            // Application du soulignement aux méthodes statiques
-            String nomMethodeBrut = met.getNom();
-            String methodeBaseFormatte = String.format("%-25s", nomMethodeBrut);
+			// Application du soulignement aux méthodes statiques
+			String nomMethodeBrut = met.getNom();
+			String methodeBaseFormatte = String.format("%-25s", nomMethodeBrut);
 
-            String nomMethodeFormatte;
-            if (met.estStatique()) {
-                nomMethodeFormatte = ANSI_SOUSTITRE + methodeBaseFormatte + ANSI_RESET;
-            } else {
-                nomMethodeFormatte = methodeBaseFormatte;
-            }
-            
-            String visibiliteUML = String.format("%-2c", changementVisibilite(met.getVisibilite()));
-            
+			String nomMethodeFormatte;
+			if (met.estStatique()) {
+				nomMethodeFormatte = ANSI_SOUSTITRE + methodeBaseFormatte + ANSI_RESET;
+			} else {
+				nomMethodeFormatte = methodeBaseFormatte;
+			}
+			
+			String visibiliteUML = String.format("%-2c", changementVisibilite(met.getVisibilite()));
+			
 			sRet += visibiliteUML + 
 					nomMethodeFormatte + 
 					String.format("%-35s", affichageParametre(met.getParametres())) + 
@@ -236,7 +274,6 @@ public String toString()
 		sRet += "-------------------------------------------------------------------------------------------\n";
 		return sRet;
 	}
-// ...
 
 
 }
