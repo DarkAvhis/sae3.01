@@ -1,5 +1,5 @@
 package test;
 
-public record Ferme {
+public record Ferme (String caca , int pipi , long  popo ) {
     
 }
