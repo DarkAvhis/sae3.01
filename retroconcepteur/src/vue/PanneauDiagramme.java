@@ -41,21 +41,15 @@ public class PanneauDiagramme extends JPanel
         this.ajouterListenersInteraction();
     }
 
-    public List<LiaisonVue> getLiaisonsVue() {
+    public List<LiaisonVue> getLiaisonsVue() 
+    {
         return liaisonsVue;
     }
 
-    // NOUVEAU SETTER pour les liaisons
     public void setLiaisonsVue(List<LiaisonVue> liaisonsVue) 
     {
         this.liaisonsVue = liaisonsVue;
-        this.repaint(); // Redessine après la mise à jour des liaisons
-    }
-    
-    // NOUVEAU SETTER pour les BlocsClasses (pour que le contrôleur mette à jour les blocs)
-    public void setBlocsClasses(List<BlocClasse> blocsVue) 
-    {
-        this.blocsClasses = blocsVue;
+        this.repaint();
     }
 
 
@@ -144,7 +138,7 @@ public class PanneauDiagramme extends JPanel
         for (LiaisonVue liaison : liaisonsVue)
         {
             // Trouver les BlocsClasse correspondants par nom
-            // Note: Optional est utilisé par le stream, mais la vérification isPresent() est faite après.
+            
             Optional<BlocClasse> blocOrig = blocsClasses.stream()
                 .filter(b -> b.getNom().equals(liaison.getNomClasseOrig()))
                 .findFirst();
@@ -302,8 +296,6 @@ public class PanneauDiagramme extends JPanel
         this.blocsClasses = blocs;
         this.repaint(); 
     }
-<<<<<<< HEAD:retroconcepteur/src/vue/PanneauDiagramme.java
-=======
 
     public void setBlocsClasses(List<BlocClasse> blocsVue) 
     {
@@ -321,7 +313,4 @@ public class PanneauDiagramme extends JPanel
         }
         return null; 
     }
-
-    
->>>>>>> b720a42b10e613d36f8cac112876beabca0e536e:src/vue/PanneauDiagramme.java
 }

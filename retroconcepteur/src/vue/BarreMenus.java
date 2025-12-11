@@ -29,15 +29,13 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
     private PanneauProjets panneauProjets;
 
+    private Controleur controleur;
+
     public BarreMenus(Controleur controleur, PanneauProjets panneauProjets) 
     {
-<<<<<<< HEAD:retroconcepteur/src/vue/BarreMenus.java
-        
-=======
         this.controleur     = controleur;
         this.panneauProjets = panneauProjets;
 
->>>>>>> b720a42b10e613d36f8cac112876beabca0e536e:src/vue/BarreMenus.java
         this.add(creerMenuFichier());
         this.add(creerMenuEdition());
         this.add(creerMenuAffichage());

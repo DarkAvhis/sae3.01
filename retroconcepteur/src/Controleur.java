@@ -20,22 +20,15 @@ import javax.swing.SwingUtilities;
 
 public class Controleur
 {
-    // Remplacement d'AnalyseurUML par le contrôleur de la couche Modèle pour une analyse complète
     private AnalyseIHMControleur metierComplet; 
     private FenetrePrincipale vuePrincipale;
+
     public Controleur()
     {
-<<<<<<< HEAD:retroconcepteur/src/Controleur.java
-        this.metierComplet = new AnalyseIHMControleur(); 
-=======
-        this.metierComplet   = new AnalyseIHMControleur(); 
-        this.classesChargees = new HashMap<>();
+        this.metierComplet   = new AnalyseIHMControleur();
         this.vuePrincipale = new FenetrePrincipale(this);
         this.vuePrincipale.setVisible(true);
->>>>>>> b720a42b10e613d36f8cac112876beabca0e536e:src/Controleur.java
-    }
-    
-   
+    }  
 
     /**
      * Analyse un dossier projet et met à jour l'affichage du diagramme.
