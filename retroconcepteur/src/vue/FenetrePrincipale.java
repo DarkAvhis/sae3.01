@@ -28,6 +28,8 @@ public class FenetrePrincipale extends JFrame
 		this.panneauDiagramme = new PanneauDiagramme(controleur);  
 		this.barreMenus       = new BarreMenus(controleur, panneauProjets);//
 
+		JScrollPane scrollDiagramme = new JScrollPane(this.panneauDiagramme);
+
 		this.setLayout(new BorderLayout());
 		
 		JSplitPane splitPane = new JSplitPane(

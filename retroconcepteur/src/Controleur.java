@@ -25,14 +25,9 @@ public class Controleur
     private FenetrePrincipale vuePrincipale;
     public Controleur()
     {
-<<<<<<< HEAD:retroconcepteur/src/Controleur.java
-        this.metierComplet = new AnalyseIHMControleur(); 
-=======
         this.metierComplet   = new AnalyseIHMControleur(); 
-        this.classesChargees = new HashMap<>();
         this.vuePrincipale = new FenetrePrincipale(this);
         this.vuePrincipale.setVisible(true);
->>>>>>> b720a42b10e613d36f8cac112876beabca0e536e:src/Controleur.java
     }
     
    

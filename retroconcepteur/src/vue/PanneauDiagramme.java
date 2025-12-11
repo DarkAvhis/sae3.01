@@ -302,13 +302,6 @@ public class PanneauDiagramme extends JPanel
         this.blocsClasses = blocs;
         this.repaint(); 
     }
-<<<<<<< HEAD:retroconcepteur/src/vue/PanneauDiagramme.java
-=======
-
-    public void setBlocsClasses(List<BlocClasse> blocsVue) 
-    {
-        this.blocsClasses = blocsVue;
-    }
 
     public List<BlocClasse> getBlocsClasses() {    return blocsClasses;   }
 
@@ -323,5 +316,4 @@ public class PanneauDiagramme extends JPanel
     }
 
     
->>>>>>> b720a42b10e613d36f8cac112876beabca0e536e:src/vue/PanneauDiagramme.java
 }
