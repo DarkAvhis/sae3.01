@@ -51,11 +51,12 @@ public class AnalyseurUML
         ArrayList<MethodeObjet> methodes = new ArrayList<>();
         
         // États de l'analyse
-        String nomEntite = nomFichier;
+        String nomEntite  = nomFichier;
         String specifique = "";
-        boolean estInterface = false;
-        boolean estRecord = false;
-        boolean enTeteTrouve = false;
+        
+        boolean estInterface         = false;
+        boolean estRecord            = false;
+        boolean enTeteTrouve         = false;
         boolean commentaireBlocActif = false;
         
         // Relations
