@@ -9,6 +9,7 @@ public class Disque
     private Point[] points;
     private Chien[] chiens;
     private Chat[] chats;
+    private Point centre;
 
     public Disque(double rayon, Point centre) 
     {

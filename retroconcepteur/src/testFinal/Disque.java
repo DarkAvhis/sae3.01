@@ -6,8 +6,8 @@ public class Disque  implements ISurface
     // ------------------------------------------------
     // Attributs (variables d'instance)
     // ------------------------------------------------ // Le centre du disque est un objet Point
-    private Point[] centre; // <-- ATTENTION : AJOUTÉ. C'est l'attribut d'association qui sera MASQUÉ par toString()
-    private double rayon; // <-- ATTENTION : RESTAURÉ. C'est l'attribut qui sera AFFICHÉ.
+    private Point[] centre;
+    private double rayon; 
 
     // ------------------------------------------------
     // Constructeur
@@ -27,6 +27,4 @@ public class Disque  implements ISurface
     {
         return 0;
     }
-
-    // ... (le reste du fichier est inchangé)
 }

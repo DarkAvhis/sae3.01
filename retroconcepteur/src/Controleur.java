@@ -256,21 +256,49 @@ public class Controleur
         List<LiaisonVue> liaisonsVue = new ArrayList<>();
         for (LiaisonObjet liaison : liaisons)
         {
-            String nomOrig = liaison.getClasseFille().getNom(); 
-            String nomDest = liaison.getClasseMere().getNom();
-            
-            String multOrig = null;
-            String multDest = null;
-            
-            if (liaison instanceof AssociationObjet)
+            // Traitement spécial pour les InterfaceObjet qui stockent les interfaces dans une liste
+            if (liaison instanceof InterfaceObjet)
             {
-                AssociationObjet asso = (AssociationObjet) liaison;
+                InterfaceObjet interfaceLiaison = (InterfaceObjet) liaison;
+                if (interfaceLiaison.getClasseFille() == null) {
+                    continue;
+                }
+                String nomClasseConcrete = interfaceLiaison.getClasseFille().getNom();
                 
-                multOrig = asso.getMultOrig() != null ? asso.getMultOrig().toString() : "1..1"; 
-                multDest = asso.getMultDest() != null ? asso.getMultDest().toString() : "1..1"; 
+                // Parcourir la liste des interfaces implémentées
+                java.util.List<ClasseObjet> interfaces = interfaceLiaison.getLstInterfaces();
+                for (ClasseObjet interfaceClass : interfaces)
+                {
+                    if (interfaceClass != null)
+                    {
+                        liaisonsVue.add(new LiaisonVue(nomClasseConcrete, interfaceClass.getNom(), type, null, null));
+                    }
+                }
             }
-            
-            liaisonsVue.add(new LiaisonVue(nomOrig, nomDest, type, multOrig, multDest)); 
+            else
+            {
+                // Vérifier que les deux classes existent pour les autres liaisons
+                if (liaison.getClasseFille() == null || liaison.getClasseMere() == null) {
+                    System.err.println("Attention: liaison avec classe null ignorée");
+                    continue;
+                }
+                
+                String nomOrig = liaison.getClasseFille().getNom(); 
+                String nomDest = liaison.getClasseMere().getNom();
+                
+                String multOrig = null;
+                String multDest = null;
+                
+                if (liaison instanceof AssociationObjet)
+                {
+                    AssociationObjet asso = (AssociationObjet) liaison;
+                    
+                    multOrig = asso.getMultOrig() != null ? asso.getMultOrig().toString() : "1..1"; 
+                    multDest = asso.getMultDest() != null ? asso.getMultDest().toString() : "1..1"; 
+                }
+                
+                liaisonsVue.add(new LiaisonVue(nomOrig, nomDest, type, multOrig, multDest)); 
+            }
         }
         return liaisonsVue;
     }
