@@ -31,9 +31,9 @@ public class ClasseObjet
 	/*-------------------------------------- */
 	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom ,String specifique) 
 	{
-		this.attributs = attributs;
-		this.methodes  = methodes;
-		this.nom       = nom;
+		this.attributs  = attributs;
+		this.methodes   = methodes;
+		this.nom        = nom;
 		this.specifique = specifique;
 	}
 
@@ -255,16 +255,18 @@ public class ClasseObjet
 			String methodeBaseFormatte = String.format("%-25s", nomMethodeBrut);
 
 			String nomMethodeFormatte;
-			if (met.estStatique()) {
+			if (met.estStatique()) 
+			{
 				nomMethodeFormatte = ANSI_SOUSTITRE + methodeBaseFormatte + ANSI_RESET;
-			} else {
+			} 
+			else 
+			{
 				nomMethodeFormatte = methodeBaseFormatte;
 			}
 			
 			String visibiliteUML = String.format("%-2c", changementVisibilite(met.getVisibilite()));
 			
-			sRet += visibiliteUML + 
-					nomMethodeFormatte + 
+			sRet += visibiliteUML + nomMethodeFormatte + 
 					String.format("%-35s", affichageParametre(met.getParametres())) + 
 					String.format("%-15s", retourType(met.getRetourType())) + "\n"; 
 		}
