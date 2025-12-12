@@ -31,5 +31,6 @@
 ./src/vue/PanneauDiagramme.java
 ./src/vue/PanneauProjets.java
 ./src/vue/LiaisonVue.java
+./src/vue/OptimisateurDisposition.java
 
 ./src/Controleur.java

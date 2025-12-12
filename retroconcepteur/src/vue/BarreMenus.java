@@ -208,7 +208,9 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
     public void actionOptimiser()  
     { 
-        JOptionPane.showMessageDialog(null, "Pas fini"); 
+        // Récupérer le panneau du diagramme via le contrôleur
+        this.controleur.optimiserDisposition();
+        JOptionPane.showMessageDialog(this, "Positions optimisées !", "Succès", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void actionAPropos()

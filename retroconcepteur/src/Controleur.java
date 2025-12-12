@@ -334,6 +334,16 @@ public class Controleur
         return liste;
     }
 
+    /**
+     * Optimise la disposition des blocs de classe en utilisant un algorithme force-directed.
+     */
+    public void optimiserDisposition()
+    {
+        if (this.vuePrincipale != null)
+        {
+            this.vuePrincipale.getPanneauDiagramme().optimiserDisposition();
+        }
+    }
 
     public static void main(String[] args)
     {
