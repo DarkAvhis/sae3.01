@@ -1,4 +1,4 @@
-package vue;
+package src.vue;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -23,7 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import src.Controleur;
-import vue.LiaisonVue.TypeLiaison;
+import src.vue.LiaisonVue.TypeLiaison;
 
 public class PanneauDiagramme extends JPanel 
 {

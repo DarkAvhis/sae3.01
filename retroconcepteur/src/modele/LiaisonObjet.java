@@ -1,4 +1,4 @@
-package modele;
+package src.modele;
 
 /**
  * Représente une liaison générique entre deux classes dans un diagramme UML.

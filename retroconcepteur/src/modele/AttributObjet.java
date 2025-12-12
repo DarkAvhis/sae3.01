@@ -1,4 +1,4 @@
-package modele;
+package src.modele;
 
 /**
  * Représente un attribut dans une classe UML.

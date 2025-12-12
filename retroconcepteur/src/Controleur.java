@@ -1,19 +1,19 @@
 package src;
 
-import modele.AnalyseIHMControleur;
-import modele.AttributObjet;
-import modele.MethodeObjet;
-import modele.ClasseObjet;
-import modele.LiaisonObjet; 
-import modele.AssociationObjet;
-import modele.HeritageObjet;
-import modele.InterfaceObjet;
-import modele.MultipliciteObjet; 
+import src.modele.AnalyseIHMControleur;
+import src.modele.AttributObjet;
+import src.modele.MethodeObjet;
+import src.modele.ClasseObjet;
+import src.modele.LiaisonObjet; 
+import src.modele.AssociationObjet;
+import src.modele.HeritageObjet;
+import src.modele.InterfaceObjet;
+import src.modele.MultipliciteObjet; 
 
-import vue.FenetrePrincipale;
-import vue.BlocClasse; 
-import vue.LiaisonVue;
-import vue.LiaisonVue.TypeLiaison;
+import src.vue.FenetrePrincipale;
+import src.vue.BlocClasse; 
+import src.vue.LiaisonVue;
+import src.vue.LiaisonVue.TypeLiaison;
 
 import java.awt.Point;
 import java.util.ArrayList;
