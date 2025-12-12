@@ -130,7 +130,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
     public void actionNouveauProjet() 
     { 
-        JOptionPane.showMessageDialog(null, "Pas fini"); 
+        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Pas fini"); 
     }
 
     //ouvrir mes dossier, les parcourir et l'ouvrir
@@ -139,7 +139,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
         JFileChooser chooser = new JFileChooser(new java.io.File(System.getProperty("user.dir")));
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
 
-        int retour = chooser.showOpenDialog(this);
+        int retour = chooser.showOpenDialog(SwingUtilities.getWindowAncestor(this));
 
         if (retour == JFileChooser.APPROVE_OPTION) 
         {
@@ -150,20 +150,20 @@ public class BarreMenus extends JMenuBar implements ActionListener
                 try 
                 {
                     this.controleur.analyserEtAfficherDiagramme(dossier.getAbsolutePath());
-                    JOptionPane.showMessageDialog(this, "Dossier chargé : " + dossier.getName());
+                    JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Dossier chargé : " + dossier.getName());
 
                     // ajoute dans panneauProjet le projet ouvert
                     this.panneauProjets.ajouterProjet(dossier.getAbsolutePath());
                 } 
                 catch (Exception ex) 
                 {
-                    JOptionPane.showMessageDialog(this,
+                    JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this),
                         "Erreur lors de l'ouverture du dossier :\n" + ex.getMessage(),
                         "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
             }
             else 
-                JOptionPane.showMessageDialog(this, "Impossible d'ouvrir ce dossier.",
+                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Impossible d'ouvrir ce dossier.",
                     "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -175,19 +175,19 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
     public void actionAnnuler()       
     { 
-        JOptionPane.showMessageDialog(null, "Pas fini");
+        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Pas fini");
     }
 
     public void actionRetablir()      
     { 
-        JOptionPane.showMessageDialog(null, "Pas fini"); 
+        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Pas fini"); 
     }
 
     public void actionSupprimer()     
     { 
      
         int rep = JOptionPane.showConfirmDialog(
-            null,
+            SwingUtilities.getWindowAncestor(this),
             "Voulez-vous vraiment supprimer la classe sélectionnée ?",
             "Confirmation",
             JOptionPane.YES_NO_OPTION
@@ -203,19 +203,19 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
     public void actionAligner()    
     { 
-        JOptionPane.showMessageDialog(null, "Pas fini"); 
+        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Pas fini"); 
     }
 
     public void actionOptimiser()  
     { 
         // Récupérer le panneau du diagramme via le contrôleur
         this.controleur.optimiserDisposition();
-        JOptionPane.showMessageDialog(this, "Positions optimisées !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Positions optimisées !", "Succès", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void actionAPropos()
     {
-        JOptionPane.showMessageDialog(null,
+        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this),
             "Modélisation UML - Générateur de Diagrammes\n" +
             "par Quentin MORVAN,\nValentin LEROY,\nCelim CHAOU,\nEnzo DUMONT,\nAriunbayar BUYANBADRAKH,\nYassine EL MAADI",
             "À propos",
