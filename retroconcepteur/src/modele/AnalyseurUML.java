@@ -19,7 +19,7 @@ public class AnalyseurUML
     
     // Listes pour stocker les relations en attente de résolution
     private ArrayList<String[]> lstIntentionHeritage = new ArrayList<>(); 
-    private ArrayList<String[]> lstInterfaces = new ArrayList<>();
+    private ArrayList<String[]> lstInterfaces        = new ArrayList<>();
 
     /**
      * Réinitialise les listes de relations stockées.
@@ -46,16 +46,15 @@ public class AnalyseurUML
         ArrayList<MethodeObjet> methodes = new ArrayList<>();
         
         // États de l'analyse
-        String nomEntite = nomFichier; 
-        String specifique = ""; 
-        boolean estInterface = false;
-        boolean estRecord = false;
-        boolean enTeteTrouve = false; 
+        String nomEntite             = nomFichier; 
+        String specifique            = ""; 
+        String nomParent             = null;
+        boolean estInterface         = false;
+        boolean estRecord            = false;
+        boolean enTeteTrouve         = false; 
         boolean commentaireBlocActif = false;
-        
-        // Relations
-        boolean estHeritier = false;
-        String nomParent = null;
+        boolean estHeritier          = false;
+
         ArrayList<String> interfacesDetectees = new ArrayList<>();
         
         String[] tabSpecifique = {"abstract class", "interface", "enum", "record"}; 
@@ -69,35 +68,38 @@ public class AnalyseurUML
                 // 1. GESTION DES COMMENTAIRES ET LIGNES VIDES (Logique inchangée)
                 if (ligneBrute.isEmpty()) continue;
                 
-                if (commentaireBlocActif) {
-                    if (ligneBrute.contains("*/")) {
+                if (commentaireBlocActif) 
+                {
+                    if (ligneBrute.contains("*/")) 
+                    {
                         commentaireBlocActif = false;
                         if (ligneBrute.endsWith("*/")) continue;
                         ligneBrute = ligneBrute.substring(ligneBrute.indexOf("*/") + 2).trim();
-                    } else {
+                    } 
+                    else 
+                    {
                         continue;
                     }
                 }
                 
-                if (ligneBrute.startsWith("/*")) {
-                    if (!ligneBrute.contains("*/")) {
+                if (ligneBrute.startsWith("/*")) 
+                {
+                    if (!ligneBrute.contains("*/")) 
+                    {
                         commentaireBlocActif = true;
                         continue;
-                    } else {
+                    } 
+                    
+                    else 
+                    {
                         int finCom = ligneBrute.lastIndexOf("*/");
-                        if (finCom + 2 < ligneBrute.length()) {
-                            ligneBrute = ligneBrute.substring(finCom + 2).trim();
-                        } else {
-                            continue; 
-                        }
+                        if (finCom + 2 < ligneBrute.length()) { ligneBrute = ligneBrute.substring(finCom + 2).trim(); } 
+                        else { continue; }
                     }
                 }
 
                 if (ligneBrute.startsWith("//")) continue;
-                if (ligneBrute.contains("//")) {
-                    ligneBrute = ligneBrute.substring(0, ligneBrute.indexOf("//")).trim();
-                }
-
+                if (ligneBrute.contains("//")) { ligneBrute = ligneBrute.substring(0, ligneBrute.indexOf("//")).trim();}
                 if (ligneBrute.startsWith("package") || ligneBrute.startsWith("import")) continue;
                 if (ligneBrute.equals("}")) continue;
 
@@ -113,13 +115,14 @@ public class AnalyseurUML
                         {
                             specifique = motCle;
                             if (motCle.contains("interface")) estInterface = true;
-                            if (motCle.contains("record"))    estRecord = true;
+                            if (motCle.contains("record"))    estRecord    = true;
                             
                             // Récupération du vrai nom (parsing manuel)
-                            if (estInterface || estRecord) {
+                            if (estInterface || estRecord) 
+                            {
                                 int idxDebut = ligneBrute.indexOf(motCle) + motCle.length();
                                 String suite = ligneBrute.substring(idxDebut).trim();
-                                String nom = lireNom(suite);
+                                String nom   = lireNom(suite);
                                 if (!nom.isEmpty()) nomEntite = nom;
                             }
                             break;
@@ -129,9 +132,9 @@ public class AnalyseurUML
                     // Détection Héritage (extends)
                     if (ligneBrute.contains("extends"))
                     {
-                        estHeritier = true;
+                        estHeritier    = true;
                         int idxExtends = ligneBrute.indexOf("extends") + 7;
-                        String suite = ligneBrute.substring(idxExtends).trim();
+                        String suite   = ligneBrute.substring(idxExtends).trim();
                         // Lire le premier identifiant utile (manuellement)
                         String possibleParent = lireNom(suite);
                         if (!possibleParent.isEmpty()) nomParent = possibleParent;
@@ -140,9 +143,9 @@ public class AnalyseurUML
                     // Détection Implémentation (implements) --- OPTIMISATION ICI ---
                     if (ligneBrute.contains("implements"))
                     {
-                        int idxImpl = ligneBrute.indexOf("implements") + 10;
+                        int idxImpl  = ligneBrute.indexOf("implements") + 10;
                         String suite = ligneBrute.substring(idxImpl).trim();
-                        int idxFin = suite.indexOf('{');
+                        int idxFin   = suite.indexOf('{');
                         if (idxFin != -1) suite = suite.substring(0, idxFin);
                         
                         // Boucle optimisée pour éviter split() sur la virgule
@@ -162,11 +165,11 @@ public class AnalyseurUML
                             if (!interBrute.isEmpty())
                             {
                                 // Nettoyage des génériques (<) et espaces
-                                int idxSpace = indexEspace(interBrute);
+                                int idxSpace   = indexEspace(interBrute);
                                 int idxChevron = interBrute.indexOf('<');
-                                int idxFinNom = interBrute.length();
+                                int idxFinNom  = interBrute.length();
 
-                                if (idxSpace != -1) idxFinNom = Math.min(idxFinNom, idxSpace);
+                                if (idxSpace != -1)   idxFinNom = Math.min(idxFinNom, idxSpace);
                                 if (idxChevron != -1) idxFinNom = Math.min(idxFinNom, idxChevron);
 
                                 String nomInterface = interBrute.substring(0, idxFinNom).trim();
@@ -185,20 +188,24 @@ public class AnalyseurUML
                     // Cas particulier : RECORD (parsing manuel des paramètres)
                     if (estRecord)
                     {
-                        if (ligneBrute.contains("(") && ligneBrute.contains(")")) {
+                        if (ligneBrute.contains("(") && ligneBrute.contains(")")) 
+                        {
                             String args = ligneBrute.substring(ligneBrute.indexOf('(') + 1, ligneBrute.lastIndexOf(')'));
-                            args = args.trim();
+                            args        = args.trim();
                             if (!args.isEmpty()) 
                             {
                                 List<String> params = decoupage(args);
-                                for (String p : params) {
-                                    String trimmed = p.trim();
+                                for (String p : params) 
+                                {
+                                    String trimmed      = p.trim();
                                     List<String> tokens = separerMots(trimmed);
-                                    if (tokens.size() >= 2) {
+                                    if (tokens.size() >= 2) 
+                                    {
                                         // type peut être composé (ex: List<String>), on prend tout sauf le dernier token
                                         String nom = tokens.get(tokens.size() - 1);
                                         String type = "";
-                                        for (int i = 0; i < tokens.size() - 1; i++) {
+                                        for (int i = 0; i < tokens.size() - 1; i++) 
+                                        {
                                             if (i > 0) type += ' ';
                                             type += tokens.get(i);
                                         }
@@ -291,9 +298,12 @@ public class AnalyseurUML
     private void extraireAttribut(String ligne, boolean estStatique, boolean estFinal, ArrayList<AttributObjet> attributs)
     {
         // 1. Ignorer l'initialisation (= ...)
-        if (ligne.contains("=")) {
+        if (ligne.contains("=")) 
+        {
             ligne = ligne.substring(0, ligne.indexOf("=")).trim();
-        } else {
+        } 
+        else 
+        {
             ligne = ligne.replace(";", "").trim();
         }
 
@@ -301,18 +311,22 @@ public class AnalyseurUML
         
         // 2. Filtrer les mots-clés pour ne garder que Type et Nom
         List<String> motsUtiles = new ArrayList<>();
-        for (String p : parts) {
-            if (!aModifierMotCle(p)) {
+        for (String p : parts) 
+        {
+            if (!aModifierMotCle(p)) 
+            {
                 motsUtiles.add(p);
             }
         }
 
-        if (motsUtiles.size() >= 2) {
+        if (motsUtiles.size() >= 2) 
+        {
             String type = motsUtiles.get(motsUtiles.size() - 2); 
-            String nom = motsUtiles.get(motsUtiles.size() - 1); 
+            String nom  = motsUtiles.get(motsUtiles.size() - 1); 
             
             String visibilite = parts.size() > 0 ? parts.get(0) : ""; 
-            if (!aVisibilite(visibilite)) {
+            if (!aVisibilite(visibilite)) 
+            {
                  visibilite = "public"; // Cas des constantes d'interface ou visibilité omise
             }
 
@@ -332,7 +346,7 @@ public class AnalyseurUML
         
         if (idxParenthOuvrante == -1 || idxParenthFermante == -1) return;
 
-        String signature = ligne.substring(0, idxParenthOuvrante).trim();
+        String signature   = ligne.substring(0, idxParenthOuvrante).trim();
         List<String> parts = separerMots(signature);
         
         if (parts.isEmpty()) return;
@@ -341,16 +355,22 @@ public class AnalyseurUML
         String nomMethode = parts.get(parts.size() - 1);
         String typeRetour = "void"; 
 
-        if (nomMethode.equals(nomClasse)) {
+        if (nomMethode.equals(nomClasse)) 
+        {
             typeRetour = null; // Constructeur
-        } else { 
+        } 
+        else 
+        { 
             List<String> motsUtiles = new ArrayList<>();
-            for (String p : parts) {
-                if (!aMethodeModif(p)) {
+            for (String p : parts) 
+            {
+                if (!aMethodeModif(p)) 
+                {
                     motsUtiles.add(p);
                 }
             }
-            if (motsUtiles.size() >= 2) {
+            if (motsUtiles.size() >= 2) 
+            {
                 typeRetour = motsUtiles.get(motsUtiles.size() - 2);
             }
         }
@@ -359,14 +379,18 @@ public class AnalyseurUML
         String paramsStr = ligne.substring(idxParenthOuvrante + 1, idxParenthFermante).trim();
         HashMap<String, String> params = new HashMap<>();
         
-        if (!paramsStr.isEmpty()) {
+        if (!paramsStr.isEmpty()) 
+        {
             List<String> paramList = decoupage(paramsStr);
 
-            for (String param : paramList) {
+            for (String param : paramList) 
+            {
                 String p = param.trim();
-                if (!p.isEmpty()) {
+                if (!p.isEmpty()) 
+                {
                     int spaceIndex = dernierIndexEspace(p);
-                    if (spaceIndex > 0) {
+                    if (spaceIndex > 0) 
+                    {
                         String pType = p.substring(0, spaceIndex).trim();
                         String pNom = p.substring(spaceIndex + 1).trim();
                         params.put(pNom, pType);
@@ -547,7 +571,7 @@ public class AnalyseurUML
         List<String> tokens = new ArrayList<>();
         String token = "";
         for (int i = 0; i < s.length(); i++) 
-            {
+        {
             char c = s.charAt(i);
             if (Character.isWhitespace(c)) 
             {
@@ -584,14 +608,15 @@ public class AnalyseurUML
 
     private boolean aModifierMotCle(String s) 
     {
-        return s.equals("public") || s.equals("private") || s.equals("protected")
-                || s.equals("static") || s.equals("final") || s.equals("transient") || s.equals("volatile");
+        return s.equals("public") || s.equals("private") || s.equals("protected") || 
+               s.equals("static") || s.equals("final")   || s.equals("transient") || s.equals("volatile");
     }
 
     private boolean aMethodeModif(String s) 
     {
-        return s.equals("public") || s.equals("private") || s.equals("protected")
-                || s.equals("static") || s.equals("final") || s.equals("abstract") || s.equals("synchronized") || s.equals("default");
+        return s.equals("public")       || s.equals("private") || s.equals("protected") ||
+               s.equals("static")       || s.equals("final")   || s.equals("abstract")  || 
+               s.equals("synchronized") || s.equals("default");
     }
 
     private boolean aVisibilite(String s) 
@@ -614,11 +639,7 @@ public class AnalyseurUML
             char c = s.charAt(i);
 
             // Si on rencontre un séparateur, on s'arrête
-            if (Character.isWhitespace(c) || 
-                c == '{' || 
-                c == '<' || 
-                c == ',' || 
-                c == '(') 
+            if (Character.isWhitespace(c) || c == '{' || c == '<' || c == ',' || c == '(') 
             {
                 break;
             }
@@ -635,10 +656,10 @@ public class AnalyseurUML
     private List<String> decoupage(String s) 
     {
         List<String> parts = new ArrayList<>();
-        String part = "";
+        String part    = "";
         int depthAngle = 0;
         for (int i = 0; i < s.length(); i++) 
-            {
+        {
             char c = s.charAt(i);
             if (c == '<') 
             {
