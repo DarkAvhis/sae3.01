@@ -1,4 +1,4 @@
-package vue;
+package src.vue;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

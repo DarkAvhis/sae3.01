@@ -1,4 +1,4 @@
-package modele;
+package src.modele;
 
 /**
  * Représente un attribut dans une classe UML.
@@ -18,12 +18,12 @@ public class AttributObjet
      */
 	public AttributObjet(String nom, String portee, String type, String visibilite, boolean statique, boolean finale) 
 	{
-		this.nom		 = nom;
-		this.portee      = portee;
-		this.type        = type;
-		this.visibilite  = visibilite;
-		this.statique    = statique;
-        this.finale      = finale;
+		this.nom	    = nom;
+		this.portee     = portee;
+		this.type       = type;
+		this.visibilite = visibilite;
+		this.statique   = statique;
+        this.finale     = finale;
 	}
 
 	/**
@@ -37,20 +37,20 @@ public class AttributObjet
 	/*-------------------------------------- */
 	/* Les Accesseurs                        */
 	/*-------------------------------------- */
-	public String  getVisibilite() {    return visibilite   ;	}
-	public String  getPortee    () {	return portee       ;	}
-	public String  getNom       () {	return nom          ;	}
-	public String  getType      () {	return type         ;	}
-    public boolean estStatique  () {    return statique     ;	}
-    public boolean estFinale    () {    return finale       ;   } 
+	public String  getVisibilite() {  return visibilite ; }
+	public String  getPortee    () {  return portee     ; }
+	public String  getNom       () {  return nom        ; }
+	public String  getType      () {  return type       ; }
+    public boolean estStatique  () {  return statique   ; }
+    public boolean estFinale    () {  return finale     ; } 
 
 	/*-------------------------------------- */
 	/* Modificateurs                         */
 	/*-------------------------------------- */
-	public void setPortee     (String portee     ) {	this.portee     = portee     ;	}
-	public void setVisibilite (String visibilite ) {	this.visibilite = visibilite ;	}
-	public void setType       (String type       ) {	this.type       = type       ;	}
-	public void setNom        (String nom        ) {	this.nom        = nom        ;	}
-	public void setStatique   (boolean statique  ) {	this.statique   = statique   ;	}
-    public void setFinale     (boolean finale    ) {    this.finale     = finale     ;   } 
+	public void setPortee     (String portee    ) { this.portee     = portee     ;	}
+	public void setVisibilite (String visibilite) { this.visibilite = visibilite ;	}
+	public void setType       (String type      ) { this.type       = type       ;	}
+	public void setNom        (String nom       ) { this.nom        = nom        ;	}
+	public void setStatique   (boolean statique ) { this.statique   = statique   ;	}
+    public void setFinale     (boolean finale   ) { this.finale     = finale     ; } 
 }

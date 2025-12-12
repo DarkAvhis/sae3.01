@@ -1,4 +1,4 @@
-package vue;
+package src.vue;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -23,7 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import src.Controleur;
-import vue.LiaisonVue.TypeLiaison;
+import src.vue.LiaisonVue.TypeLiaison;
 
 public class PanneauDiagramme extends JPanel 
 {
@@ -373,5 +373,51 @@ public class PanneauDiagramme extends JPanel
         calculerTailleDynamique(); 
     }
 
+    /**
+     * Optimise la disposition des blocs en utilisant un algorithme hiérarchique.
+     * Les blocs sont arrangés en couches pour minimiser les croisements de liaisons.
+     */
+    public void optimiserDisposition() 
+    {
+        if (blocsClasses.isEmpty()) 
+        {
+            return;
+        }
+        
+        // Appliquer l'algorithme hiérarchique (Sugiyama-style)
+        OptimisateurDisposition.appliquerLayoutHierarchique(blocsClasses, liaisonsVue);
+        
+        // Mettre à jour la taille du panneau et redessiner
+        calculerTailleDynamique();
+        repaint();
+    }
+
+    /**
+     * Dispose les blocs en grille régulière.
+     */
+    public void disposerEnGrille() 
+    {
+        if (blocsClasses.isEmpty()) {
+            return;
+        }
+        
+        OptimisateurDisposition.appliquerLayoutGrille(blocsClasses);
+        calculerTailleDynamique();
+        repaint();
+    }
+
+    /**
+     * Dispose les blocs en cercle autour du premier bloc.
+     */
+    public void disposerEnCirculaire() 
+    {
+        if (blocsClasses.isEmpty()) {
+            return;
+        }
+        
+        OptimisateurDisposition.appliquerLayoutCirculaire(blocsClasses, 0);
+        calculerTailleDynamique();
+        repaint();
+    }
     
 }

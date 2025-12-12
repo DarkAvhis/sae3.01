@@ -1,4 +1,4 @@
-package modele;
+package src.modele;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +68,15 @@ public class InterfaceObjet extends LiaisonObjet
         }
 
         return String.format("%-10s", nomFille) + " implémente " + sRet;
+    }
+    
+    /**
+     * Retourne la liste des interfaces implémentées par la classe concrète.
+     * @return la liste des interfaces
+     */
+    public List<ClasseObjet> getLstInterfaces()
+    {
+        return this.lstInterfaces;
     }
      
 }

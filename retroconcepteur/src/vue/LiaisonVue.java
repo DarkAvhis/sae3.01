@@ -1,8 +1,9 @@
-package vue;
+package src.vue;
 
 public class LiaisonVue 
 {
-    public enum TypeLiaison {
+    public enum TypeLiaison 
+    {
         ASSOCIATION_UNIDI, // Ligne pleine + flèche simple
         ASSOCIATION_BIDI,  // Ligne pleine simple
         HERITAGE,          // Ligne pleine + triangle vide

@@ -1,4 +1,4 @@
-package vue;
+package src.vue;
 
 import java.awt.*;
 
@@ -88,7 +88,20 @@ public class BlocClasse
         for (String att : attributsAffichage) 
         {
             currentY += HAUTEUR_LIGNE;
-            g.drawString(att, x + PADDING, currentY);
+
+            boolean estStatique = att.contains("{static}");
+            String libelle = att.replace(" {static}", "").replace("{static} ", "");
+
+            g.drawString(libelle, x + PADDING, currentY);
+
+            if (estStatique) 
+            {
+                FontMetrics fmLigne = g.getFontMetrics();
+
+                int underlineY = currentY + 2;
+                int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
+                g.drawLine(x + PADDING, underlineY, underlineX2, underlineY);
+            }
         }
         
         // 4. Ligne de séparation (Attributs / Méthodes)
@@ -102,7 +115,18 @@ public class BlocClasse
         for (String met : methodesAffichage) 
         {
             currentY += HAUTEUR_LIGNE;
-            g.drawString(met, x + PADDING, currentY);
+
+            boolean estStatique = met.contains("{static}");
+            String libelle = met.replace(" {static}", "").replace("{static} ", "");
+
+            g.drawString(libelle, x + PADDING, currentY);
+
+            if (estStatique) {
+                FontMetrics fmLigne = g.getFontMetrics();
+                int underlineY = currentY + 2;
+                int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
+                g.drawLine(x + PADDING, underlineY, underlineX2, underlineY);
+            }
         }
 
         // 6. Gestion Interface (si besoin)
