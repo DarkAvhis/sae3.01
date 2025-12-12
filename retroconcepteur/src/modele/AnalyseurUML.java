@@ -76,10 +76,7 @@ public class AnalyseurUML
                         if (ligneBrute.endsWith("*/")) continue;
                         ligneBrute = ligneBrute.substring(ligneBrute.indexOf("*/") + 2).trim();
                     } 
-                    else 
-                    {
-                        continue;
-                    }
+                    else { continue; }
                 }
                 
                 if (ligneBrute.startsWith("/*")) 

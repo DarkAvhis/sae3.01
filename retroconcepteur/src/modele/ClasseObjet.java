@@ -211,12 +211,11 @@ public class ClasseObjet
 			// LOGIQUE DE MASQUAGE AFFINÉE (pour masquer les attributs d'association)
 			
 			// 1. Vérifier si le type commence par une Majuscule (potentiellement une classe utilisateur)
-			boolean commenceParMaj = !typeAttribut.isEmpty() && Character.isUpperCase(typeAttribut.charAt(0));
+			boolean commenceParMaj = !typeAttribut.isEmpty() && 
+									  Character.isUpperCase(typeAttribut.charAt(0));
 			
 			// 2. Définir si c'est un attribut d'association (à masquer)
-			boolean estAssociation = commenceParMaj && 
-									!typeAttribut.contains("<") &&         // Pas une List<> (contenant <>)
-									// L'exclusion !typeAttribut.endsWith("[]") a été supprimée ici !
+			boolean estAssociation = commenceParMaj	 && !typeAttribut.contains("<") && 
 									!typesNonAssociation.contains(typeAttribut); // Pas un type standard (String)
 			
 			if (estAssociation) 
@@ -233,14 +232,16 @@ public class ClasseObjet
 
 			// 2. Ajouter le soulignement ANSI SI c'est statique (UML)
 			String nomFormatte;
-			if (att.estStatique()) {
+			if (att.estStatique()) 
+			{
 				nomFormatte = String.format("%-10s",ANSI_SOUSTITRE + nomBaseFormatte + ANSI_RESET);
-			} else {
+			} 
+			else 
+			{
 				nomFormatte = nomBaseFormatte;
 			}
 			
-			sRet +=  String.format( "%-2c" , changementVisibilite(att.getVisibilite()) )   + 
-					nomFormatte  + 
+			sRet += String.format( "%-2c" , changementVisibilite(att.getVisibilite()) ) + nomFormatte  + 
 					String.format("%-15s" , retourType( att.getType() ))  + 
 					String.format("%-10s" , finalFlag) + "\n" ; 
 		}
@@ -251,18 +252,12 @@ public class ClasseObjet
 		for (MethodeObjet met : methodes)
 		{
 			// Application du soulignement aux méthodes statiques
-			String nomMethodeBrut = met.getNom();
+			String nomMethodeBrut 	   = met.getNom();
 			String methodeBaseFormatte = String.format("%-25s", nomMethodeBrut);
 
 			String nomMethodeFormatte;
-			if (met.estStatique()) 
-			{
-				nomMethodeFormatte = ANSI_SOUSTITRE + methodeBaseFormatte + ANSI_RESET;
-			} 
-			else 
-			{
-				nomMethodeFormatte = methodeBaseFormatte;
-			}
+			if (met.estStatique()) { nomMethodeFormatte = ANSI_SOUSTITRE + methodeBaseFormatte + ANSI_RESET;} 
+			else 				   { nomMethodeFormatte = methodeBaseFormatte							   ;}
 			
 			String visibiliteUML = String.format("%-2c", changementVisibilite(met.getVisibilite()));
 			
