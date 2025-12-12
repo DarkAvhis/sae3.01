@@ -19,7 +19,7 @@ public class AnalyseurUML
     
     // Listes pour stocker les relations en attente de résolution
     private ArrayList<String[]> lstIntentionHeritage = new ArrayList<>(); 
-    private ArrayList<String[]> lstInterfaces = new ArrayList<>();
+    private ArrayList<String[]> lstInterfaces        = new ArrayList<>();
 
     /**
      * Réinitialise les listes de relations stockées.
@@ -46,16 +46,15 @@ public class AnalyseurUML
         ArrayList<MethodeObjet> methodes = new ArrayList<>();
         
         // États de l'analyse
-        String nomEntite = nomFichier; 
-        String specifique = ""; 
-        boolean estInterface = false;
-        boolean estRecord = false;
-        boolean enTeteTrouve = false; 
+        String nomEntite             = nomFichier; 
+        String specifique            = ""; 
+        String nomParent             = null;
+        boolean estInterface         = false;
+        boolean estRecord            = false;
+        boolean enTeteTrouve         = false; 
         boolean commentaireBlocActif = false;
-        
-        // Relations
-        boolean estHeritier = false;
-        String nomParent = null;
+        boolean estHeritier          = false;
+
         ArrayList<String> interfacesDetectees = new ArrayList<>();
         
         String[] tabSpecifique = {"abstract class", "interface", "enum", "record"}; 
@@ -69,35 +68,38 @@ public class AnalyseurUML
                 // 1. GESTION DES COMMENTAIRES ET LIGNES VIDES (Logique inchangée)
                 if (ligneBrute.isEmpty()) continue;
                 
-                if (commentaireBlocActif) {
-                    if (ligneBrute.contains("*/")) {
+                if (commentaireBlocActif) 
+                {
+                    if (ligneBrute.contains("*/")) 
+                    {
                         commentaireBlocActif = false;
                         if (ligneBrute.endsWith("*/")) continue;
                         ligneBrute = ligneBrute.substring(ligneBrute.indexOf("*/") + 2).trim();
-                    } else {
+                    } 
+                    else 
+                    {
                         continue;
                     }
                 }
                 
-                if (ligneBrute.startsWith("/*")) {
-                    if (!ligneBrute.contains("*/")) {
+                if (ligneBrute.startsWith("/*")) 
+                {
+                    if (!ligneBrute.contains("*/")) 
+                    {
                         commentaireBlocActif = true;
                         continue;
-                    } else {
+                    } 
+                    
+                    else 
+                    {
                         int finCom = ligneBrute.lastIndexOf("*/");
-                        if (finCom + 2 < ligneBrute.length()) {
-                            ligneBrute = ligneBrute.substring(finCom + 2).trim();
-                        } else {
-                            continue; 
-                        }
+                        if (finCom + 2 < ligneBrute.length()) { ligneBrute = ligneBrute.substring(finCom + 2).trim(); } 
+                        else { continue; }
                     }
                 }
 
                 if (ligneBrute.startsWith("//")) continue;
-                if (ligneBrute.contains("//")) {
-                    ligneBrute = ligneBrute.substring(0, ligneBrute.indexOf("//")).trim();
-                }
-
+                if (ligneBrute.contains("//")) { ligneBrute = ligneBrute.substring(0, ligneBrute.indexOf("//")).trim();}
                 if (ligneBrute.startsWith("package") || ligneBrute.startsWith("import")) continue;
                 if (ligneBrute.equals("}")) continue;
 
