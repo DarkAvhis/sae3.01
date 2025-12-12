@@ -39,10 +39,10 @@ public class MethodeObjet
      */
 	public MethodeObjet(String nom, HashMap<String, String> parametres, String retourType, String visibilite, boolean estStatique) 
 	{
-		this.nom = nom;
-		this.parametres = parametres;
-		this.retourType = retourType;
-		this.visibilite = visibilite;
+		this.nom         = nom;
+		this.parametres  = parametres;
+		this.retourType  = retourType;
+		this.visibilite  = visibilite;
 		this.estStatique = estStatique;
 	}
 
@@ -57,9 +57,9 @@ public class MethodeObjet
      */
 	public MethodeObjet( String nom, HashMap<String, String> parametres,String visibilite, boolean estStatique )
 	{
-		this.nom = nom;
-		this.parametres = parametres;
-		this.visibilite = visibilite;
+		this.nom         = nom;
+		this.parametres  = parametres;
+		this.visibilite  = visibilite;
 		this.estStatique = estStatique;
 	}
 
@@ -96,17 +96,5 @@ public class MethodeObjet
 
     /** @param statique Définit si la méthode est statique */
     public void setStatique(boolean estStatique)                  { this.estStatique = estStatique; }
-
-	/*
-	public MethodeObjet(String nom, HashMap<String, String> parametres, String retourType, String visibilite) 
-	{
-		this(nom, parametres, retourType, visibilite, false);
-	}
-
-	public MethodeObjet( String nom, HashMap<String, String> parametres,String visibilite )
-	{
-		this(nom, parametres, null, visibilite, false);
-	}
-	*/
 
 }

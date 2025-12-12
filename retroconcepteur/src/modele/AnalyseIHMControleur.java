@@ -46,12 +46,7 @@ public class AnalyseIHMControleur
         }
 
         // Réinitialiser les données en cas d'appels multiples
-        this.classes.clear();
-        this.mapClasses.clear();
-        this.associations.clear();
-        this.heritages.clear();
-        this.implementations.clear();
-        this.analyseur.resetRelations(); // Réinitialise l'intention d'héritage
+        this.reinitialiser(); // Réinitialise l'intention d'héritage
 
         List<File> fichiersJava = analyseur.ClassesDuDossier(cheminDossier);
         
@@ -70,13 +65,14 @@ public class AnalyseIHMControleur
         this.associations.addAll(analyseur.detecterAssociations(this.classes, this.mapClasses));
         
         // 3. Résolution des liens
-        resoudreHeritage();
-        resoudreImplementation();
-        renumeroterLiaisonsFinales();
-
+        this.resoudreHeritage();
+        this.resoudreImplementation();
+        this.renumeroterLiaisonsFinales();
+        
         return true;
     }
     
+
     /**
      * Convertit la liste des noms de classes (intentions) en objets HeritageObjet réels 
      * en utilisant la map de toutes les classes parsées.
@@ -160,6 +156,16 @@ public class AnalyseIHMControleur
         this.classes.remove(classe) ; 
     }
 
+    public void reinitialiser()
+    {
+        this.classes.clear();
+        this.mapClasses.clear();
+        this.associations.clear();
+        this.heritages.clear();
+        this.implementations.clear();
+        this.analyseur.resetRelations(); // Réinitialise l'intention d'héritage
+    }
+
     private void renumeroterLiaisonsFinales()
     {
         // Réinitialiser le compteur statique pour éviter les conflits dans les logs ou les numéros futurs.
@@ -184,25 +190,10 @@ public class AnalyseIHMControleur
     
     // --- Getters pour l'IHM/Vue ---
     
-    public List<ClasseObjet> getClasses()
-    {
-        return classes;
-    }
-
-    public List<AssociationObjet> getAssociations()
-    {
-        return associations;
-    }
-
-    public List<HeritageObjet> getHeritages()
-    {
-        return heritages;
-    }
-    
-    public List<InterfaceObjet> getImplementations()
-    {
-        return implementations;
-    }
+    public List<ClasseObjet>      getClasses()        { return classes        ;}
+    public List<AssociationObjet> getAssociations()   { return associations   ;}
+    public List<HeritageObjet>    getHeritages()      { return heritages      ;}
+    public List<InterfaceObjet>   getImplementations(){ return implementations;}
 
     // --- Main pour l'exécution CUI (Point d'entrée de l'application) ---
 
