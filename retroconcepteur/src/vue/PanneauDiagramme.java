@@ -25,15 +25,13 @@ import src.vue.LiaisonVue.TypeLiaison;
 
 /**
  * Panneau d'affichage du diagramme UML.
- * 
- * Ce panneau gère l'affichage graphique des classes (BlocClasse) et de leurs
+ * * Ce panneau gère l'affichage graphique des classes (BlocClasse) et de leurs
  * liaisons
  * (héritage, implémentation, associations). Il supporte l'interaction
  * utilisateur
  * pour déplacer les blocs et ajuste dynamiquement sa taille pour le défilement.
- * 
- * @author Quentin MORVAN, Valentin LEROY, Celim CHAOU, Enzo DUMONT, Ariunbayar
- *         BUYANBADRAKH, Yassine EL MAADI
+ * * @author Quentin MORVAN, Valentin LEROY, Celim CHAOU, Enzo DUMONT, Ariunbayar
+ * BUYANBADRAKH, Yassine EL MAADI
  * @date 12 décembre 2025
  */
 public class PanneauDiagramme extends JPanel
@@ -43,14 +41,12 @@ public class PanneauDiagramme extends JPanel
 
     /**
      * Constructeur du panneau de diagramme.
-     * 
-     * Initialise le panneau avec une taille minimale et configure les listeners
+     * * Initialise le panneau avec une taille minimale et configure les listeners
      * pour l'interaction utilisateur (déplacement des blocs).
-     * 
-     * @param controleur Le contrôleur principal de l'application
+     * * @param controleur Le contrôleur principal de l'application
      */
-    public PanneauDiagramme(Controleur controleur) 
-{
+    public PanneauDiagramme(Controleur controleur)
+    {
         this.blocsClasses = new ArrayList<>();
         this.liaisonsVue = new ArrayList<>();
 
@@ -66,32 +62,31 @@ public class PanneauDiagramme extends JPanel
 
     /**
      * Gestionnaire d'événements souris pour l'interaction avec les blocs.
-     * 
-     * Permet de sélectionner et déplacer les blocs de classes dans le diagramme.
+     * * Permet de sélectionner et déplacer les blocs de classes dans le diagramme.
      */
     private class GereSourisInteraction extends MouseAdapter
-{
+    {
         private BlocClasse blocSelectionne = null;
         private int offsetX = 0;
         private int offsetY = 0;
 
         @Override
-        public void mousePressed(MouseEvent e) 
-{
+        public void mousePressed(MouseEvent e)
+        {
             blocSelectionne = null;
 
-            for (int i = blocsClasses.size() - 1; i >= 0; i--) 
-{
+            for (int i = blocsClasses.size() - 1; i >= 0; i--)
+            {
                 BlocClasse bloc = blocsClasses.get(i);
 
-                if (bloc.contient(e.getX(), e.getY())) 
-{
+                if (bloc.contient(e.getX(), e.getY()))
+                {
                     blocSelectionne = bloc;
                     offsetX = e.getX() - bloc.getX();
                     offsetY = e.getY() - bloc.getY();
 
-                    for (BlocClasse b : blocsClasses) 
-{
+                    for (BlocClasse b : blocsClasses)
+                    {
                         b.setSelectionne(false);
                     }
 
@@ -104,10 +99,10 @@ public class PanneauDiagramme extends JPanel
         }
 
         @Override
-        public void mouseDragged(MouseEvent e) 
-{
-            if (blocSelectionne != null) 
-{
+        public void mouseDragged(MouseEvent e)
+        {
+            if (blocSelectionne != null)
+            {
                 blocSelectionne.setX(e.getX() - offsetX);
                 blocSelectionne.setY(e.getY() - offsetY);
 
@@ -117,16 +112,16 @@ public class PanneauDiagramme extends JPanel
         }
 
         @Override
-        public void mouseReleased(MouseEvent e) 
-{
+        public void mouseReleased(MouseEvent e)
+        {
             blocSelectionne = null;
             offsetX = 0;
             offsetY = 0;
         }
     }
 
-    private void ajouterListenersInteraction() 
-{
+    private void ajouterListenersInteraction()
+    {
         GereSourisInteraction adapter = new GereSourisInteraction();
         this.addMouseListener(adapter);
         this.addMouseMotionListener(adapter);
@@ -134,18 +129,17 @@ public class PanneauDiagramme extends JPanel
 
     /**
      * Calcule et définit la taille préférée du panneau pour le JScrollPane.
-     * 
-     * Ajuste automatiquement la taille du panneau en fonction des positions
+     * * Ajuste automatiquement la taille du panneau en fonction des positions
      * et dimensions des blocs pour permettre un défilement adéquat.
      */
-    private void calculerTailleDynamique() 
-{
+    private void calculerTailleDynamique()
+    {
         int maxX = 0;
         int maxY = 0;
         final int PADDING = 100; // Marge de sécurité
 
-        for (BlocClasse bloc : blocsClasses) 
-{
+        for (BlocClasse bloc : blocsClasses)
+        {
             // maxX = position du coin supérieur gauche + largeur
             maxX = Math.max(maxX, bloc.getX() + bloc.getLargeur());
             maxY = Math.max(maxY, bloc.getY() + bloc.getHauteur());
@@ -157,8 +151,8 @@ public class PanneauDiagramme extends JPanel
 
         Dimension currentSize = getPreferredSize();
 
-        if (requiredWidth > currentSize.width || requiredHeight > currentSize.height) 
-{
+        if (requiredWidth > currentSize.width || requiredHeight > currentSize.height)
+        {
             // Met à jour la taille préférée
             setPreferredSize(new java.awt.Dimension(requiredWidth, requiredHeight));
 
@@ -171,37 +165,37 @@ public class PanneauDiagramme extends JPanel
     // --- LOGIQUE DE DESSIN ---
 
     @Override
-    protected void paintComponent(Graphics g) 
-{
+    protected void paintComponent(Graphics g)
+    {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         dessinerLiaisons(g2d);
 
-        for (BlocClasse bloc : blocsClasses) 
-{
+        for (BlocClasse bloc : blocsClasses)
+        {
             bloc.dessiner(g2d);
         }
     }
 
     /**
      * Dessine toutes les liaisons entre les classes.
-     * 
-     * Affiche les flèches, traits et multiplicités selon le type de liaison
+     * * Affiche les flèches, traits et multiplicités selon le type de liaison
      * (héritage, implémentation, association).
-     * 
-     * @param g2d Contexte graphique 2D
+     * * @param g2d Contexte graphique 2D
      */
-    private void dessinerLiaisons(Graphics2D g2d) 
-{
+    private void dessinerLiaisons(Graphics2D g2d)
+    {
         if (liaisonsVue == null || blocsClasses == null)
+        {
             return;
+        }
 
         g2d.setFont(new Font("Arial", Font.PLAIN, 10)); // Police pour les multiplicités
 
-        for (LiaisonVue liaison : liaisonsVue) 
-{
+        for (LiaisonVue liaison : liaisonsVue)
+        {
             Optional<BlocClasse> blocOrig = blocsClasses.stream()
                     .filter(b -> b.getNom().equals(liaison.getNomClasseOrig()))
                     .findFirst();
@@ -210,16 +204,16 @@ public class PanneauDiagramme extends JPanel
                     .filter(b -> b.getNom().equals(liaison.getNomClasseDest()))
                     .findFirst();
 
-            if (blocOrig.isPresent() && blocDest.isPresent()) 
-{
+            if (blocOrig.isPresent() && blocDest.isPresent())
+            {
                 Point p1 = calculerPointConnexion(blocOrig.get(), blocDest.get());
                 Point p2 = calculerPointConnexion(blocDest.get(), blocOrig.get());
 
                 g2d.setColor(Color.BLACK);
                 Stroke oldStroke = g2d.getStroke();
 
-                switch (liaison.getType()) 
-{
+                switch (liaison.getType())
+                {
                     case HERITAGE:
                         dessinerFlecheHeritage(g2d, p1, p2, false);
                         break;
@@ -234,17 +228,17 @@ public class PanneauDiagramme extends JPanel
                         g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
 
                         // Multiplicités (seulement pour les associations)
-                        if (!liaison.getMultipliciteOrig().isEmpty()) 
-{
-                            drawMultiplicity(g2d, p1, p2, liaison.getMultipliciteOrig(), true);
+                        if (!liaison.getMultipliciteOrig().isEmpty())
+                        {
+                            dessinerMultiplicite(g2d, p1, p2, liaison.getMultipliciteOrig(), true);
                         }
-                        if (!liaison.getMultipliciteDest().isEmpty()) 
-{
-                            drawMultiplicity(g2d, p1, p2, liaison.getMultipliciteDest(), false);
+                        if (!liaison.getMultipliciteDest().isEmpty())
+                        {
+                            dessinerMultiplicite(g2d, p1, p2, liaison.getMultipliciteDest(), false);
                         }
 
-                        if (liaison.getType() == TypeLiaison.ASSOCIATION_UNIDI) 
-{
+                        if (liaison.getType() == TypeLiaison.ASSOCIATION_UNIDI)
+                        {
                             dessinerFlecheSimple(g2d, p1, p2);
                         }
                         break;
@@ -257,16 +251,15 @@ public class PanneauDiagramme extends JPanel
 
     /**
      * Affiche la multiplicité d'une association.
-     * 
-     * @param g2d          Contexte graphique 2D
+     * * @param g2d          Contexte graphique 2D
      * @param pStart       Point de départ de la liaison
      * @param pEnd         Point d'arrivée de la liaison
      * @param multiplicity Texte de la multiplicité (ex: "1..*", "0..1")
      * @param isSource     true pour la multiplicité source, false pour la
-     *                     destination
+     * destination
      */
-    private void drawMultiplicity(Graphics2D g2d, Point pStart, Point pEnd, String multiplicity, boolean isSource) 
-{
+    private void dessinerMultiplicite(Graphics2D g2d, Point pStart, Point pEnd, String multiplicity, boolean isSource)
+    {
 
         Point pAnchor = isSource ? pStart : pEnd;
 
@@ -292,17 +285,15 @@ public class PanneauDiagramme extends JPanel
 
     /**
      * Dessine une flèche d'héritage ou d'implémentation.
-     * 
-     * Affiche un triangle vide à l'extrémité avec une ligne pleine (héritage)
+     * * Affiche un triangle vide à l'extrémité avec une ligne pleine (héritage)
      * ou pointillée (implémentation).
-     * 
-     * @param g2d              Contexte graphique 2D
+     * * @param g2d              Contexte graphique 2D
      * @param p1               Point de départ (classe enfant)
      * @param p2               Point d'arrivée (classe parent/interface)
      * @param isImplementation true pour implémentation, false pour héritage
      */
-    private void dessinerFlecheHeritage(Graphics2D g2d, Point p1, Point p2, boolean isImplementation) 
-{
+    private void dessinerFlecheHeritage(Graphics2D g2d, Point p1, Point p2, boolean isImplementation)
+    {
         int tailleTriangle = 15;
 
         double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);
@@ -325,12 +316,13 @@ public class PanneauDiagramme extends JPanel
         Polygon triangle = new Polygon(xPoints, yPoints, 3);
 
         // 2. Dessin de la ligne (pleine ou pointillée)
-        if (isImplementation) 
-{
+        if (isImplementation)
+        {
             g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f,
                     new float[] { 4.0f, 4.0f }, 0.0f));
-        } else
-{
+        }
+        else
+        {
             g2d.setStroke(new BasicStroke(1));
         }
 
@@ -346,13 +338,12 @@ public class PanneauDiagramme extends JPanel
 
     /**
      * Dessine une flèche simple pour les associations unidirectionnelles.
-     * 
-     * @param g2d Contexte graphique 2D
+     * * @param g2d Contexte graphique 2D
      * @param p1  Point de départ
      * @param p2  Point d'arrivée
      */
-    private void dessinerFlecheSimple(Graphics2D g2d, Point p1, Point p2) 
-{
+    private void dessinerFlecheSimple(Graphics2D g2d, Point p1, Point p2)
+    {
         int tailleFleche = 10;
 
         double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);
@@ -369,16 +360,14 @@ public class PanneauDiagramme extends JPanel
 
     /**
      * Calcule le point de connexion optimal sur le bord d'un bloc.
-     * 
-     * Détermine le côté du bloc (haut, bas, gauche, droite) le plus proche
+     * * Détermine le côté du bloc (haut, bas, gauche, droite) le plus proche
      * de la cible pour tracer la liaison.
-     * 
-     * @param blocOrigine Bloc de départ
+     * * @param blocOrigine Bloc de départ
      * @param blocCible   Bloc ciblé
      * @return Point de connexion sur le bord du bloc origine
      */
-    private Point calculerPointConnexion(BlocClasse blocOrigine, BlocClasse blocCible) 
-{
+    private Point calculerPointConnexion(BlocClasse blocOrigine, BlocClasse blocCible)
+    {
         // ... (Logique inchangée pour calculer le point de connexion)
         int x1 = blocOrigine.getX();
         int y1 = blocOrigine.getY();
@@ -393,20 +382,25 @@ public class PanneauDiagramme extends JPanel
         double angle = Math.atan2(cY2 - cY1, cX2 - cX1);
         double angleDeg = Math.toDegrees(angle);
         if (angleDeg < 0)
+        {
             angleDeg += 360;
+        }
 
         // Détermination du côté touché
-        if ((angleDeg >= 315 && angleDeg <= 360) || (angleDeg >= 0 && angleDeg < 45)) 
-{
+        if ((angleDeg >= 315 && angleDeg <= 360) || (angleDeg >= 0 && angleDeg < 45))
+        {
             return new Point(x1 + w1, cY1);
-        } else if (angleDeg >= 45 && angleDeg < 135) 
-{
+        }
+        else if (angleDeg >= 45 && angleDeg < 135)
+        {
             return new Point(cX1, y1 + h1);
-        } else if (angleDeg >= 135 && angleDeg < 225) 
-{
+        }
+        else if (angleDeg >= 135 && angleDeg < 225)
+        {
             return new Point(x1, cY1);
-        } else if (angleDeg >= 225 && angleDeg < 315) 
-{
+        }
+        else if (angleDeg >= 225 && angleDeg < 315)
+        {
             return new Point(cX1, y1);
         }
 
@@ -417,48 +411,48 @@ public class PanneauDiagramme extends JPanel
 
     /**
      * Affiche une liste de blocs dans le diagramme.
-     * 
-     * @param blocs Liste des blocs à afficher
+     * * @param blocs Liste des blocs à afficher
      */
-    public void afficherDiagramme(List<BlocClasse> blocs) 
-{
+    public void afficherDiagramme(List<BlocClasse> blocs)
+    {
         this.blocsClasses = blocs;
         // Le repaint est maintenant géré par setLiaisonsVue
     }
 
-    public List<LiaisonVue> getLiaisonsVue() 
-{
+    public List<LiaisonVue> getLiaisonsVue()
+    {
         return liaisonsVue;
     }
 
-    public void setLiaisonsVue(List<LiaisonVue> liaisonsVue) 
-{
+    public void setLiaisonsVue(List<LiaisonVue> liaisonsVue)
+    {
         this.liaisonsVue = liaisonsVue;
         this.repaint();
     }
 
-    public List<BlocClasse> getBlocsClasses() 
-{
+    public List<BlocClasse> getBlocsClasses()
+    {
         return blocsClasses;
     }
 
-    public BlocClasse getBlocsClasseSelectionnee() 
-{
-        for (BlocClasse bloc : blocsClasses) 
-{
+    public BlocClasse getBlocsClasseSelectionnee()
+    {
+        for (BlocClasse bloc : blocsClasses)
+        {
             if (bloc.estSelectionne())
+            {
                 return bloc;
+            }
         }
         return null;
     }
 
     /**
      * Définit la liste des blocs à afficher et recalcule la taille du panneau.
-     * 
-     * @param blocsVue Liste des blocs de classes à afficher
+     * * @param blocsVue Liste des blocs de classes à afficher
      */
-    public void setBlocsClasses(List<BlocClasse> blocsVue) 
-{
+    public void setBlocsClasses(List<BlocClasse> blocsVue)
+    {
         this.blocsClasses = blocsVue;
         // Met à jour la taille du panneau pour le JScrollPane
         calculerTailleDynamique();
@@ -466,15 +460,14 @@ public class PanneauDiagramme extends JPanel
 
     /**
      * Optimise la disposition des blocs en utilisant un algorithme hiérarchique.
-     * 
-     * Les blocs sont arrangés en couches pour minimiser les croisements de
+     * * Les blocs sont arrangés en couches pour minimiser les croisements de
      * liaisons.
      * Met à jour la taille du panneau et red essine le diagramme.
      */
-    public void optimiserDisposition() 
-{
-        if (blocsClasses.isEmpty()) 
-{
+    public void optimiserDisposition()
+    {
+        if (blocsClasses.isEmpty())
+        {
             return;
         }
 
@@ -488,13 +481,12 @@ public class PanneauDiagramme extends JPanel
 
     /**
      * Dispose les blocs en grille régulière.
-     * 
-     * Organisation en lignes et colonnes avec espacement uniforme.
+     * * Organisation en lignes et colonnes avec espacement uniforme.
      */
-    public void disposerEnGrille() 
-{
-        if (blocsClasses.isEmpty()) 
-{
+    public void disposerEnGrille()
+    {
+        if (blocsClasses.isEmpty())
+        {
             return;
         }
 
@@ -505,13 +497,12 @@ public class PanneauDiagramme extends JPanel
 
     /**
      * Dispose les blocs en cercle autour du premier bloc.
-     * 
-     * Utile pour visualiser les relations centrées sur une classe principale.
+     * * Utile pour visualiser les relations centrées sur une classe principale.
      */
-    public void disposerEnCirculaire() 
-{
-        if (blocsClasses.isEmpty()) 
-{
+    public void disposerEnCirculaire()
+    {
+        if (blocsClasses.isEmpty())
+        {
             return;
         }
 
@@ -519,5 +510,4 @@ public class PanneauDiagramme extends JPanel
         calculerTailleDynamique();
         repaint();
     }
-
 }

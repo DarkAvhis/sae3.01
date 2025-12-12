@@ -31,7 +31,7 @@ public class AttributObjet
 	 * @param finale     true si l'attribut est final, false sinon
 	 */
 	public AttributObjet(String nom, String portee, String type, String visibilite, boolean statique, boolean finale) 
-{
+	{
 		this.nom = nom;
 		this.portee = portee;
 		this.type = type;
@@ -51,7 +51,7 @@ public class AttributObjet
 	 * @param visibilite Visibilité de l'attribut
 	 */
 	public AttributObjet(String nom, String portee, String type, String visibilite) 
-{
+	{
 		this(nom, portee, type, visibilite, false, false);
 	}
 
@@ -59,32 +59,32 @@ public class AttributObjet
 	/* Les Accesseurs */
 	/*-------------------------------------- */
 	public String getVisibilite() 
-{
+	{
 		return visibilite;
 	}
 
 	public String getPortee() 
-{
+	{
 		return portee;
 	}
 
 	public String getNom() 
-{
+	{
 		return nom;
 	}
 
 	public String getType() 
-{
+	{
 		return type;
 	}
 
 	public boolean estStatique() 
-{
+	{
 		return statique;
 	}
 
 	public boolean estFinale() 
-{
+	{
 		return finale;
 	}
 
@@ -92,7 +92,7 @@ public class AttributObjet
 	/* Modificateurs */
 	/*-------------------------------------- */
 	public void setPortee(String portee) 
-{
+	{
 		this.portee = portee;
 	}
 

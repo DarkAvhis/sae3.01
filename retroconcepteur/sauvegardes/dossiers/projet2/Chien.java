@@ -2,20 +2,24 @@ public class Chien {
 	private String nom;
 	private int age;
 
-	public Chien(String nom, int age) {
+	public Chien(String nom, int age) 
+	{
 		this.nom = nom;
 		this.age = age;
 	}
 
-	public String getNom() {
+	public String getNom() 
+	{
 		return nom;
 	}
 
-	public int getAge() {
+	public int getAge() 
+	{
 		return age;
 	}
 
-	public void aboyer() {
+	public void aboyer() 
+	{
 		System.out.println(nom + "Ouaf");
 	}
 }

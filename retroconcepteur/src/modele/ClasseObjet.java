@@ -162,19 +162,6 @@ public class ClasseObjet
 	 *
 	 * @return chaîne formatée représentant la classe (attributs + méthodes)
 	 */
-// Dans modele/ClasseObjet.java (méthode toString)
-
-// ...
-
-	/*-------------------------------------- */
-/* toString                              */
-/*-------------------------------------- */
-
-/**
- * Génère une représentation textuelle de la classe sous forme UML.
- *
- * @return chaîne formatée représentant la classe (attributs + méthodes)
- */
 	public String toString() 
 	{
 		// Codes ANSI

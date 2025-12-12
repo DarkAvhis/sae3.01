@@ -14,25 +14,24 @@ package src.modele;
 public class HeritageObjet extends LiaisonObjet
 {
 
-    /**
-     * Constructeur d'une relation d'héritage.
-     * 
-     * @param classeDest Classe parent (superclasse)
-     * @param classeOrig Classe enfant (sous-classe)
-     */
-    public HeritageObjet(ClasseObjet classeDest, ClasseObjet classeOrig) 
-{
-        super(null, classeDest, classeOrig);
-    }
+	/**
+	 * Constructeur d'une relation d'héritage.
+	 * 
+	 * @param classeDest Classe parent (superclasse)
+	 * @param classeOrig Classe enfant (sous-classe)
+	 */
+	public HeritageObjet(ClasseObjet classeDest, ClasseObjet classeOrig) 
+	{
+		super(null, classeDest, classeOrig);
+	}
 
-    /**
-     * Retourne une représentation textuelle simple de l'héritage.
-     *
-     * @return une chaîne du type : "Fille hérite de Mere".
-     */
-    public String toString() 
-{
-        return String.format("%-10s", classeFille.getNom()) + " hérite de " + classeMere.getNom();
-    }
-
+	/**
+	 * Retourne une représentation textuelle simple de l'héritage.
+	 *
+	 * @return une chaîne du type : "Fille hérite de Mere".
+	 */
+	public String toString() 
+	{
+		return String.format("%-10s", classeFille.getNom()) + " hérite de " + classeMere.getNom();
+	}
 }
