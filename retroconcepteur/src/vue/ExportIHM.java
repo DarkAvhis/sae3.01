@@ -19,12 +19,7 @@ public class ExportIHM
             component.setSize(size);
         }
 
-        BufferedImage image = new BufferedImage(
-            size.width,
-            size.height,
-            BufferedImage.TYPE_INT_ARGB
-        );
-
+        BufferedImage image = new BufferedImage( size.width, size.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();
         component.paintAll(g2d);
         g2d.dispose();
