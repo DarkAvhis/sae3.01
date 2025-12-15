@@ -39,6 +39,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
     private JMenuItem alignerClasse;
     private JMenuItem optimiserClasse;
+    private JMenuItem itemExporter;
 
     private JMenuItem aProposClasse;
 
@@ -54,7 +55,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
      * @param panneauProjets Le panneau de projets pour ajouter des projets ouverts
      */
     public BarreMenus(Controleur controleur, PanneauProjets panneauProjets) 
-{
+    {
         this.controleur = controleur;
         this.panneauProjets = panneauProjets;
 
@@ -73,7 +74,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
      * @return Le menu Fichier configuré
      */
     public JMenu creerMenuFichier() 
-{
+    {
         JMenu menu = new JMenu("Fichier");
 
         this.nouvelleClasse = new JMenuItem("Nouveau projet");
@@ -103,7 +104,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
      * @return Le menu Édition configuré
      */
     public JMenu creerMenuEdition() 
-{
+    {
         JMenu menu = new JMenu("Édition");
 
         this.annulerClasse = new JMenuItem("Annuler");
@@ -130,17 +131,21 @@ public class BarreMenus extends JMenuBar implements ActionListener
      * @return Le menu Affichage configuré
      */
     public JMenu creerMenuAffichage() 
-{
+    {
         JMenu menu = new JMenu("Affichage");
 
-        this.alignerClasse = new JMenuItem("Aligner les symboles");
+        this.alignerClasse   = new JMenuItem("Aligner les symboles");
         this.optimiserClasse = new JMenuItem("Optimiser les positions");
+        this.itemExporter    = new JMenuItem("Exporter le diagramme (PNG)");
 
-        alignerClasse.addActionListener(this);
+        alignerClasse  .addActionListener(this);
         optimiserClasse.addActionListener(this);
+        itemExporter   .addActionListener(this);
 
         menu.add(alignerClasse);
         menu.add(optimiserClasse);
+        menu.addSeparator();
+        menu.add(itemExporter);
 
         return menu;
     }
@@ -153,7 +158,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
      * @return Le menu Aide configuré
      */
     public JMenu creerMenuAide() 
-{
+    {
         JMenu menu = new JMenu("Aide");
 
         this.aProposClasse = new JMenuItem("À propos");
@@ -172,7 +177,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
      * @param e L'événement déclenché par un item de menu
      */
     public void actionPerformed(ActionEvent e) 
-{
+    {
         Object src = e.getSource();
 
         if (src == nouvelleClasse)
@@ -195,6 +200,8 @@ public class BarreMenus extends JMenuBar implements ActionListener
             actionAligner();
         else if (src == optimiserClasse)
             actionOptimiser();
+        else if (src == itemExporter)
+            actionExporter();
         else if (src == aProposClasse)
             actionAPropos();
     }
@@ -205,8 +212,18 @@ public class BarreMenus extends JMenuBar implements ActionListener
      * @note Fonctionnalité en cours de développement
      */
     public void actionNouveauProjet() 
-{
+    {
         JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Pas fini");
+    }
+
+    /**
+     * Action pour exporter le diagramme au format PNG.
+     * 
+     * @note Fonctionnalité en cours de développement
+     */
+    public void actionExporter()
+    {
+        controleur.exporterDiagramme("diagramme.png");
     }
 
     /**
@@ -252,17 +269,17 @@ public class BarreMenus extends JMenuBar implements ActionListener
      * Action pour sauvegarder les positions des blocs.
      */
     public void actionSauvegarder() 
-{
+    {
         this.controleur.sauvegarde();
     }
 
     public void actionAnnuler() 
-{
+    {
         JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Pas fini");
     }
 
     public void actionRetablir() 
-{
+    {
         JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Pas fini");
     }
 

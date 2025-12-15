@@ -27,9 +27,9 @@ public class OptimisateurDisposition
      */
     public static void appliquerLayoutHierarchique(List<BlocClasse> blocsClasses, List<LiaisonVue> liaisonsVue)
    
-{
+    {
         if (blocsClasses == null || blocsClasses.isEmpty()) 
-{
+        {
             return;
         }
 

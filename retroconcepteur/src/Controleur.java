@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import src.modele.entites.InterfaceObjet;
 import src.modele.entites.AssociationObjet;
 import src.modele.entites.AttributObjet;
@@ -18,6 +20,9 @@ import src.vue.BlocClasse;
 import src.vue.FenetrePrincipale;
 import src.vue.LiaisonVue;
 import src.vue.LiaisonVue.TypeLiaison;
+
+import java.io.IOException;
+import src.vue.ExportIHM;
 
 /**
  * Contrôleur principal de l'application de génération de diagrammes UML.
@@ -54,7 +59,38 @@ public class Controleur
     {
         this.metierComplet = new AnalyseIHMControleur();
         this.vuePrincipale = new FenetrePrincipale(this);
-        this.vuePrincipale.setVisible(true);
+    }
+
+    // nouveau (permettre l'exportation)
+    public void exporterDiagramme(String cheminFichier)
+    {
+        if (this.vuePrincipale == null)
+            return;
+
+        try
+        {
+            ExportIHM.exportComponent(
+                this.vuePrincipale.getPanneauDiagramme(),
+                cheminFichier
+            );
+
+            JOptionPane.showMessageDialog(
+                this.vuePrincipale,
+                "Le diagramme a été exporté avec succès.\n\nFichier : " + cheminFichier,
+                "Export réussi",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+        }
+        catch (IOException e)
+        {
+            JOptionPane.showMessageDialog(
+                this.vuePrincipale,
+                "Erreur lors de l'export du diagramme.",
+                "Erreur",
+                JOptionPane.ERROR_MESSAGE
+            );
+            e.printStackTrace();
+        }
     }
 
     /**
