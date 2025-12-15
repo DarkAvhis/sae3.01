@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import src.modele.entites.InterfaceObjet;
 import src.modele.entites.AssociationObjet;
 import src.modele.entites.AttributObjet;
@@ -70,11 +72,22 @@ public class Controleur
                 this.vuePrincipale.getPanneauDiagramme(),
                 cheminFichier
             );
-            System.out.println("Diagramme exporté : " + cheminFichier);
+
+            JOptionPane.showMessageDialog(
+                this.vuePrincipale,
+                "Le diagramme a été exporté avec succès.\n\nFichier : " + cheminFichier,
+                "Export réussi",
+                JOptionPane.INFORMATION_MESSAGE
+            );
         }
         catch (IOException e)
         {
-            System.err.println("Erreur lors de l'export du diagramme");
+            JOptionPane.showMessageDialog(
+                this.vuePrincipale,
+                "Erreur lors de l'export du diagramme.",
+                "Erreur",
+                JOptionPane.ERROR_MESSAGE
+            );
             e.printStackTrace();
         }
     }
