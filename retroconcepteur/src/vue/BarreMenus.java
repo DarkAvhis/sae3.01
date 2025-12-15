@@ -206,7 +206,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
     /**
      * Action pour exporter le diagramme au format PNG.
      * 
-     * @note Fonctionnalité en cours de développement
+     * Permet d'exporter le diagramme sous le nom "diagramme.png"
      */
     public void actionExporter()
     {
