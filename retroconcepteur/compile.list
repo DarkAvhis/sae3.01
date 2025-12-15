@@ -9,5 +9,14 @@
 ./src/modele/entites/InterfaceObjet.java
 ./src/modele/outil/ParsingUtil.java
 
+./src/vue/BarreMenus.java
+./src/vue/BlocClasse.java
 ./src/vue/ConsoleVue.java
+./src/vue/FenetrePrincipale.java
+./src/vue/LiaisonVue.java
+./src/vue/OptimisateurDisposition.java
+./src/vue/PanneauDiagramme.java
+./src/vue/PanneauProjets.java
+
 ./src/AnalyseIHMControleur.java
+./src/Controleur.java
