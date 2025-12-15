@@ -90,7 +90,7 @@ public class BlocClasse
      * @param y   Position Y du bloc
      */
     public BlocClasse(String nom, int x, int y) 
-{
+    {
         this(nom, x, y, new ArrayList<>(), new ArrayList<>());
     }
 
@@ -198,62 +198,21 @@ public class BlocClasse
     }
 
     // Getters et Setters
-    public String getNom() 
-{
-        return this.nom;
-    }
+    public String  getNom        () {    return this.nom            ;  }
+    public int     getX          () {    return this.x              ;  }
+    public int     getY          () {    return this.y              ;  }
+    public int     getLargeur    () {    return this.largeur        ;  }
+    public int     getHauteur    () {    return this.hauteur        ;  }
+    public boolean estInterface  () {    return this.estInterface   ;  }
+    public boolean estSelectionne() {    return this.estSelectionne ;  }
 
-    public int getX() 
-{
-        return this.x;
-    }
 
-    public int getY() 
-{
-        return this.y;
-    }
+    public void setX(int x) {    this.x = x;    }
+    public void setY(int y) {    this.y = y;   }
+    public void setInterface(boolean estInterface) {    this.estInterface = estInterface;    }
+    public void setSelectionne(boolean selectionne) {    this.estSelectionne = selectionne;    }
 
-    public int getLargeur() 
-{
-        return this.largeur;
-    }
-
-    public int getHauteur() 
-{
-        return this.hauteur;
-    }
-
-    public void setX(int x) 
-{
-        this.x = x;
-    }
-
-    public void setY(int y) 
-{
-        this.y = y;
-    }
-
-    public void setInterface(boolean estInterface) 
-{
-        this.estInterface = estInterface;
-    }
-
-    public void setSelectionne(boolean selectionne) 
-{
-        this.estSelectionne = selectionne;
-    }
-
-    public boolean estInterface() 
-{
-        return this.estInterface;
-    }
-
-    public boolean estSelectionne() 
-{
-        return this.estSelectionne;
-    }
-
-     public void setAttributs(List<String> attributs) 
+    public void setAttributs(List<String> attributs) 
     {
         this.attributsAffichage = attributs;
         recalculerDimensions();
