@@ -113,6 +113,7 @@ public class ClasseObjet {
 
 		return sRet;
 	}
+	
 
 	/**
 	 * Retourne la syntaxe UML pour un type de retour.
