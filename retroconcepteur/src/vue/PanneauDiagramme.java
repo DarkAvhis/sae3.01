@@ -1,4 +1,4 @@
-package src.vue;
+package vue;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -20,8 +20,8 @@ import java.util.Optional;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import src.Controleur;
-import src.vue.LiaisonVue.TypeLiaison;
+import controleur.Controleur;
+import vue.LiaisonVue.TypeLiaison;
 
 /**
  * Panneau d'affichage du diagramme UML.

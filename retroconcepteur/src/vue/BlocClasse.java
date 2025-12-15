@@ -1,4 +1,4 @@
-package src.vue;
+package vue;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -20,14 +20,14 @@ import java.util.List;
  *         BUYANBADRAKH, Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class BlocClasse
-{
+public class BlocClasse {
     private String nom;
     private int x;
     private int y;
     private int largeur;
     private int hauteur;
     private boolean estInterface;
+    private boolean estSuperClasse;
     private boolean estSelectionne;
 
     // Nouveaux champs pour stocker les détails
@@ -39,8 +39,10 @@ public class BlocClasse
     private static final int HAUTEUR_ENTETE = 30;
     private static final int HAUTEUR_LIGNE = 20; // Nouvelle constante pour la hauteur d'une ligne de texte
     private static final Color COULEUR_FOND = new Color(230, 240, 250);
+    private static final Color COULEUR_FOND_SUPER = new Color(235, 235, 235);
     private static final Color COULEUR_BORDURE = new Color(0, 0, 0);
     private static final Color COULEUR_ENTETE = new Color(100, 150, 200);
+    private static final Color COULEUR_ENTETE_SUPER = new Color(140, 140, 140);
 
     /**
      * Constructeur principal d'un bloc classe.
@@ -54,8 +56,7 @@ public class BlocClasse
      * @param attributs Liste des attributs formatés pour l'affichage
      * @param methodes  Liste des méthodes formatées pour l'affichage
      */
-    public BlocClasse(String nom, int x, int y, List<String> attributs, List<String> methodes) 
-{
+    public BlocClasse(String nom, int x, int y, List<String> attributs, List<String> methodes) {
         this.nom = nom;
         this.x = x;
         this.y = y;
@@ -63,6 +64,7 @@ public class BlocClasse
         this.methodesAffichage = methodes;
 
         this.estInterface = false;
+        this.estSuperClasse = false;
         this.estSelectionne = false;
 
         // Calculer la taille initiale minimale
@@ -89,8 +91,7 @@ public class BlocClasse
      * @param x   Position X du bloc
      * @param y   Position Y du bloc
      */
-    public BlocClasse(String nom, int x, int y) 
-{
+    public BlocClasse(String nom, int x, int y) {
         this(nom, x, y, new ArrayList<>(), new ArrayList<>());
     }
 
@@ -102,10 +103,10 @@ public class BlocClasse
      * 
      * @param g Le contexte graphique 2D pour le dessin
      */
-    public void dessiner(Graphics2D g) 
-{
+    public void dessiner(Graphics2D g) {
         // 1. Fond et Bord
-        g.setColor(COULEUR_FOND);
+        Color couleurFond = this.estSuperClasse ? COULEUR_FOND_SUPER : COULEUR_FOND;
+        g.setColor(couleurFond);
         g.fillRect(x, y, largeur, hauteur);
 
         g.setColor(estSelectionne ? Color.BLUE : COULEUR_BORDURE);
@@ -113,7 +114,8 @@ public class BlocClasse
         g.drawRect(x, y, largeur, hauteur);
 
         // 2. Entête (Nom de la classe)
-        g.setColor(COULEUR_ENTETE);
+        Color couleurEntete = this.estSuperClasse ? COULEUR_ENTETE_SUPER : COULEUR_ENTETE;
+        g.setColor(couleurEntete);
         g.fillRect(x, y, largeur, HAUTEUR_ENTETE);
 
         g.setColor(Color.WHITE);
@@ -129,7 +131,7 @@ public class BlocClasse
         g.setFont(new Font("Arial", Font.PLAIN, 12));
 
         for (String att : attributsAffichage) 
-{
+        {
             currentY += HAUTEUR_LIGNE;
 
             boolean estStatique = att.contains("{static}");
@@ -138,7 +140,7 @@ public class BlocClasse
             g.drawString(libelle, x + PADDING, currentY);
 
             if (estStatique) 
-{
+            {
                 FontMetrics fmLigne = g.getFontMetrics();
 
                 int underlineY = currentY + 2;
@@ -156,7 +158,7 @@ public class BlocClasse
         currentY += PADDING;
 
         for (String met : methodesAffichage) 
-{
+        {
             currentY += HAUTEUR_LIGNE;
 
             boolean estStatique = met.contains("{static}");
@@ -165,18 +167,12 @@ public class BlocClasse
             g.drawString(libelle, x + PADDING, currentY);
 
             if (estStatique) 
-{
+            {
                 FontMetrics fmLigne = g.getFontMetrics();
                 int underlineY = currentY + 2;
                 int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
                 g.drawLine(x + PADDING, underlineY, underlineX2, underlineY);
             }
-        }
-
-        // 6. Gestion Interface (si besoin)
-        if (estInterface) 
-{
-            // ... (logique de dessin <<interface>> conservée)
         }
     }
 
@@ -189,67 +185,59 @@ public class BlocClasse
      * @param py Coordonnée Y du point
      * @return true si le point est dans le bloc, false sinon
      */
-    public boolean contient(int px, int py) 
-{
+    public boolean contient(int px, int py) {
         return px >= x
                 && px <= x + largeur
                 && py >= y
                 && py <= y + hauteur;
     }
 
+    public void setSuperClasse(boolean estSuperClasse) {
+        this.estSuperClasse = estSuperClasse;
+    }
+
     // Getters et Setters
-    public String getNom() 
-{
+    public String getNom() {
         return this.nom;
     }
 
-    public int getX() 
-{
+    public int getX() {
         return this.x;
     }
 
-    public int getY() 
-{
+    public int getY() {
         return this.y;
     }
 
-    public int getLargeur() 
-{
+    public int getLargeur() {
         return this.largeur;
     }
 
-    public int getHauteur() 
-{
+    public int getHauteur() {
         return this.hauteur;
     }
 
-    public void setX(int x) 
-{
+    public void setX(int x) {
         this.x = x;
     }
 
-    public void setY(int y) 
-{
+    public void setY(int y) {
         this.y = y;
     }
 
-    public void setInterface(boolean estInterface) 
-{
+    public void setInterface(boolean estInterface) {
         this.estInterface = estInterface;
     }
 
-    public void setSelectionne(boolean selectionne) 
-{
+    public void setSelectionne(boolean selectionne) {
         this.estSelectionne = selectionne;
     }
 
-    public boolean estInterface() 
-{
+    public boolean estInterface() {
         return this.estInterface;
     }
 
-    public boolean estSelectionne() 
-{
+    public boolean estSelectionne() {
         return this.estSelectionne;
     }
 }
