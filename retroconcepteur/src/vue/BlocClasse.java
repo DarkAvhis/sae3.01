@@ -197,7 +197,6 @@ public class BlocClasse
     }
 
     // Getters et Setters
-<<<<<<< HEAD
     public String  getNom        () {    return this.nom            ;  }
     public int     getX          () {    return this.x              ;  }
     public int     getY          () {    return this.y              ;  }
@@ -270,20 +269,4 @@ public class BlocClasse
                 + (attributsAffichage.size() + methodesAffichage.size()) * HAUTEUR_LIGNE
                 + PADDING * 4;
     }
-=======
-    public String getNom    () {return this.nom    ;}
-    public int    getX      () {return this.x      ;}
-    public int    getY      () {return this.y      ;}
-    public int    getLargeur() {return this.largeur;}
-    public int    getHauteur() {return this.hauteur;}
-
-    public void setX(int x) {this.x = x;}
-    public void setY(int y) {this.y = y;}
-    public void setInterface  (boolean estInterface) {this.estInterface   = estInterface;}
-    public void setSelectionne(boolean selectionne ) {this.estSelectionne = selectionne ;}
-
->>>>>>> 92fad977006e2de2a7408e30999535427a718c35
-
-    public boolean estInterface  () {return this.estInterface  ;}
-    public boolean estSelectionne() {return this.estSelectionne;}
 }
