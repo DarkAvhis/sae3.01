@@ -2,7 +2,7 @@
 
 # Compilation
 echo "=== Compilation du projet ==="
-javac -d bin @compile.list
+javac -d class @compile.list
 
 if [ $? -eq 0 ]; then
     echo "Compilation réussie"
