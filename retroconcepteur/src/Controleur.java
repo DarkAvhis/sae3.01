@@ -167,6 +167,8 @@ public class Controleur
         majAffichage();
     }
 
+    
+
     /**
      * Met à jour l'affichage des blocs et des liaisons.
      */

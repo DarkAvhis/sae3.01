@@ -67,7 +67,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
     @Override
     public void mouseWheelMoved(MouseWheelEvent e)
     {
-        if (e.isControlDown()) 
+        if (e.isControlDown() ) 
         { 
             double delta = 0.1;
             if (e.getWheelRotation() < 0)
