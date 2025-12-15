@@ -1,123 +1,70 @@
-package src.modele;
+package src.modele.entites;
 
 /**
  * Représente une liaison générique entre deux classes dans un diagramme UML.
- * 
- * Cette classe abstraite sert de base pour tous les types de relations :
+ * Cette classe sert de superclasse pour les relations comme :
  * - Héritage (HeritageObjet)
  * - Implémentation d'interface (InterfaceObjet)
- * - Association (AssociationObjet)
  * 
- * Chaque liaison possède un identifiant unique et relie une classe fille à une
- * classe mère.
- * 
- * @author Quentin MORVAN, Valentin LEROY, Celim CHAOU, Enzo DUMONT, Ariunbayar
- *         BUYANBADRAKH, Yassine EL MAADI
- * @date 12 décembre 2025
+ * Attributs principaux :
+ * classeFille : la classe qui reçoit la relation (ex: enfant ou classe concrète)</li>
+ * classeMere  : la classe source de la relation (ex: parent ou interface)</li>
+ * nomAttribut : nom optionnel de la relation</li>
+ * num         : identifiant unique de la liaison</li>
  */
-public class LiaisonObjet
+public class LiaisonObjet 
 {
-	/** Nom optionnel de la liaison (non utilisé dans l'affichage UML). */
-	protected String nomAttribut;
-	/** Classe qui reçoit la relation (classe enfant ou classe concrète). */
+    /*-------------------------------------- */
+	/* Attributs                             */
+	/*-------------------------------------- */
+	protected String      nomAttribut;
 	protected ClasseObjet classeFille;
-	/** Classe source de la relation (classe parent ou interface). */
 	protected ClasseObjet classeMere;
-	/** Identifiant unique de la liaison. */
-	protected int num;
+	protected int         num;
 
-	/** Compteur statique pour attribuer un numéro unique à chaque liaison. */
-	private static int nbLiaisons = 0;
+	private static int    nbLiaisons = 0;
 
-	/**
-	 * Constructeur complet d'une liaison entre deux classes.
-	 *
-	 * @param nomAttribut Nom optionnel de la relation
-	 * @param classeMere  Classe source (parent ou interface)
-	 * @param classeFille Classe cible (enfant ou classe concrète)
-	 */
-	public LiaisonObjet(String nomAttribut, ClasseObjet classeMere, ClasseObjet classeFille) 
+    /*-------------------------------------- */
+	/* Constructeurs                         */
+	/*-------------------------------------- */
+	public LiaisonObjet(String nomAttribut, ClasseObjet classeMere, ClasseObjet classeFille)
 	{
-		this.nomAttribut = nomAttribut;
-		this.classeMere = classeMere;
-		this.classeFille = classeFille;
-		num = ++nbLiaisons;
+		this.nomAttribut = nomAttribut ;
+		this.classeMere  = classeMere  ;
+		this.classeFille = classeFille ;
+		this.num         = ++LiaisonObjet.nbLiaisons;
 	}
 
-	/**
-	 * Constructeur simplifié d'une liaison sans classe mère.
-	 * 
-	 * Utilisé lorsque la classe mère sera définie ultérieurement.
-	 * 
-	 * @param nomAttribut Nom optionnel de la relation
-	 * @param classeFille Classe cible
-	 */
-	public LiaisonObjet(String nomAttribut, ClasseObjet classeFille) 
+    public LiaisonObjet(ClasseObjet classeMere, ClasseObjet classeFille) 
 	{
-		this.nomAttribut = nomAttribut;
-		this.classeFille = classeFille;
-		num = ++nbLiaisons;
+        this("",classeMere,classeFille);
+		this.num          = ++LiaisonObjet.nbLiaisons;
 	}
 
-	// ----------------- Getters -----------------
-
-	/** @return le nom de la liaison */
-	public String getNomAttribut() 
+    public LiaisonObjet(ClasseObjet classeFille) 
 	{
-		return this.nomAttribut;
+		this("",null,classeFille);
+		this.num          = ++LiaisonObjet.nbLiaisons;
 	}
 
-	/** @return la classe enfant ou classe concrète */
-	public ClasseObjet getClasseFille() 
-	{
-		return this.classeFille;
-	}
+	/*-------------------------------------- */
+	/* Les Accesseurs                        */
+	/*-------------------------------------- */
+    public String      getNomAttribut() { return this.nomAttribut; }
+    public ClasseObjet getClasseFille() { return this.classeFille; }
+    public ClasseObjet getClasseMere () { return  this.classeMere; }
+    public int         getNum        () { return  this.num;        }
+    
+	/*-------------------------------------- */
+	/* Modificateurs                         */
+	/*-------------------------------------- */
+    public void setNomAttribut(String      nomAttribut) { this.nomAttribut = nomAttribut ;   }
+    public void setClasseFille(ClasseObjet classeFille) { this.classeFille = classeFille ;   }
+    public void setClasseMere (ClasseObjet classeMere ) { this.classeMere  = classeMere  ;   }
+    public void setNum        (int         num        ) { this.num         = num         ;   }
 
-	/** @return la classe parent ou interface */
-	public ClasseObjet getClasseMere() 
-	{
-		return this.classeMere;
-	}
-
-	/** @return le numéro unique de la liaison */
-	public int getNum() 
-	{
-		return this.num;
-	}
-
-	/**
-	 * Réinitialise le compteur de liaisons.
-	 * 
-	 * Utile pour recommencer la numérotation à 1 lors d'une nouvelle analyse.
-	 */
-	public static void reinitialiserCompteur() 
-	{
-		nbLiaisons = 0;
-	}
-
-	// ----------------- Setters -----------------
-
-	/** @param nomAttribut nouveau nom de la liaison */
-	public void setNomAttribut(String nomAttribut) 
-	{
-		this.nomAttribut = nomAttribut;
-	}
-
-	/** @param classeFille nouvelle classe enfant ou classe concrète */
-	public void setClasseFille(ClasseObjet classeFille) 
-	{
-		this.classeFille = classeFille;
-	}
-
-	/** @param classeMere nouvelle classe parent ou interface */
-	public void setClasseMere(ClasseObjet classeMere) 
-	{
-		this.classeMere = classeMere;
-	}
-
-	/** @param num nouveau numéro unique de la liaison */
-	public void setNum(int num) 
-	{
-		this.num = num;
-	}
+    /*-------------------------------------- */
+	/* Autre methodes                        */
+	/*-------------------------------------- */
+    public static void reinitialiserCompteur() {LiaisonObjet.nbLiaisons = 0;}
 }

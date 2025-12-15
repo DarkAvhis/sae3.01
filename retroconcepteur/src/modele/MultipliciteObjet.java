@@ -1,95 +1,67 @@
-package src.modele;
+package src.modele.entites;
 
 /**
  * Représente la multiplicité d'une relation UML.
  * 
- * La multiplicité indique le nombre d'instances d'une classe pouvant participer
- * à une relation avec une autre classe.
+ * La multiplicité indique combien d'instances d'une classe sont liées à une autre classe.
+ * Par exemple :
  * 
- * Exemples courants :
- * - 1..1 : exactement une instance (relation obligatoire unique)
- * - 0..1 : zéro ou une instance (relation optionnelle unique)
- * - 0..* : zéro ou plusieurs instances (collection optionnelle)
- * - 1..* : au moins une instance (collection obligatoire)
- * 
- * La valeur spéciale 999999999 représente "*" (infini).
- * 
- * @author Quentin MORVAN, Valentin LEROY, Celim CHAOU, Enzo DUMONT, Ariunbayar
- *         BUYANBADRAKH, Yassine EL MAADI
- * @date 12 décembre 2025
+ * 1..1 : exactement une instance</li>
+ * 0..* : zéro ou plusieurs instances</li>
+ * 1..* : au moins une instance</li>
+ * La valeur spéciale {@code 999999999} est utilisée pour représenter "*" (infini).
  */
-public class MultipliciteObjet
+public class MultipliciteObjet 
 {
-	/** Début de la multiplicité (valeur minimale) */
-	private int debut;
+    /*-------------------------------------- */
+	/* Attributs                             */
+	/*-------------------------------------- */
+    private int debut;
+    private int fin;
 
-	/** Fin de la multiplicité (valeur maximale) */
-	private int fin;
+    /*-------------------------------------- */
+	/* Constructeur                          */
+	/*-------------------------------------- */
+    public MultipliciteObjet(int debut, int fin) 
+    {
+        this.debut = debut;
+        this.fin   = fin;
+    }
 
-	// ----------------- Constructeur -----------------
+    /*-------------------------------------- */
+	/* Les Accesseurs                        */
+	/*-------------------------------------- */
+    public int getDebut() { return this.debut ; }
+    public int getFin  () { return this.fin   ; }
 
-	/**
-	 * Constructeur d'une multiplicité.
-	 *
-	 * @param debut Valeur minimale (borne inférieure) de la multiplicité
-	 * @param fin   Valeur maximale (borne supérieure) de la multiplicité (utiliser
-	 *              999999999 pour "*")
-	 */
-	public MultipliciteObjet(int debut, int fin) 
-	{
-		this.debut = debut;
-		this.fin = fin;
-	}
+    /*-------------------------------------- */
+	/* Modificateurs                         */
+	/*-------------------------------------- */
+    public void setDebut(int debut) { this.debut = debut  ; }
+    public void setFin  (int fin  ) { this.fin   = fin    ; }
 
-	// ----------------- Getters -----------------
+    /*-------------------------------------- */
+	/* toString                              */
+	/*-------------------------------------- */
 
-	/** @return Valeur minimale de la multiplicité */
-	public int getDebut() 
-	{
-		return debut;
-	}
-
-	/** @return Valeur maximale de la multiplicité */
-	public int getFin() 
-	{
-		return fin;
-	}
-
-	// ----------------- Setters -----------------
-
-	/** @param debut Nouvelle valeur minimale de la multiplicité */
-	public void setDebut(int debut) 
-	{
-		this.debut = debut;
-	}
-
-	/** @param fin Nouvelle valeur maximale de la multiplicité */
-	public void setFin(int fin) 
-	{
-		this.fin = fin;
-	}
-
-	// ----------------- toString -----------------
-
-	/**
-	 * Retourne une représentation textuelle de la multiplicité.
-	 * 
-	 * Exemples :
-	 * 
-	 * 1..1
-	 * 0..*
-	 * 1..*
-	 *
-	 * @return Chaîne représentant la multiplicité
-	 */
-	@Override
-	public String toString() 
-	{
-		if (this.debut == 999999999)
-			return "*";
-		if (this.fin == 999999999)
-			return this.debut + "..*";
-
-		return this.debut + ".." + this.fin;
-	}
+    /**
+     * Retourne une représentation textuelle de la multiplicité.
+     * 
+     * Exemples :
+     * 
+     *     1..1
+     *     0..*
+     *     1..*
+     * 
+     * note : 999999999 --> représente l'étoile 
+     *
+     * @return Chaîne représentant la multiplicité
+     */
+    public String toString()
+    {
+        if (this.debut == 999999999) return "*";
+        if (this.fin   == 999999999) return this.debut + "..*";
+        
+        return this.debut + ".." + this.fin;
+    }
 }

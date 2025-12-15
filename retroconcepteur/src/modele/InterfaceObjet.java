@@ -1,93 +1,70 @@
-package src.modele;
-
-import java.util.ArrayList;
-import java.util.List;
+package src.modele.entites;
 
 /**
- * Représente une relation d'implémentation d'interfaces dans un diagramme UML.
+ * Représente une liaison générique entre deux classes dans un diagramme UML.
+ * Cette classe sert de superclasse pour les relations comme :
+ * - Héritage (HeritageObjet)
+ * - Implémentation d'interface (InterfaceObjet)
  * 
- * Une classe concrète (classeFille) peut implémenter plusieurs interfaces.
- * Cette classe stocke la liste de toutes les interfaces implémentées.
- * 
- * @author Quentin MORVAN, Valentin LEROY, Celim CHAOU, Enzo DUMONT, Ariunbayar
- *         BUYANBADRAKH, Yassine EL MAADI
- * @date 12 décembre 2025
+ * Attributs principaux :
+ * classeFille : la classe qui reçoit la relation (ex: enfant ou classe concrète)</li>
+ * classeMere  : la classe source de la relation (ex: parent ou interface)</li>
+ * nomAttribut : nom optionnel de la relation</li>
+ * num         : identifiant unique de la liaison</li>
  */
-public class InterfaceObjet extends LiaisonObjet
+public class LiaisonObjet 
 {
-	// Rétablissement de la liste pour stocker plusieurs interfaces
-	private List<ClasseObjet> lstInterfaces;
+    /*-------------------------------------- */
+	/* Attributs                             */
+	/*-------------------------------------- */
+	protected String      nomAttribut;
+	protected ClasseObjet classeFille;
+	protected ClasseObjet classeMere;
+	protected int         num;
 
-	/**
-	 * Constructeur d'une relation d'implémentation d'interfaces.
-	 * 
-	 * Initialise la relation pour une classe concrète.
-	 * Les interfaces seront ajoutées ensuite via ajouterInterface().
-	 *
-	 * @param classeFille La classe concrète qui implémente des interfaces
-	 */
-	public InterfaceObjet(ClasseObjet classeFille) 
+	private static int    nbLiaisons = 0;
+
+    /*-------------------------------------- */
+	/* Constructeurs                         */
+	/*-------------------------------------- */
+	public LiaisonObjet(String nomAttribut, ClasseObjet classeMere, ClasseObjet classeFille)
 	{
-		// On passe null pour classeMere car il y en aura potentiellement plusieurs.
-		super(null, null, classeFille);
-		this.lstInterfaces = new ArrayList<>();
+		this.nomAttribut = nomAttribut ;
+		this.classeMere  = classeMere  ;
+		this.classeFille = classeFille ;
+		this.num         = ++LiaisonObjet.nbLiaisons;
 	}
 
-	/**
-	 * Ajoute une interface à la liste des implémentations.
-	 * 
-	 * @param interfaceObjet L'interface (représentée par un ClasseObjet) à ajouter
-	 */
-	public void ajouterInterface(ClasseObjet interfaceObjet) 
+    public LiaisonObjet(ClasseObjet classeMere, ClasseObjet classeFille) 
 	{
-		if (interfaceObjet != null) 
-		{
-			this.lstInterfaces.add(interfaceObjet);
-		}
+        this("",classeMere,classeFille);
+		this.num          = ++LiaisonObjet.nbLiaisons;
 	}
 
-	/**
-	 * Retourne une représentation textuelle de toutes les relations
-	 * d'implémentation.
-	 * Format attendu: "Classe Concrète implémente Interface1, Interface2, ..."
-	 */
-	@Override
-	public String toString() 
+    public LiaisonObjet(ClasseObjet classeFille) 
 	{
-		// 1. Récupérer le nom de la classe concrète
-		String nomFille = (this.classeFille != null) ? this.classeFille.getNom() : "[Classe Concrète manquante]";
-
-		if (this.lstInterfaces.isEmpty()) 
-		{
-			return nomFille + " n'implémente aucune interface enregistrée.";
-		}
-
-		// 2. Assembler les noms des interfaces séparés par des virgules
-		String sRet = "";
-
-		for (int i = 0; i < this.lstInterfaces.size(); i++) 
-		{
-			if (this.lstInterfaces.get(i) != null) 
-			{
-				sRet += this.lstInterfaces.get(i).getNom();
-				if (i < this.lstInterfaces.size() - 1) 
-				{
-					sRet += " , "; // Utilisation de ' , ' pour plus de clarté
-				}
-			}
-		}
-
-		return String.format("%-10s", nomFille) + " implémente " + sRet;
+		this("",null,classeFille);
+		this.num          = ++LiaisonObjet.nbLiaisons;
 	}
 
-	/**
-	 * Retourne la liste des interfaces implémentées par la classe concrète.
-	 * 
-	 * @return la liste des interfaces
-	 */
-	public List<ClasseObjet> getLstInterfaces() 
-	{
-		return this.lstInterfaces;
-	}
+	/*-------------------------------------- */
+	/* Les Accesseurs                        */
+	/*-------------------------------------- */
+    public String      getNomAttribut() { return this.nomAttribut; }
+    public ClasseObjet getClasseFille() { return this.classeFille; }
+    public ClasseObjet getClasseMere () { return  this.classeMere; }
+    public int         getNum        () { return  this.num;        }
+    
+	/*-------------------------------------- */
+	/* Modificateurs                         */
+	/*-------------------------------------- */
+    public void setNomAttribut(String      nomAttribut) { this.nomAttribut = nomAttribut ;   }
+    public void setClasseFille(ClasseObjet classeFille) { this.classeFille = classeFille ;   }
+    public void setClasseMere (ClasseObjet classeMere ) { this.classeMere  = classeMere  ;   }
+    public void setNum        (int         num        ) { this.num         = num         ;   }
 
+    /*-------------------------------------- */
+	/* Autre methodes                        */
+	/*-------------------------------------- */
+    public static void reinitialiserCompteur() {LiaisonObjet.nbLiaisons = 0;}
 }
