@@ -1,7 +1,5 @@
 package src.modele.entites;
 
-import src.modele.LiaisonObjet;
-
 /**
  * Représente une liaison générique entre deux classes dans un diagramme UML.
  * Cette classe sert de superclasse pour les relations comme :

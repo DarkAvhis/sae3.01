@@ -37,6 +37,10 @@ public class InterfaceObjet extends LiaisonObjet
         }
     }
 
+    public List<ClasseObjet> getLstInterfaces()
+    {
+        return this.lstInterfaces;
+    }
     
     /*-------------------------------------- */
 	/* toString                              */

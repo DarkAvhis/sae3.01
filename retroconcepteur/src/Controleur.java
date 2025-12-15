@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import src.modele.InterfaceObjet;
+import src.modele.entites.InterfaceObjet;
 import src.modele.entites.AssociationObjet;
 import src.modele.entites.AttributObjet;
 import src.modele.entites.ClasseObjet;
@@ -369,7 +369,7 @@ public class Controleur
                 String nomClasseConcrete = interfaceLiaison.getClasseFille().getNom();
 
                 // Parcourir la liste des interfaces implémentées
-                java.util.List<ClasseObjet> interfaces = interfaceLiaison.getLstInterfaces();
+                List<ClasseObjet> interfaces = interfaceLiaison.getLstInterfaces();
                 for (ClasseObjet interfaceClass : interfaces)
                 {
                     if (interfaceClass != null)
