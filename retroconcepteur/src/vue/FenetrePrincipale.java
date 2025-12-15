@@ -71,6 +71,8 @@ public class FenetrePrincipale extends JFrame
 		this.add(splitPane, BorderLayout.CENTER);
 
 		this.setJMenuBar(barreMenus);//
+
+		this.setVisible(true);
 	}
 
 	/**
