@@ -64,6 +64,7 @@ public class Controleur {
     public Controleur() {
         this.metierComplet = new AnalyseIHMControleur();
         this.vuePrincipale = new FenetrePrincipale(this);
+        this.cheminProjetActuel = null;
     }
 
     /**
@@ -240,6 +241,8 @@ public class Controleur {
 
         majAffichage();
     }
+
+    
 
     /**
      * Met à jour l'affichage des blocs et des liaisons.
@@ -584,6 +587,12 @@ public class Controleur {
         if (this.vuePrincipale != null) {
             this.vuePrincipale.getPanneauDiagramme().optimiserDisposition();
         }
+    }
+
+    // nouveau getter pour récupérer le dossier de projet actuellement ouvert
+    public String getCheminProjetActuel() 
+    {
+        return this.cheminProjetActuel;
     }
 
     /**

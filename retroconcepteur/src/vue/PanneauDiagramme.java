@@ -68,25 +68,20 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
     @Override
     public void mouseWheelMoved(MouseWheelEvent e)
     {
-        if (e.isControlDown()) 
+        if (e.isControlDown() ) 
         { 
             double delta = 0.1;
-            if (e.getWheelRotation() < 0)
-            {
-                setZoom(zoom + delta); // Zoom avant
-            } else {
-                setZoom(zoom - delta); // Zoom arrière
-            }
+            if (e.getWheelRotation() < 0){setZoom(zoom + delta);}
+            else                         {setZoom(zoom - delta);}
         }
         else if (e.isShiftDown()) // Shift + molette => décalage horizontal
         {
-            
             if (getParent() instanceof JViewport viewport) 
             {
                 Point pos = viewport.getViewPosition();
                 pos.x += e.getWheelRotation() * 100; // 20 pixels par "tick"
-                pos.x = Math.max(0, pos.x);
-                pos.x = Math.min(pos.x, getWidth() - viewport.getWidth());
+                pos.x  = Math.max(0, pos.x);
+                pos.x  = Math.min(pos.x, getWidth() - viewport.getWidth());
                 viewport.setViewPosition(pos);
             }
         }
@@ -96,8 +91,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
             {
                 Point pos = viewport.getViewPosition();
                 pos.y += e.getWheelRotation() * 100; // 20 pixels par "tick"
-                pos.y = Math.max(0, pos.y);
-                pos.y = Math.min(pos.y, getHeight() - viewport.getHeight());
+                pos.y  = Math.max(0, pos.y);
+                pos.y  = Math.min(pos.y, getHeight() - viewport.getHeight());
                 viewport.setViewPosition(pos);
             }
         }
@@ -117,11 +112,10 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         this.repaint();
     }
 
-    public double getZoom() {
-        return this.zoom;
-    }
+    public double getZoom() {return this.zoom; }
 
-    public void setZoom(double zoom) {
+    public void setZoom(double zoom) 
+    {
         // Limiter le zoom entre 0.2x et 5x
         this.zoom = Math.max(0.2, Math.min(zoom, 5.0));
         calculerTailleDynamique(); // Ajuste la taille du panneau selon le zoom
@@ -225,7 +219,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         int requiredHeight = (int)Math.max(maxY * zoom + PADDING, 800) ;
 
         Dimension currentSize = getPreferredSize();
-        if (requiredWidth > currentSize.width || requiredHeight > currentSize.height) {
+        if (requiredWidth > currentSize.width || requiredHeight > currentSize.height) 
+        {
             setPreferredSize(new Dimension(requiredWidth, requiredHeight));
             revalidate();
         }
@@ -245,7 +240,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
 
         dessinerLiaisons(g2d);
 
-        for (BlocClasse bloc : blocsClasses) {
+        for (BlocClasse bloc : blocsClasses) 
+        {
             bloc.dessiner(g2d);
         }
     }
@@ -337,7 +333,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         int offsetFromAnchor    = 15;
         int offsetPerpendicular = 10;
 
-        double angle = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
+        double angle     = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
         double perpAngle = angle + Math.PI / 2;
 
         int xLine = (int) (pAnchor.x + offsetFromAnchor * Math.cos(angle));
@@ -450,7 +446,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         int cX2 = blocCible.getX() + blocCible.getLargeur() / 2;
         int cY2 = blocCible.getY() + blocCible.getHauteur() / 2;
 
-        double angle = Math.atan2(cY2 - cY1, cX2 - cX1);
+        double angle    = Math.atan2(cY2 - cY1, cX2 - cX1);
         double angleDeg = Math.toDegrees(angle);
         if (angleDeg < 0)
         {
