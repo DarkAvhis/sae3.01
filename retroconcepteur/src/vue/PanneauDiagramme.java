@@ -60,6 +60,19 @@ public class PanneauDiagramme extends JPanel
         this.ajouterListenersInteraction();
     }
 
+    /*
+        nouvelle méthode permettant de netoyer le panneauDiagramme
+        et qui est ensuite appeler dans panneauProjet pour que 
+        lorque l'on appuie sur le bouton actualiser cela actualise 
+        aussi panneauDiagramme
+    */
+    public void clearDiagram() 
+    {
+        this.blocsClasses.clear(); // permet de nettoyer les blocs de classe
+        this.liaisonsVue .clear(); // permet de nettoyer les liaisons des classes
+        this.repaint();
+    }
+
     /**
      * Gestionnaire d'événements souris pour l'interaction avec les blocs.
      * * Permet de sélectionner et déplacer les blocs de classes dans le diagramme.

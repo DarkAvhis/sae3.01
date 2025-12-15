@@ -40,7 +40,7 @@ public class FenetrePrincipale extends JFrame
 	 * @param controleur Le contrôleur principal de l'application
 	 */
 	public FenetrePrincipale(Controleur controleur) 
-{
+	{
 		this.controleur = controleur;
 
 		Dimension tailleEcran = Toolkit.getDefaultToolkit().getScreenSize();
@@ -51,8 +51,8 @@ public class FenetrePrincipale extends JFrame
 		this.setLocationRelativeTo(null);
 		this.setResizable(true);
 
-		this.panneauProjets = new PanneauProjets(this, controleur);
 		this.panneauDiagramme = new PanneauDiagramme(controleur);
+		this.panneauProjets = new PanneauProjets(this, controleur, this.panneauDiagramme);
 		this.barreMenus = new BarreMenus(controleur, panneauProjets);//
 
 		JScrollPane scrollDiagramme = new JScrollPane(this.panneauDiagramme);
@@ -81,7 +81,7 @@ public class FenetrePrincipale extends JFrame
 	 * @param cheminProjet Chemin absolu vers le dossier du projet à charger
 	 */
 	public void chargerProjet(String cheminProjet) 
-{
+	{
 		this.controleur.analyserEtAfficherDiagramme(cheminProjet);
 	}
 
@@ -92,7 +92,12 @@ public class FenetrePrincipale extends JFrame
 	 *         affichés
 	 */
 	public PanneauDiagramme getPanneauDiagramme() 
-{
+	{
 		return this.panneauDiagramme;
+	}
+
+	public PanneauProjets getPanneauProjets() 
+	{
+		return this.panneauProjets;
 	}
 }

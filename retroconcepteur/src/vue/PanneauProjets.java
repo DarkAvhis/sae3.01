@@ -33,6 +33,7 @@ import src.Controleur;
 public class PanneauProjets extends JPanel implements ActionListener
 {
     private FenetrePrincipale fenetrePrincipale;
+    private PanneauDiagramme panneauDiagramme; // nouveau
     private String cheminDossiers;
     private JButton boutonAttributs;
     private JButton boutonMethodes;
@@ -49,9 +50,10 @@ public class PanneauProjets extends JPanel implements ActionListener
      * @param fenetrePrincipale La fenêtre principale de l'application
      * @param controleur        Le contrôleur principal
      */
-    public PanneauProjets(FenetrePrincipale fenetrePrincipale, Controleur controleur) 
+    public PanneauProjets(FenetrePrincipale fenetrePrincipale, Controleur controleur, PanneauDiagramme panneauDiagramme) 
 {
         this.fenetrePrincipale = fenetrePrincipale;
+        this.panneauDiagramme = panneauDiagramme; // nouveau
 
         this.cheminDossiers = "src";
 
@@ -102,14 +104,21 @@ public class PanneauProjets extends JPanel implements ActionListener
 
     @Override
     public void actionPerformed(ActionEvent e) 
-{
+    {
 
         if (e.getSource() == boutonActualiser) 
-{
+        {
             panelProjets.removeAll();
             this.chargerProjets(panelProjets);
             panelProjets.revalidate();
             panelProjets.repaint();
+
+            /* 
+                nouveau permet de clear le panneauDiagramme que
+                si il est pas null
+            */
+            if (this.panneauDiagramme != null) 
+                this.panneauDiagramme.clearDiagram();
         }
     }
 
@@ -218,5 +227,10 @@ public class PanneauProjets extends JPanel implements ActionListener
 
         return bouton;
     }
+
+    public JPanel getPanelProjets() 
+    {
+        return this.panelProjets;
+    } 
 
 }
