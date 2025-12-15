@@ -34,6 +34,7 @@ public class PanneauProjets extends JPanel implements ActionListener
 {
     private FenetrePrincipale fenetrePrincipale;
     private PanneauDiagramme panneauDiagramme; // nouveau
+    private Controleur controleur ; 
     private String cheminDossiers;
     private JButton boutonAttributs;
     private JButton boutonMethodes;
@@ -54,6 +55,7 @@ public class PanneauProjets extends JPanel implements ActionListener
 {
         this.fenetrePrincipale = fenetrePrincipale;
         this.panneauDiagramme = panneauDiagramme; // nouveau
+        this.controleur        = controleur ; 
 
         this.cheminDossiers = "src";
 
@@ -83,11 +85,7 @@ public class PanneauProjets extends JPanel implements ActionListener
 
         // actualiser la liste
         JPanel panelBouton = new JPanel(new BorderLayout());
-        panelBouton.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
         panelBouton.setBackground(new Color(245, 245, 245));
-
-        // Empêche BorderLayout.SOUTH de compresser le panel
-        panelBouton.setPreferredSize(new Dimension(100, 100));
 
         boutonAttributs = new JButton("Attributs");
         boutonMethodes = new JButton("Méthodes");
@@ -97,7 +95,11 @@ public class PanneauProjets extends JPanel implements ActionListener
         panelBouton.add(boutonMethodes, BorderLayout.CENTER);
         panelBouton.add(boutonActualiser, BorderLayout.SOUTH);
 
+       
+        this.boutonAttributs.addActionListener(this);
+        this.boutonMethodes.addActionListener(this);
         this.boutonActualiser.addActionListener(this);
+
 
         this.add(panelBouton, BorderLayout.SOUTH);
     }
@@ -106,19 +108,25 @@ public class PanneauProjets extends JPanel implements ActionListener
     public void actionPerformed(ActionEvent e) 
     {
 
-        if (e.getSource() == boutonActualiser) 
+         
+        if( e.getSource() == boutonActualiser )
         {
             panelProjets.removeAll();
             this.chargerProjets(panelProjets);
             panelProjets.revalidate();
             panelProjets.repaint();
 
-            /* 
-                nouveau permet de clear le panneauDiagramme que
-                si il est pas null
-            */
-            if (this.panneauDiagramme != null) 
-                this.panneauDiagramme.clearDiagram();
+            if( this.panneauDiagramme != null ) this.panneauDiagramme.clearDiagram();
+        }
+
+        if( e.getSource() == boutonAttributs )
+        {
+            controleur.ajouterAttributs() ; 
+        }
+
+        if( e.getSource() == boutonMethodes )
+        {
+            controleur.ajouterMethodes() ; 
         }
     }
 

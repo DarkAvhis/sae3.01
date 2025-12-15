@@ -36,6 +36,7 @@ public class Controleur
 {
     private AnalyseIHMControleur metierComplet;
     private FenetrePrincipale vuePrincipale;
+    private List<BlocClasse> blocsVue = new ArrayList<>();
 
     // --- Constantes pour le Layout Hiérarchique ---
     private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
@@ -68,60 +69,92 @@ public class Controleur
      * @param cheminProjet Chemin absolu vers le dossier contenant les fichiers Java
      *                     à analyser
      */
-    public void analyserEtAfficherDiagramme(String cheminProjet)
+     public void analyserEtAfficherDiagramme(String cheminProjet)
     {
         if (!this.metierComplet.analyserDossier(cheminProjet)) {
             return;
         }
 
         List<ClasseObjet> classes = this.metierComplet.getClasses();
-        List<AssociationObjet> associations = this.metierComplet.getAssociations();
-        List<HeritageObjet> heritages = this.metierComplet.getHeritages();
-        List<InterfaceObjet> implementations = this.metierComplet.getImplementations();
+        blocsVue.clear();
 
-        List<LiaisonVue> toutesLiaisonsVue = new ArrayList<>();
-        toutesLiaisonsVue.addAll(convertirLiaisons(associations, TypeLiaison.ASSOCIATION_UNIDI));
-        toutesLiaisonsVue.addAll(convertirLiaisons(heritages, TypeLiaison.HERITAGE));
-        toutesLiaisonsVue.addAll(convertirLiaisons(implementations, TypeLiaison.IMPLEMENTATION));
-
-        List<BlocClasse> blocsAvecTailles = new ArrayList<>();
+        int x = 50, y = 50;
         for (ClasseObjet c : classes)
         {
-            List<String> attrVue = this.convertirAttributs(c.getattributs(), c);
-            List<String> methVue = this.convertirMethodes(c.getMethodes(), c);
-            blocsAvecTailles.add(new BlocClasse(c.getNom(), 0, 0, attrVue, methVue));
-        }
-
-        // --- Calcul des Positions Optimales (Hiérarchique) ---
-        HashMap<String, Point> positionsOptimales = calculerPositionsOptimales(classes, toutesLiaisonsVue,
-                blocsAvecTailles);
-
-        List<BlocClasse> blocsVue = new ArrayList<>();
-
-        for (ClasseObjet c : classes)
-        {
-            Point pos = positionsOptimales.get(c.getNom());
-
-            List<String> attrVue = this.convertirAttributs(c.getattributs(), c);
-            List<String> methVue = this.convertirMethodes(c.getMethodes(), c);
-
-            BlocClasse bloc = new BlocClasse(c.getNom(), pos.x, pos.y, attrVue, methVue);
-
-            if (c.getNom().contains("Interface")) {
-                bloc.setInterface(true);
-            }
+            BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
+            if (c.getNom().contains("Interface")) bloc.setInterface(true);
 
             blocsVue.add(bloc);
+            x += 250;
+            if (x > 1000) { x = 50; y += 200; }
         }
 
-        if (this.vuePrincipale != null)
-        {
-            this.vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocsVue);
-            this.vuePrincipale.getPanneauDiagramme().setLiaisonsVue(toutesLiaisonsVue);
-            this.vuePrincipale.getPanneauDiagramme().repaint();
-        }
+        majAffichage();
     }
 
+    /**
+     * Ajoute les méthodes aux blocs existants.
+     */
+    public void ajouterMethodes()
+    {
+        List<ClasseObjet> classes = this.metierComplet.getClasses();
+
+        for (ClasseObjet c : classes)
+        {
+            List<String> methVue = convertirMethodes(c.getMethodes(), c);
+
+            for (BlocClasse bloc : blocsVue)
+            {
+                if (bloc.getNom().equals(c.getNom()))
+                    bloc.setMethodes(methVue);
+            }
+        }
+
+        majAffichage();
+    }
+
+    /**
+     * Ajoute les attributs aux blocs existants.
+     */
+    public void ajouterAttributs()
+    {
+        List<ClasseObjet> classes = this.metierComplet.getClasses();
+
+        for (ClasseObjet c : classes)
+        {
+            List<String> attrVue = convertirAttributs(c.getattributs(), c);
+
+            for (BlocClasse bloc : blocsVue)
+            {
+                if (bloc.getNom().equals(c.getNom()))
+                    bloc.setAttributs(attrVue);
+            }
+        }
+
+        majAffichage();
+    }
+
+    /**
+     * Met à jour l'affichage des blocs et des liaisons.
+     */
+    private void majAffichage()
+    {
+        List<AssociationObjet> associations  = this.metierComplet.getAssociations();
+        List<HeritageObjet> heritages        = this.metierComplet.getHeritages();
+        List<InterfaceObjet> implementations = this.metierComplet.getImplementations();
+
+        List<LiaisonVue> liaisonsVue = new ArrayList<>();
+        liaisonsVue.addAll(convertirLiaisons(associations, TypeLiaison.ASSOCIATION_UNIDI));
+        liaisonsVue.addAll(convertirLiaisons(heritages, TypeLiaison.HERITAGE));
+        liaisonsVue.addAll(convertirLiaisons(implementations, TypeLiaison.IMPLEMENTATION));
+
+        if (vuePrincipale != null)
+        {
+            vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocsVue);
+            vuePrincipale.getPanneauDiagramme().setLiaisonsVue(liaisonsVue);
+            vuePrincipale.getPanneauDiagramme().repaint();
+        }
+    }
     /**
      * Calcule les positions optimales des classes dans le diagramme.
      * 

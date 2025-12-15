@@ -252,4 +252,64 @@ public class BlocClasse
 {
         return this.estSelectionne;
     }
+
+     public void setAttributs(List<String> attributs) 
+    {
+        this.attributsAffichage = attributs;
+        recalculerDimensions();
+    }
+
+    public void setMethodes(List<String> methodes) 
+    {
+        this.methodesAffichage = methodes;
+        recalculerDimensions();
+    }
+
+    private void recalculerDimensions() 
+    {
+
+        // ---- LARGEUR ----
+        int maxLongueur = 0;
+
+        // 1️⃣ Nom de la classe
+        if (nom != null) {
+            maxLongueur = nom.length();
+        }
+
+        // 2️⃣ Attributs
+        for (String att : attributsAffichage) {
+            if (att == null) continue;
+
+            String texte = att.replace("{static}", "").trim();
+            int longueur = texte.length();
+
+            if (longueur > maxLongueur) {
+                maxLongueur = longueur;
+            }
+        }
+
+        // 3️⃣ Méthodes
+        for (String met : methodesAffichage) {
+            if (met == null) continue;
+
+            String texte = met.replace("{static}", "").trim();
+            int longueur = texte.length();
+
+            if (longueur > maxLongueur) {
+                maxLongueur = longueur;
+            }
+        }
+
+        // Conversion caractères → pixels (approximation)
+        this.largeur = Math.max(
+                200,
+                PADDING * 2 + maxLongueur * 8
+        );
+
+        // ---- HAUTEUR ----
+        this.hauteur = HAUTEUR_ENTETE
+                + (attributsAffichage.size() + methodesAffichage.size()) * HAUTEUR_LIGNE
+                + PADDING * 4;
+    }
+
 }
