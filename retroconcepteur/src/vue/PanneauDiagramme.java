@@ -50,7 +50,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
     public PanneauDiagramme(Controleur controleur)
     {
         this.blocsClasses = new ArrayList<>();
-        this.liaisonsVue = new ArrayList<>();
+        this.liaisonsVue  = new ArrayList<>();
         this.zoom = 1.0;
         // Taille minimale pour que le JScrollPane soit utilisable
         this.setPreferredSize(new java.awt.Dimension(1000, 800));
@@ -135,8 +135,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
     private class GereSourisInteraction extends MouseAdapter
     {
         private BlocClasse blocSelectionne = null;
-        private int offsetX = 0;
-        private int offsetY = 0;
+        private int        offsetX         = 0   ;
+        private int        offsetY         = 0   ;
 
         @Override
         public void mousePressed(MouseEvent e)
@@ -183,8 +183,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         public void mouseReleased(MouseEvent e)
         {
             blocSelectionne = null;
-            offsetX = 0;
-            offsetY = 0;
+            offsetX         = 0   ;
+            offsetY         = 0   ;
         }
     }
 
@@ -212,8 +212,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
             maxY = Math.max(maxY, bloc.getY() + bloc.getHauteur());
         }
 
-        int requiredWidth = (int)Math.max(maxX * zoom + PADDING, 1000);
-        int requiredHeight = (int)Math.max(maxY * zoom + PADDING, 800);
+        int requiredWidth  = (int)Math.max(maxX * zoom + PADDING, 1000);
+        int requiredHeight = (int)Math.max(maxY * zoom + PADDING, 800) ;
 
         Dimension currentSize = getPreferredSize();
         if (requiredWidth > currentSize.width || requiredHeight > currentSize.height) {
@@ -325,7 +325,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
 
         Point pAnchor = isSource ? pStart : pEnd;
 
-        int offsetFromAnchor = 15;
+        int offsetFromAnchor    = 15;
         int offsetPerpendicular = 10;
 
         double angle = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
@@ -338,7 +338,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         int yText = (int) (yLine + offsetPerpendicular * Math.sin(perpAngle));
 
         FontMetrics fm = g2d.getFontMetrics();
-        int textWidth = fm.stringWidth(multiplicity);
+        int textWidth  = fm.stringWidth(multiplicity);
 
         xText -= (int) (textWidth * 0.5);
 
@@ -364,8 +364,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         int y_base = (int) (p2.y + tailleTriangle * Math.sin(angle));
 
         double demiLargeur = tailleTriangle * 0.4;
-        double angleFlanc1 = angle + Math.PI / 2;
-        double angleFlanc2 = angle - Math.PI / 2;
+        double angleFlanc1 = angle + Math.PI / 2 ;
+        double angleFlanc2 = angle - Math.PI / 2 ;
 
         int x_lat1 = (int) (x_base + demiLargeur * Math.cos(angleFlanc1));
         int y_lat1 = (int) (y_base + demiLargeur * Math.sin(angleFlanc1));
@@ -453,18 +453,9 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         {
             return new Point(x1 + w1, cY1);
         }
-        else if (angleDeg >= 45 && angleDeg < 135)
-        {
-            return new Point(cX1, y1 + h1);
-        }
-        else if (angleDeg >= 135 && angleDeg < 225)
-        {
-            return new Point(x1, cY1);
-        }
-        else if (angleDeg >= 225 && angleDeg < 315)
-        {
-            return new Point(cX1, y1);
-        }
+        else if (angleDeg >= 45  && angleDeg < 135){return new Point(cX1, y1 + h1);}
+        else if (angleDeg >= 135 && angleDeg < 225){return new Point(x1 , cY1    );}
+        else if (angleDeg >= 225 && angleDeg < 315){return new Point(cX1, y1     );}
 
         return new Point(cX1, cY1);
     }
@@ -481,10 +472,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         // Le repaint est maintenant géré par setLiaisonsVue
     }
 
-    public List<LiaisonVue> getLiaisonsVue()
-    {
-        return liaisonsVue;
-    }
+    public List<LiaisonVue> getLiaisonsVue(){return liaisonsVue;}
 
     public void setLiaisonsVue(List<LiaisonVue> liaisonsVue)
     {
@@ -492,10 +480,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         this.repaint();
     }
 
-    public List<BlocClasse> getBlocsClasses()
-    {
-        return blocsClasses;
-    }
+    public List<BlocClasse> getBlocsClasses(){return blocsClasses;}
 
     public BlocClasse getBlocsClasseSelectionnee()
     {
