@@ -22,8 +22,9 @@ import java.util.List;
  */
 public class BlocClasse {
     private String nom;
-    private int x;
-    private int y;
+
+    private int x      ;
+    private int y      ;
     private int largeur;
     private int hauteur;
     private boolean estInterface;
@@ -32,10 +33,10 @@ public class BlocClasse {
 
     // Nouveaux champs pour stocker les détails
     private List<String> attributsAffichage;
-    private List<String> methodesAffichage;
+    private List<String> methodesAffichage ;
 
     // Constantes
-    private static final int PADDING = 10;
+    private static final int PADDING        = 10;
     private static final int HAUTEUR_ENTETE = 30;
     private static final int HAUTEUR_LIGNE = 20; // Nouvelle constante pour la hauteur d'une ligne de texte
     private static final Color COULEUR_FOND = new Color(230, 240, 250);
@@ -58,28 +59,26 @@ public class BlocClasse {
      */
     public BlocClasse(String nom, int x, int y, List<String> attributs, List<String> methodes) {
         this.nom = nom;
-        this.x = x;
-        this.y = y;
+        this.x   = x  ;
+        this.y   = y  ;
         this.attributsAffichage = attributs;
-        this.methodesAffichage = methodes;
+        this.methodesAffichage  = methodes;
 
         this.estInterface = false;
         this.estSuperClasse = false;
         this.estSelectionne = false;
 
         // Calculer la taille initiale minimale
-        int maxLgNom = nom.length() * 8; // Estimation
+        int maxLgNom       = nom.length() * 8; // Estimation
         int maxLgAttributs = attributs.stream().mapToInt(String::length).max().orElse(0) * 8;
-        int maxLgMethodes = methodes.stream().mapToInt(String::length).max().orElse(0) * 8;
+        int maxLgMethodes  = methodes.stream().mapToInt(String::length).max().orElse(0) * 8 ;
 
         // Calcul de la largeur : min(max) ou 200
         this.largeur = Math.max(200, PADDING * 2 + Math.max(maxLgNom, Math.max(maxLgAttributs, maxLgMethodes)));
 
         // Calcul de la hauteur : Entête + (Attributs + Méthodes) * HAUTEUR_LIGNE +
         // PADDINGS
-        this.hauteur = HAUTEUR_ENTETE +
-                (attributs.size() + methodes.size()) * HAUTEUR_LIGNE +
-                PADDING * 4; // Ajuster les paddings internes
+        this.hauteur = HAUTEUR_ENTETE + (attributs.size() + methodes.size()) * HAUTEUR_LIGNE + PADDING * 4;
     }
 
     /**
@@ -143,7 +142,7 @@ public class BlocClasse {
             {
                 FontMetrics fmLigne = g.getFontMetrics();
 
-                int underlineY = currentY + 2;
+                int underlineY  = currentY + 2;
                 int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
                 g.drawLine(x + PADDING, underlineY, underlineX2, underlineY);
             }
@@ -162,14 +161,14 @@ public class BlocClasse {
             currentY += HAUTEUR_LIGNE;
 
             boolean estStatique = met.contains("{static}");
-            String libelle = met.replace(" {static}", "").replace("{static} ", "");
+            String libelle      = met.replace(" {static}", "").replace("{static} ", "");
 
             g.drawString(libelle, x + PADDING, currentY);
 
             if (estStatique) 
             {
                 FontMetrics fmLigne = g.getFontMetrics();
-                int underlineY = currentY + 2;
+                int underlineY  = currentY + 2;
                 int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
                 g.drawLine(x + PADDING, underlineY, underlineX2, underlineY);
             }

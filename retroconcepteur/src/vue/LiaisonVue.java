@@ -44,37 +44,19 @@ public class LiaisonVue
      */
     public LiaisonVue(String nomClasseOrig, String nomClasseDest, TypeLiaison type, String multOrig, String multDest)
     {
-        this.nomClasseOrig = nomClasseOrig;
-        this.nomClasseDest = nomClasseDest;
-        this.type = type;
+        this.nomClasseOrig    = nomClasseOrig;
+        this.nomClasseDest    = nomClasseDest;
+        this.type             = type;
         this.multipliciteOrig = (multOrig != null) ? multOrig : "";
         this.multipliciteDest = (multDest != null) ? multDest : "";
     }
 
     // Getters
-    public String getNomClasseOrig()
-    {
-        return nomClasseOrig;
-    }
-
-    public String getNomClasseDest()
-    {
-        return nomClasseDest;
-    }
-
-    public TypeLiaison getType()
-    {
-        return type;
-    }
+    public String getNomClasseOrig(){return nomClasseOrig;}
+    public String getNomClasseDest(){return nomClasseDest;}
+    public TypeLiaison getType    (){return type         ;}
 
     // NOUVEAUX GETTERS
-    public String getMultipliciteOrig()
-    {
-        return multipliciteOrig;
-    }
-
-    public String getMultipliciteDest()
-    {
-        return multipliciteDest;
-    }
+    public String getMultipliciteOrig(){return multipliciteOrig;}
+    public String getMultipliciteDest(){return multipliciteDest;}
 }

@@ -28,23 +28,23 @@ import controleur.Controleur;
 public class BarreMenus extends JMenuBar implements ActionListener {
 
     // Références aux Classes pour les reconnaître dans actionPerformed
-    private JMenuItem nouvelleClasse;
-    private JMenuItem ouvrirClasse;
-    private JMenuItem sauvegarderClasse;
-    private JMenuItem quitterClasse;
+    private JMenuItem nouvelleClasse     ;
+    private JMenuItem ouvrirClasse       ;
+    private JMenuItem sauvegarderClasse  ;
+    private JMenuItem quitterClasse      ;
 
-    private JMenuItem annulerClasse;
-    private JMenuItem retablirClasse;
-    private JMenuItem supprimerClasse;
+    private JMenuItem annulerClasse      ;
+    private JMenuItem retablirClasse     ;
+    private JMenuItem supprimerClasse    ;
 
     private JMenuItem alignerClasse;
     private JMenuItem optimiserClasse;
     private JCheckBoxMenuItem afficherClassesExternes;
 
-    private JMenuItem aProposClasse;
+    private JMenuItem aProposClasse      ;
 
     private PanneauProjets panneauProjets;
-    private Controleur controleur;
+    private Controleur     controleur    ;
 
     /**
      * Constructeur de la barre de menus.
@@ -75,21 +75,21 @@ public class BarreMenus extends JMenuBar implements ActionListener {
     public JMenu creerMenuFichier() {
         JMenu menu = new JMenu("Fichier");
 
-        this.nouvelleClasse = new JMenuItem("Nouveau projet");
-        this.ouvrirClasse = new JMenuItem("Ouvrir projet");
+        this.nouvelleClasse    = new JMenuItem("Nouveau projet");
+        this.ouvrirClasse      = new JMenuItem("Ouvrir projet");
         this.sauvegarderClasse = new JMenuItem("Sauvegarder positions");
-        this.quitterClasse = new JMenuItem("Quitter");
+        this.quitterClasse     = new JMenuItem("Quitter");
 
-        this.nouvelleClasse.addActionListener(this);
-        this.ouvrirClasse.addActionListener(this);
+        this.nouvelleClasse   .addActionListener(this);
+        this.ouvrirClasse     .addActionListener(this);
         this.sauvegarderClasse.addActionListener(this);
-        this.quitterClasse.addActionListener(this);
+        this.quitterClasse    .addActionListener(this);
 
-        menu.add(nouvelleClasse);
-        menu.add(ouvrirClasse);
-        menu.addSeparator();
+        menu.add(nouvelleClasse)   ;
+        menu.add(ouvrirClasse)     ;
+        menu.addSeparator()        ;
         menu.add(sauvegarderClasse);
-        menu.add(quitterClasse);
+        menu.add(quitterClasse)    ;
 
         return menu;
     }
@@ -104,12 +104,12 @@ public class BarreMenus extends JMenuBar implements ActionListener {
     public JMenu creerMenuEdition() {
         JMenu menu = new JMenu("Édition");
 
-        this.annulerClasse = new JMenuItem("Annuler");
-        this.retablirClasse = new JMenuItem("Rétablir");
+        this.annulerClasse   = new JMenuItem("Annuler")  ;
+        this.retablirClasse  = new JMenuItem("Rétablir") ;
         this.supprimerClasse = new JMenuItem("Supprimer");
 
-        annulerClasse.addActionListener(this);
-        retablirClasse.addActionListener(this);
+        annulerClasse  .addActionListener(this);
+        retablirClasse .addActionListener(this);
         supprimerClasse.addActionListener(this);
 
         menu.add(annulerClasse);
@@ -130,15 +130,15 @@ public class BarreMenus extends JMenuBar implements ActionListener {
     public JMenu creerMenuAffichage() {
         JMenu menu = new JMenu("Affichage");
 
-        this.alignerClasse = new JMenuItem("Aligner les symboles");
+        this.alignerClasse   = new JMenuItem("Aligner les symboles");
         this.optimiserClasse = new JMenuItem("Optimiser les positions");
         this.afficherClassesExternes = new JCheckBoxMenuItem("Afficher classes externes", true);
 
-        alignerClasse.addActionListener(this);
+        alignerClasse  .addActionListener(this);
         optimiserClasse.addActionListener(this);
         afficherClassesExternes.addActionListener(this);
 
-        menu.add(alignerClasse);
+        menu.add(alignerClasse)  ;
         menu.add(optimiserClasse);
         menu.addSeparator();
         menu.add(afficherClassesExternes);
@@ -210,6 +210,16 @@ public class BarreMenus extends JMenuBar implements ActionListener {
     }
 
     /**
+     * Action pour exporter le diagramme au format PNG.
+     * 
+     * Permet d'exporter le diagramme sous le nom "diagramme.png"
+     */
+    public void actionExporter()
+    {
+        controleur.exporterDiagramme("diagramme.png");
+    }
+
+    /**
      * Action pour ouvrir un projet existant.
      * 
      * Affiche un sélecteur de dossiers, analyse le dossier sélectionné
@@ -237,7 +247,8 @@ public class BarreMenus extends JMenuBar implements ActionListener {
                             "Erreur lors de l'ouverture du dossier :\n" + ex.getMessage(),
                             "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
-            } else
+            } 
+            else
                 JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Impossible d'ouvrir ce dossier.",
                         "Erreur", JOptionPane.ERROR_MESSAGE);
         }

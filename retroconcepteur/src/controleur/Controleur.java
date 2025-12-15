@@ -1,6 +1,7 @@
 package controleur;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -183,6 +184,8 @@ public class Controleur {
             }
 
             blocsVue.add(bloc);
+            x += 250;
+            if (x > 1000) { x = 50; y += 200; }
         }
 
         if (this.vuePrincipale != null) {
@@ -192,6 +195,69 @@ public class Controleur {
         }
     }
 
+    /**
+     * Ajoute les méthodes aux blocs existants.
+     */
+    public void ajouterMethodes()
+    {
+        List<ClasseObjet> classes = this.metierComplet.getClasses();
+
+        for (ClasseObjet c : classes)
+        {
+            List<String> methVue = convertirMethodes(c.getMethodes(), c);
+
+            for (BlocClasse bloc : blocsVue)
+            {
+                if (bloc.getNom().equals(c.getNom()))
+                    bloc.setMethodes(methVue);
+            }
+        }
+
+        majAffichage();
+    }
+
+    /**
+     * Ajoute les attributs aux blocs existants.
+     */
+    public void ajouterAttributs()
+    {
+        List<ClasseObjet> classes = this.metierComplet.getClasses();
+
+        for (ClasseObjet c : classes)
+        {
+            List<String> attrVue = convertirAttributs(c.getattributs(), c);
+
+            for (BlocClasse bloc : blocsVue)
+            {
+                if (bloc.getNom().equals(c.getNom()))
+                    bloc.setAttributs(attrVue);
+            }
+        }
+
+        majAffichage();
+    }
+
+    /**
+     * Met à jour l'affichage des blocs et des liaisons.
+     */
+    private void majAffichage()
+    {
+        List<AssociationObjet> associations  = this.metierComplet.getAssociations();
+        List<HeritageObjet> heritages        = this.metierComplet.getHeritages();
+        List<InterfaceObjet> implementations = this.metierComplet.getImplementations();
+
+        List<LiaisonVue> liaisonsVue = new ArrayList<>();
+        liaisonsVue.addAll(convertirLiaisons(associations, TypeLiaison.ASSOCIATION_UNIDI));
+        liaisonsVue.addAll(convertirLiaisons(heritages, TypeLiaison.HERITAGE));
+        liaisonsVue.addAll(convertirLiaisons(implementations, TypeLiaison.IMPLEMENTATION));
+
+        if (vuePrincipale != null)
+        {
+            vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocsVue);
+            vuePrincipale.getPanneauDiagramme().setLiaisonsVue(liaisonsVue);
+            vuePrincipale.getPanneauDiagramme().repaint();
+        }
+    }
     /**
      * Calcule les positions optimales des classes dans le diagramme.
      * 
@@ -394,7 +460,6 @@ public class Controleur {
         if (this.vuePrincipale == null)
             return;
         BlocClasse bloc = this.vuePrincipale.getPanneauDiagramme().getBlocsClasseSelectionnee();
-        // ... (Logique de suppression inchangée) ...
     }
 
     /**

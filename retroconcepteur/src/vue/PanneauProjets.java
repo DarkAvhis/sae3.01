@@ -33,6 +33,7 @@ import controleur.Controleur;
 public class PanneauProjets extends JPanel implements ActionListener {
     private FenetrePrincipale fenetrePrincipale;
     private PanneauDiagramme panneauDiagramme; // nouveau
+    private Controleur controleur ; 
     private String cheminDossiers;
     private JButton boutonAttributs;
     private JButton boutonMethodes;
@@ -82,11 +83,7 @@ public class PanneauProjets extends JPanel implements ActionListener {
 
         // actualiser la liste
         JPanel panelBouton = new JPanel(new BorderLayout());
-        panelBouton.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
         panelBouton.setBackground(new Color(245, 245, 245));
-
-        // Empêche BorderLayout.SOUTH de compresser le panel
-        panelBouton.setPreferredSize(new Dimension(100, 100));
 
         boutonAttributs = new JButton("Attributs");
         boutonMethodes = new JButton("Méthodes");
@@ -96,7 +93,11 @@ public class PanneauProjets extends JPanel implements ActionListener {
         panelBouton.add(boutonMethodes, BorderLayout.CENTER);
         panelBouton.add(boutonActualiser, BorderLayout.SOUTH);
 
+       
+        this.boutonAttributs.addActionListener(this);
+        this.boutonMethodes.addActionListener(this);
         this.boutonActualiser.addActionListener(this);
+
 
         this.add(panelBouton, BorderLayout.SOUTH);
     }
@@ -144,14 +145,13 @@ public class PanneauProjets extends JPanel implements ActionListener {
         File projet = new File(cheminProjet);
 
         // Vérifier que le chemin existe et est un dossier
-        if (!projet.exists() || !projet.isDirectory())
-            return;
+        if (!projet.exists() || !projet.isDirectory()) return;
 
         // Récupérer JScrollPane → viewport → panelProjets
         JScrollPane scrollPane = (JScrollPane) this.getComponent(1);
-        JPanel panelProjets = (JPanel) scrollPane.getViewport().getView();
+        JPanel panelProjets    = (JPanel) scrollPane.getViewport().getView();
 
-        // 🔍 Vérifier si le projet existe déjà dans le panel
+        // Vérifier si le projet existe déjà dans le panel
         for (Component comp : panelProjets.getComponents()) {
             if (comp instanceof JButton) {
                 JButton btn = (JButton) comp;
