@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JViewport;
 
 import controleur.Controleur;
 import vue.LiaisonVue.TypeLiaison;
@@ -562,5 +563,10 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         OptimisateurDisposition.appliquerLayoutCirculaire(blocsClasses, 0);
         calculerTailleDynamique();
         repaint();
+    }
+
+    public List<BlocClasse> getBlocsClasses() 
+    {
+        return this.blocsClasses;
     }
 }

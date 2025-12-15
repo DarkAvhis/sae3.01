@@ -239,4 +239,14 @@ public class BlocClasse {
     public boolean estSelectionne() {
         return this.estSelectionne;
     }
+
+    public void setMethodes(List<String> methVue) 
+    {
+        this.methodesAffichage = methVue;
+    }
+
+    public void setAttributs(List<String> attrVue) 
+    {
+        this.attributsAffichage = attrVue;
+    }
 }

@@ -45,6 +45,7 @@ public class Controleur {
     private List<AssociationObjet> dernieresAssociations;
     private List<HeritageObjet> derniersHeritages;
     private List<InterfaceObjet> dernieresImplementations;
+    private List<BlocClasse> blocsVue;
     private List<LiaisonVue> dernieresToutesLiaisonsVue;
     private HashMap<String, Point> dernieresPositions;
 
@@ -96,6 +97,9 @@ public class Controleur {
         List<AssociationObjet> associations = this.dernieresAssociations;
         List<HeritageObjet> heritages = this.derniersHeritages;
         List<InterfaceObjet> implementations = this.dernieresImplementations;
+
+        int x = 50;
+        int y = 50;
 
         HashSet<String> classesExternesAGriser = new HashSet<String>();
 
