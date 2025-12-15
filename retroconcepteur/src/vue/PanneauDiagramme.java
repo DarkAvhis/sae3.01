@@ -138,20 +138,24 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         private int        offsetX         = 0   ;
         private int        offsetY         = 0   ;
 
-        @Override
+       @Override
         public void mousePressed(MouseEvent e)
         {
             blocSelectionne = null;
+
+            // Transformer les coordonnées de la souris en coordonnées "logiques"
+            int mouseX = (int)(e.getX() / zoom);
+            int mouseY = (int)(e.getY() / zoom);
 
             for (int i = blocsClasses.size() - 1; i >= 0; i--)
             {
                 BlocClasse bloc = blocsClasses.get(i);
 
-                if (bloc.contient(e.getX(), e.getY()))
+                if (bloc.contient(mouseX, mouseY))
                 {
                     blocSelectionne = bloc;
-                    offsetX = e.getX() - bloc.getX();
-                    offsetY = e.getY() - bloc.getY();
+                    offsetX = mouseX - bloc.getX();
+                    offsetY = mouseY - bloc.getY();
 
                     for (BlocClasse b : blocsClasses)
                     {
@@ -160,24 +164,28 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
 
                     bloc.setSelectionne(true);
                     repaint();
-
                     break;
                 }
             }
         }
+
 
         @Override
         public void mouseDragged(MouseEvent e)
         {
             if (blocSelectionne != null)
             {
-                blocSelectionne.setX(e.getX() - offsetX);
-                blocSelectionne.setY(e.getY() - offsetY);
+                int mouseX = (int)(e.getX() / zoom);
+                int mouseY = (int)(e.getY() / zoom);
 
-                calculerTailleDynamique(); // NOUVEAU : Recalcule la taille après déplacement
+                blocSelectionne.setX(mouseX - offsetX);
+                blocSelectionne.setY(mouseY - offsetY);
+
+                calculerTailleDynamique();
                 repaint();
             }
         }
+
 
         @Override
         public void mouseReleased(MouseEvent e)
