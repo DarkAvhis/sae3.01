@@ -6,12 +6,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-
-import src.modele.entites.InterfaceObjet;
 import src.modele.entites.AssociationObjet;
 import src.modele.entites.AttributObjet;
 import src.modele.entites.ClasseObjet;
 import src.modele.entites.HeritageObjet;
+import src.modele.entites.InterfaceObjet;
 import src.modele.entites.LiaisonObjet;
 import src.modele.entites.MethodeObjet;
 import src.vue.BlocClasse;
@@ -53,7 +52,6 @@ public class Controleur
     {
         this.metierComplet = new AnalyseIHMControleur();
         this.vuePrincipale = new FenetrePrincipale(this);
-        this.vuePrincipale.setVisible(true);
     }
 
     /**
