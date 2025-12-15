@@ -190,6 +190,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
         else if (src == alignerClasse    ) actionAligner      ();
         else if (src == optimiserClasse  ) actionOptimiser    ();
         else if (src == aProposClasse    ) actionAPropos      ();
+        else if (src == itemExporter     ) actionExporter     ();   
     }
 
     /**
