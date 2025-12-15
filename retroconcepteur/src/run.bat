@@ -8,7 +8,7 @@ if %ERRORLEVEL% equ 0 (
     echo Compilation reussie
     echo.
     echo === Execution de l'application ===
-    java -cp class vue.FenetrePrincipale
+    java -cp class controleur.Controleur
 ) else (
     echo Erreur lors de la compilation
     exit /b 1

@@ -1,14 +1,13 @@
-package src.vue;
+package vue;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
-import src.Controleur;
+import controleur.Controleur;
 
 /**
  * Fenêtre principale de l'application de génération de diagrammes UML.
@@ -66,7 +65,7 @@ public class FenetrePrincipale extends JFrame
 
 		this.add(splitPane, BorderLayout.CENTER);
 
-		this.setJMenuBar(barreMenus);//
+		this.setJMenuBar(barreMenus);
 
 		this.setVisible(true);
 	}

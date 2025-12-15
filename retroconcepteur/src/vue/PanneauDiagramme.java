@@ -1,4 +1,4 @@
-package src.vue;
+package vue;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -13,15 +13,16 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import src.Controleur;
-import src.vue.LiaisonVue.TypeLiaison;
+import controleur.Controleur;
+import vue.LiaisonVue.TypeLiaison;
 
 /**
  * Panneau d'affichage du diagramme UML.
@@ -34,10 +35,11 @@ import src.vue.LiaisonVue.TypeLiaison;
  * BUYANBADRAKH, Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class PanneauDiagramme extends JPanel
+public class PanneauDiagramme extends JPanel implements MouseWheelListener
 {
     private List<BlocClasse> blocsClasses;
     private List<LiaisonVue> liaisonsVue;
+    private double zoom;
 
     /**
      * Constructeur du panneau de diagramme.
@@ -49,7 +51,7 @@ public class PanneauDiagramme extends JPanel
     {
         this.blocsClasses = new ArrayList<>();
         this.liaisonsVue  = new ArrayList<>();
-
+        this.zoom = 1.0;
         // Taille minimale pour que le JScrollPane soit utilisable
         this.setPreferredSize(new java.awt.Dimension(1000, 800));
 
@@ -58,7 +60,43 @@ public class PanneauDiagramme extends JPanel
         this.setBorder(BorderFactory.createTitledBorder("Diagramme UML"));
 
         this.ajouterListenersInteraction();
+        this.addMouseWheelListener(this);
+
     }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e)
+    {
+        if (e.isControlDown()) 
+        { 
+            double delta = 0.1;
+            if (e.getWheelRotation() < 0){setZoom(zoom + delta);}
+            else                         {setZoom(zoom - delta);}
+        }
+        else if (e.isShiftDown()) // Shift + molette => décalage horizontal
+        {
+            if (getParent() instanceof JViewport viewport) 
+            {
+                Point pos = viewport.getViewPosition();
+                pos.x += e.getWheelRotation() * 100; // 20 pixels par "tick"
+                pos.x  = Math.max(0, pos.x);
+                pos.x  = Math.min(pos.x, getWidth() - viewport.getWidth());
+                viewport.setViewPosition(pos);
+            }
+        }
+        else // Molette normale => défilement vertical
+        {
+            if (getParent() instanceof JViewport viewport) 
+            {
+                Point pos = viewport.getViewPosition();
+                pos.y += e.getWheelRotation() * 100; // 20 pixels par "tick"
+                pos.y  = Math.max(0, pos.y);
+                pos.y  = Math.min(pos.y, getHeight() - viewport.getHeight());
+                viewport.setViewPosition(pos);
+            }
+        }
+    }
+
 
     /*
         nouvelle méthode permettant de netoyer le panneauDiagramme
@@ -73,6 +111,17 @@ public class PanneauDiagramme extends JPanel
         this.repaint();
     }
 
+    public double getZoom() {return this.zoom; }
+
+    public void setZoom(double zoom) 
+    {
+        // Limiter le zoom entre 0.2x et 5x
+        this.zoom = Math.max(0.2, Math.min(zoom, 5.0));
+        calculerTailleDynamique(); // Ajuste la taille du panneau selon le zoom
+        repaint();
+    }
+
+
     /**
      * Gestionnaire d'événements souris pour l'interaction avec les blocs.
      * * Permet de sélectionner et déplacer les blocs de classes dans le diagramme.
@@ -83,20 +132,24 @@ public class PanneauDiagramme extends JPanel
         private int        offsetX         = 0   ;
         private int        offsetY         = 0   ;
 
-        @Override
+       @Override
         public void mousePressed(MouseEvent e)
         {
             blocSelectionne = null;
+
+            // Transformer les coordonnées de la souris en coordonnées "logiques"
+            int mouseX = (int)(e.getX() / zoom);
+            int mouseY = (int)(e.getY() / zoom);
 
             for (int i = blocsClasses.size() - 1; i >= 0; i--)
             {
                 BlocClasse bloc = blocsClasses.get(i);
 
-                if (bloc.contient(e.getX(), e.getY()))
+                if (bloc.contient(mouseX, mouseY))
                 {
                     blocSelectionne = bloc;
-                    offsetX = e.getX() - bloc.getX();
-                    offsetY = e.getY() - bloc.getY();
+                    offsetX = mouseX - bloc.getX();
+                    offsetY = mouseY - bloc.getY();
 
                     for (BlocClasse b : blocsClasses)
                     {
@@ -105,24 +158,28 @@ public class PanneauDiagramme extends JPanel
 
                     bloc.setSelectionne(true);
                     repaint();
-
                     break;
                 }
             }
         }
+
 
         @Override
         public void mouseDragged(MouseEvent e)
         {
             if (blocSelectionne != null)
             {
-                blocSelectionne.setX(e.getX() - offsetX);
-                blocSelectionne.setY(e.getY() - offsetY);
+                int mouseX = (int)(e.getX() / zoom);
+                int mouseY = (int)(e.getY() / zoom);
 
-                calculerTailleDynamique(); // NOUVEAU : Recalcule la taille après déplacement
+                blocSelectionne.setX(mouseX - offsetX);
+                blocSelectionne.setY(mouseY - offsetY);
+
+                calculerTailleDynamique();
                 repaint();
             }
         }
+
 
         @Override
         public void mouseReleased(MouseEvent e)
@@ -147,30 +204,23 @@ public class PanneauDiagramme extends JPanel
      */
     private void calculerTailleDynamique()
     {
+
         int maxX = 0;
         int maxY = 0;
-        final int PADDING = 100; // Marge de sécurité
+        final int PADDING = 100;
 
-        for (BlocClasse bloc : blocsClasses)
-        {
-            // maxX = position du coin supérieur gauche + largeur
+        for (BlocClasse bloc : blocsClasses) {
             maxX = Math.max(maxX, bloc.getX() + bloc.getLargeur());
             maxY = Math.max(maxY, bloc.getY() + bloc.getHauteur());
         }
 
-        // Maintien d'une taille minimale de 1000x800 pour le panneau vide
-        int requiredWidth  = Math.max(maxX + PADDING, 1000);
-        int requiredHeight = Math.max(maxY + PADDING, 800) ;
+        int requiredWidth  = (int)Math.max(maxX * zoom + PADDING, 1000);
+        int requiredHeight = (int)Math.max(maxY * zoom + PADDING, 800) ;
 
         Dimension currentSize = getPreferredSize();
-
-        if (requiredWidth > currentSize.width || requiredHeight > currentSize.height)
+        if (requiredWidth > currentSize.width || requiredHeight > currentSize.height) 
         {
-            // Met à jour la taille préférée
-            setPreferredSize(new java.awt.Dimension(requiredWidth, requiredHeight));
-
-            // Notifie le parent (JScrollPane) que la taille a changé et qu'il doit
-            // réévaluer les barres
+            setPreferredSize(new Dimension(requiredWidth, requiredHeight));
             revalidate();
         }
     }
@@ -184,9 +234,12 @@ public class PanneauDiagramme extends JPanel
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        // Appliquer le zoom
+        g2d.scale(zoom, zoom);
+
         dessinerLiaisons(g2d);
 
-        for (BlocClasse bloc : blocsClasses)
+        for (BlocClasse bloc : blocsClasses) 
         {
             bloc.dessiner(g2d);
         }
@@ -279,7 +332,7 @@ public class PanneauDiagramme extends JPanel
         int offsetFromAnchor    = 15;
         int offsetPerpendicular = 10;
 
-        double angle = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
+        double angle     = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
         double perpAngle = angle + Math.PI / 2;
 
         int xLine = (int) (pAnchor.x + offsetFromAnchor * Math.cos(angle));
@@ -392,7 +445,7 @@ public class PanneauDiagramme extends JPanel
         int cX2 = blocCible.getX() + blocCible.getLargeur() / 2;
         int cY2 = blocCible.getY() + blocCible.getHauteur() / 2;
 
-        double angle = Math.atan2(cY2 - cY1, cX2 - cX1);
+        double angle    = Math.atan2(cY2 - cY1, cX2 - cX1);
         double angleDeg = Math.toDegrees(angle);
         if (angleDeg < 0)
         {
@@ -430,8 +483,6 @@ public class PanneauDiagramme extends JPanel
         this.liaisonsVue = liaisonsVue;
         this.repaint();
     }
-
-    public List<BlocClasse> getBlocsClasses(){return blocsClasses;}
 
     public BlocClasse getBlocsClasseSelectionnee()
     {
