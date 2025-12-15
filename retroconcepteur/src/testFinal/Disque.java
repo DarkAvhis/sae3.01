@@ -1,7 +1,7 @@
 // Fichier : testFinal/Disque.java
 package testFinal;
 
-public class Disque  implements ISurface
+public class Disque extends Forme implements ISurface
 {
     // ------------------------------------------------
     // Attributs (variables d'instance)
@@ -19,11 +19,23 @@ public class Disque  implements ISurface
      */
     public Disque(Point[] centre, double rayon) 
     {
+        super("rouge"); 
         this.centre = centre;
         this.rayon = rayon;
     }
     
-    public int zero()
+    public double aire() 
+    {
+        return Math.PI * rayon * rayon;
+    }
+
+    public double surface() 
+    {
+        return aire();
+    }
+
+    @Override
+    public int zero() 
     {
         return 0;
     }
