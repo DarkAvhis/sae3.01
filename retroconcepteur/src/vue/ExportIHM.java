@@ -1,11 +1,11 @@
 package src.vue;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class ExportIHM 
 {
@@ -19,11 +19,7 @@ public class ExportIHM
             component.setSize(size);
         }
 
-        BufferedImage image = new BufferedImage( 
-            size.width, 
-            size.height, 
-            BufferedImage.TYPE_INT_ARGB
-        );
+        BufferedImage image = new BufferedImage( size.width, size.height, BufferedImage.TYPE_INT_ARGB);
         
         Graphics2D g2d = image.createGraphics();
         component.paintAll(g2d);
