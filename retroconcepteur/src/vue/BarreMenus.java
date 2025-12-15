@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import src.Controleur;
+import src.modele.Sauvegarde;
 
 /**
  * Barre de menus de l'application.
@@ -259,7 +260,38 @@ public class BarreMenus extends JMenuBar implements ActionListener
      */
     public void actionSauvegarder() 
     {
-        this.controleur.sauvegarde();
+        // Récupère le dossier du projet ouvert dans l'UI (si présent)
+        String projet = this.controleur.getCheminProjetActuel();
+        String dossierCible = null;
+
+        if (projet == null || projet.isEmpty())
+        {
+            int rep = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+                    "Aucun projet ouvert. Voulez-vous choisir un dossier à sauvegarder ?",
+                    "Sauvegarder", JOptionPane.YES_NO_OPTION);
+            if (rep != JOptionPane.YES_OPTION) return;
+
+            JFileChooser chooser = new JFileChooser(new java.io.File(System.getProperty("user.dir")));
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int retour = chooser.showOpenDialog(SwingUtilities.getWindowAncestor(this));
+            if (retour != JFileChooser.APPROVE_OPTION) return;
+
+            dossierCible = chooser.getSelectedFile().getAbsolutePath();
+        }
+        else
+        {
+            dossierCible = projet;
+        }
+
+        java.io.File sortie = new java.io.File(dossierCible, "DiagrammeUML.txt");
+        Sauvegarde.sauvegarder(dossierCible, sortie.getAbsolutePath());
+
+        JOptionPane.showMessageDialog(
+            SwingUtilities.getWindowAncestor(this),
+            "Diagramme sauvegardé dans " + sortie.getAbsolutePath(),
+            "Sauvegarde réussie",
+            JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     public void actionAnnuler() 

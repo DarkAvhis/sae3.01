@@ -42,6 +42,7 @@ public class Controleur
     private AnalyseIHMControleur metierComplet;
     private FenetrePrincipale vuePrincipale;
     private List<BlocClasse> blocsVue = new ArrayList<>();
+     private String cheminProjetActuel; // nouveau champ
 
     // --- Constantes pour le Layout Hiérarchique ---
     private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
@@ -59,6 +60,7 @@ public class Controleur
     {
         this.metierComplet = new AnalyseIHMControleur();
         this.vuePrincipale = new FenetrePrincipale(this);
+        this.cheminProjetActuel = null;
     }
 
     // nouveau (permettre l'exportation)
@@ -110,6 +112,9 @@ public class Controleur
         if (!this.metierComplet.analyserDossier(cheminProjet)) {
             return;
         }
+
+        // stocke le chemin du projet ouvert pour permettre la sauvegarde ciblée
+        this.cheminProjetActuel = cheminProjet;
 
         List<ClasseObjet> classes = this.metierComplet.getClasses();
         blocsVue.clear();
@@ -541,6 +546,12 @@ public class Controleur
         {
             this.vuePrincipale.getPanneauDiagramme().optimiserDisposition();
         }
+    }
+
+    // nouveau getter pour récupérer le dossier de projet actuellement ouvert
+    public String getCheminProjetActuel() 
+    {
+        return this.cheminProjetActuel;
     }
 
     /**
