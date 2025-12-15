@@ -24,8 +24,8 @@ import src.Controleur;
  */
 public class FenetrePrincipale extends JFrame
 {
-	private Controleur controleur;
-	private PanneauProjets panneauProjets;
+	private Controleur       controleur      ; 
+	private PanneauProjets   panneauProjets  ;
 	private PanneauDiagramme panneauDiagramme;
 
 	private BarreMenus barreMenus;
