@@ -17,11 +17,13 @@ import javax.swing.JTextArea;
  *         BUYANBADRAKH, Yassine EL MAADI
  * @date 16 décembre 2025
  */
-public class FenetrePleinEcran extends JFrame {
+public class FenetrePleinEcran extends JFrame 
+{
     private JTextArea textArea;
     private BlocClasse bloc;
 
-    public FenetrePleinEcran(BlocClasse bloc) {
+    public FenetrePleinEcran(BlocClasse bloc) 
+    {
         this.bloc = bloc;
         
         this.setTitle("Détails de la classe: " + bloc.getNom());
@@ -55,11 +57,14 @@ public class FenetrePleinEcran extends JFrame {
         contenu += "│  CLASS: " + bloc.getNom() + "\n";
         contenu += "└─────────────────────────────────────────────┘\n\n";
 
-        contenu += "ATTRIBUTS (" + bloc.getAttributsComplets().size() + ")\n";
+        contenu += "ATTRIBUTS (" + bloc.getAttributsComplets() + ")\n";
         contenu += "─────────────────────────────────────────────\n";
-        if (bloc.getAttributsComplets().isEmpty()) {
+        if (bloc.getAttributsComplets() == null) 
+        {
             contenu += "   (aucun)\n";
-        } else {
+        } 
+        else 
+        {
             for (String attr : bloc.getAttributsComplets()) {
                 contenu += "    " + attr + "\n";
             }

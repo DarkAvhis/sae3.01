@@ -2,6 +2,7 @@ package vue;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -210,6 +211,15 @@ public class BlocClasse {
     public int getHauteur() {
         return this.hauteur;
     }
+
+    public List<String> getAttributs() {
+        return this.attributsAffichage;
+    }
+
+    public List<String> getMethodes() {
+        return this.methodesAffichage;
+    }
+
 
     public boolean estInterface() {
         return this.estInterface;
