@@ -16,7 +16,6 @@
 ./src/vue/ConsoleVue.java
 ./src/vue/ExportIHM.java
 ./src/vue/FenetrePrincipale.java
-./src/vue/FenetrePleinEcran.java
 ./src/vue/LiaisonVue.java
 ./src/vue/OptimisateurDisposition.java
 ./src/vue/PanneauDiagramme.java
