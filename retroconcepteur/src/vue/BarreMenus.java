@@ -27,18 +27,14 @@ public class BarreMenus extends JMenuBar implements ActionListener
 {
 
     // Références aux Classes pour les reconnaître dans actionPerformed
-    private JMenuItem nouvelleClasse     ;
     private JMenuItem ouvrirClasse       ;
     private JMenuItem sauvegarderClasse  ;
     private JMenuItem quitterClasse      ;
 
-    private JMenuItem annulerClasse      ;
-    private JMenuItem retablirClasse     ;
-    private JMenuItem supprimerClasse    ;
-
     private JMenuItem alignerClasse;
     private JMenuItem optimiserClasse;
     private JMenuItem itemExporter;
+    private JMenuItem supprimerClasse    ;
 
     private JMenuItem aProposClasse      ;
 
@@ -59,7 +55,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
         this.panneauProjets = panneauProjets;
 
         this.add(creerMenuFichier());
-        this.add(creerMenuEdition());
         this.add(creerMenuAffichage());
         this.add(creerMenuAide());
     }
@@ -76,52 +71,24 @@ public class BarreMenus extends JMenuBar implements ActionListener
     {
         JMenu menu = new JMenu("Fichier");
 
-        this.nouvelleClasse    = new JMenuItem("Nouveau projet");
+       
         this.ouvrirClasse      = new JMenuItem("Ouvrir projet");
         this.sauvegarderClasse = new JMenuItem("Sauvegarder au format txt");
         this.itemExporter    = new JMenuItem("Exporter le diagramme (PNG)");
         this.quitterClasse     = new JMenuItem("Quitter");
 
-        this.nouvelleClasse   .addActionListener(this);
+      
         this.ouvrirClasse     .addActionListener(this);
         this.sauvegarderClasse.addActionListener(this);
         this.itemExporter     .addActionListener(this);
         this.quitterClasse    .addActionListener(this);
 
-        menu.add(nouvelleClasse)   ;
         menu.add(ouvrirClasse)     ;
         menu.addSeparator()        ;
         menu.add(sauvegarderClasse);
         menu.add(itemExporter);
         menu.addSeparator();
         menu.add(quitterClasse)    ;
-
-        return menu;
-    }
-
-    /**
-     * Crée le menu Édition.
-     * 
-     * Contient les actions : Annuler, Rétablir, Supprimer.
-     * 
-     * @return Le menu Édition configuré
-     */
-    public JMenu creerMenuEdition() 
-    {
-        JMenu menu = new JMenu("Édition");
-
-        this.annulerClasse   = new JMenuItem("Annuler")  ;
-        this.retablirClasse  = new JMenuItem("Rétablir") ;
-        this.supprimerClasse = new JMenuItem("Supprimer");
-
-        annulerClasse  .addActionListener(this);
-        retablirClasse .addActionListener(this);
-        supprimerClasse.addActionListener(this);
-
-        menu.add(annulerClasse);
-        menu.add(retablirClasse);
-        menu.addSeparator();
-        menu.add(supprimerClasse);
 
         return menu;
     }
@@ -139,14 +106,17 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
         this.alignerClasse   = new JMenuItem("Aligner les symboles");
         this.optimiserClasse = new JMenuItem("Optimiser les positions");
+        this.supprimerClasse = new JMenuItem("Supprimer");
         
 
         alignerClasse  .addActionListener(this);
         optimiserClasse.addActionListener(this);
+        supprimerClasse.addActionListener(this);
 
         menu.add(alignerClasse)  ;
         menu.add(optimiserClasse);
         menu.addSeparator();
+        menu.add(supprimerClasse);
        
 
         return menu;
@@ -182,27 +152,14 @@ public class BarreMenus extends JMenuBar implements ActionListener
     {
         Object src = e.getSource();
 
-        if      (src == nouvelleClasse   ) actionNouveauProjet();
-        else if (src == ouvrirClasse     ) actionOuvrirProjet ();
-        else if (src == sauvegarderClasse) actionSauvegarder  ();
-        else if (src == quitterClasse    ) System.exit(0);
-        else if (src == annulerClasse    ) actionAnnuler      ();
-        else if (src == retablirClasse   ) actionRetablir     ();
-        else if (src == supprimerClasse  ) actionSupprimer    ();
-        else if (src == alignerClasse    ) actionAligner      ();
-        else if (src == optimiserClasse  ) actionOptimiser    ();
-        else if (src == aProposClasse    ) actionAPropos      ();
-        else if (src == itemExporter     ) actionExporter     ();   
-    }
-
-    /**
-     * Action pour créer un nouveau projet.
-     * 
-     * @note Fonctionnalité en cours de développement
-     */
-    public void actionNouveauProjet() 
-    {
-        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Pas fini");
+        if (src == ouvrirClasse     ) actionOuvrirProjet ();
+        if (src == sauvegarderClasse) actionSauvegarder  ();
+        if (src == supprimerClasse  ) actionSupprimer    ();
+        if (src == alignerClasse    ) actionAligner      ();
+        if (src == optimiserClasse  ) actionOptimiser    ();
+        if (src == aProposClasse    ) actionAPropos      ();
+        if (src == itemExporter     ) actionExporter     ();   
+        if (src == quitterClasse    ) System.exit(0);
     }
 
     /**
@@ -295,15 +252,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
         );
     }
 
-    public void actionAnnuler() 
-    {
-        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Pas fini");
-    }
-
-    public void actionRetablir() 
-    {
-        JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Pas fini");
-    }
 
     public void actionSupprimer() 
     {
