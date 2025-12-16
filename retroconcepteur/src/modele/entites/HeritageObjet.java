@@ -1,4 +1,4 @@
-package modele.entites;
+package src.modele.entites;
 
 /**
  * Représente une relation d'héritage entre deux classes d'un diagramme UML.

@@ -1,4 +1,4 @@
-package modele.entites;
+package src.modele.entites;
 
 
 import java.util.ArrayList;

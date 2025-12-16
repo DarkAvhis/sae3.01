@@ -1,12 +1,15 @@
-package vue;
+package src.vue;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
-import javax.swing.*;
-
-import controleur.Controleur;
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import src.Controleur;
 
 /**
  * Barre de menus de l'application.
@@ -37,9 +40,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
     private JMenuItem itemExporter;
 
     private JMenuItem aProposClasse      ;
-    private JMenuItem exporterClasse     ;
-
-    private JCheckBoxMenuItem afficherClassesExternes;
 
     private PanneauProjets panneauProjets;
     private Controleur     controleur    ;
@@ -77,18 +77,22 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
         this.nouvelleClasse    = new JMenuItem("Nouveau projet");
         this.ouvrirClasse      = new JMenuItem("Ouvrir projet");
-        this.sauvegarderClasse = new JMenuItem("Sauvegarder positions");
+        this.sauvegarderClasse = new JMenuItem("Sauvegarder au format txt");
+        this.itemExporter    = new JMenuItem("Exporter le diagramme (PNG)");
         this.quitterClasse     = new JMenuItem("Quitter");
 
         this.nouvelleClasse   .addActionListener(this);
         this.ouvrirClasse     .addActionListener(this);
         this.sauvegarderClasse.addActionListener(this);
+        this.itemExporter     .addActionListener(this);
         this.quitterClasse    .addActionListener(this);
 
         menu.add(nouvelleClasse)   ;
         menu.add(ouvrirClasse)     ;
         menu.addSeparator()        ;
         menu.add(sauvegarderClasse);
+        menu.add(itemExporter);
+        menu.addSeparator();
         menu.add(quitterClasse)    ;
 
         return menu;
@@ -134,19 +138,15 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
         this.alignerClasse   = new JMenuItem("Aligner les symboles");
         this.optimiserClasse = new JMenuItem("Optimiser les positions");
-        this.exporterClasse  = new JMenuItem("Exporter en PNG");
-        this.afficherClassesExternes = new JCheckBoxMenuItem("Afficher classes externes", true);
+        
 
         alignerClasse  .addActionListener(this);
         optimiserClasse.addActionListener(this);
-        exporterClasse .addActionListener(this);
-        afficherClassesExternes.addActionListener(this);
 
         menu.add(alignerClasse)  ;
         menu.add(optimiserClasse);
         menu.addSeparator();
-        menu.add(afficherClassesExternes);
-        menu.add(exporterClasse) ;
+       
 
         return menu;
     }
@@ -177,41 +177,21 @@ public class BarreMenus extends JMenuBar implements ActionListener
      * 
      * @param e L'événement déclenché par un item de menu
      */
-    public void actionPerformed(ActionEvent e) {
-        ;
-
-        if (e.getSource() == nouvelleClasse)
-            actionNouveauProjet();
-        else if (e.getSource() == ouvrirClasse)
-            actionOuvrirProjet();
-        else if (e.getSource() == sauvegarderClasse)
-            actionSauvegarder();
-        else if (e.getSource() == quitterClasse)
-            System.exit(0);
-
-        else if (e.getSource() == annulerClasse)
-            actionAnnuler();
-        else if (e.getSource() == retablirClasse)
-            actionRetablir();
-        else if (e.getSource() == supprimerClasse)
-            actionSupprimer();
-        else if (e.getSource() == exporterClasse)
-            actionExporter();
-
-        else if (e.getSource() == alignerClasse)
-            actionAligner();
-        else if (e.getSource() == optimiserClasse)
-            actionOptimiser();
-        else if (e.getSource() == afficherClassesExternes)
-            actionAfficherClassesExternes();
-        else if (e.getSource() == aProposClasse)
-            actionAPropos();
-    }
-
-    private void actionAfficherClassesExternes() 
+    public void actionPerformed(ActionEvent e) 
     {
-        boolean afficher = this.afficherClassesExternes.isSelected();
-        this.controleur.setAfficherClassesExternes(afficher);
+        Object src = e.getSource();
+
+        if      (src == nouvelleClasse   ) actionNouveauProjet();
+        else if (src == ouvrirClasse     ) actionOuvrirProjet ();
+        else if (src == sauvegarderClasse) actionSauvegarder  ();
+        else if (src == quitterClasse    ) System.exit(0);
+        else if (src == annulerClasse    ) actionAnnuler      ();
+        else if (src == retablirClasse   ) actionRetablir     ();
+        else if (src == supprimerClasse  ) actionSupprimer    ();
+        else if (src == alignerClasse    ) actionAligner      ();
+        else if (src == optimiserClasse  ) actionOptimiser    ();
+        else if (src == aProposClasse    ) actionAPropos      ();
+        else if (src == itemExporter     ) actionExporter     ();   
     }
 
     /**
@@ -231,7 +211,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
      */
     public void actionExporter()
     {
-        //controleur.exporterDiagramme("diagramme.png");
+        controleur.exporterDiagramme("diagramme.png");
     }
 
     /**
@@ -253,7 +233,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
             if (dossier.exists() && dossier.isDirectory()) 
             {
-                try 
+                try
                 {
                     this.controleur.analyserEtAfficherDiagramme(dossier.getAbsolutePath());
                     JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this),
@@ -291,7 +271,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
                     "Sauvegarder", JOptionPane.YES_NO_OPTION);
             if (rep != JOptionPane.YES_OPTION) return;
 
-            JFileChooser chooser = new JFileChooser(new java.io.File(System.getProperty("user.dir")));
+            JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.dir")));
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int retour = chooser.showOpenDialog(SwingUtilities.getWindowAncestor(this));
             if (retour != JFileChooser.APPROVE_OPTION) return;
@@ -304,7 +284,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
         }
 
         File sortie = new File(dossierCible, "DiagrammeUML.txt");
-        // Sauvegarde.sauvegarder(dossierCible, sortie.getAbsolutePath());
+        controleur.sauvegarde(dossierCible, sortie.getAbsolutePath());
 
         JOptionPane.showMessageDialog(
             SwingUtilities.getWindowAncestor(this),

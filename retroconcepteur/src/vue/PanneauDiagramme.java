@@ -1,4 +1,4 @@
-package vue;
+package src.vue;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -11,20 +11,18 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-
-import java.awt.event.*;
-
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-
-import javax.swing.*;
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
-
-import controleur.Controleur;
-import vue.LiaisonVue.TypeLiaison;
+import src.Controleur;
+import src.vue.LiaisonVue.TypeLiaison;
 
 /**
  * Panneau d'affichage du diagramme UML.
@@ -564,21 +562,6 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         }
 
         OptimisateurDisposition.appliquerLayoutCirculaire(blocsClasses, 0);
-        calculerTailleDynamique();
-        repaint();
-    }
-
-    public void setPositionsClasses(HashMap<String,Point> positionsOptimales) 
-    {
-        for (BlocClasse bloc : blocsClasses) 
-        {
-            Point pos = positionsOptimales.get(bloc.getNom());
-            if (pos != null) 
-            {
-                bloc.setX(pos.x);
-                bloc.setY(pos.y);
-            }
-        }
         calculerTailleDynamique();
         repaint();
     }
