@@ -41,6 +41,7 @@ public class Controleur
     private FenetrePrincipale vuePrincipale;
     private List<BlocClasse> blocsVue = new ArrayList<>();
     private String cheminProjetActuel;
+    private boolean afficherClassesExternes = true;
 
     // --- Constantes pour le Layout Hiérarchique ---
     private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
@@ -113,14 +114,38 @@ public class Controleur
 
         this.cheminProjetActuel = cheminProjet;
 
+        reafficherAvecFiltreExternes();
+    }
+
+    /**
+     * Active/désactive l'affichage des classes externes et réaffiche.
+     */
+    public void setAfficherClassesExternes(boolean afficher)
+    {
+        this.afficherClassesExternes = afficher;
+        reafficherAvecFiltreExternes();
+    }
+
+    /**
+     * Reconstruit les blocs affichés selon le filtre d'affichage des classes externes.
+     */
+    private void reafficherAvecFiltreExternes()
+    {
         List<ClasseObjet> classes = this.metierComplet.getClasses();
         blocsVue.clear();
 
         int x = 50, y = 50;
         for (ClasseObjet c : classes)
         {
+            boolean estExterne = (c.getSpecifique() != null && c.getSpecifique().equals("externe"));
+            if (!afficherClassesExternes && estExterne)
+            {
+                continue;
+            }
+
             BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
             if (c.getNom().contains("Interface")) bloc.setInterface(true);
+            if (estExterne) bloc.setExterne(true);
 
             blocsVue.add(bloc);
             x += 250;
@@ -576,7 +601,7 @@ public class Controleur
      * @param args Arguments de la ligne de commande (non utilisés)
      */
     public static void main(String[] args) 
-{
+    {
         new Controleur();
     }
 }
