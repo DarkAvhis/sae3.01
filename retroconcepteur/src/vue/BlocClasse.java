@@ -131,31 +131,27 @@ public class BlocClasse
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        for (String att : attributsAffichage)
-        {
+        int maxAttributs = 3;
+        int nbAttAffiches = Math.min(attributsAffichage.size(), maxAttributs);
+        int nbLignesAtt = nbAttAffiches + (attributsAffichage.size() > maxAttributs ? 1 : 0);
+        int iAtt = 0;
+        for (String att : attributsAffichage) {
+            if (iAtt >= maxAttributs) break;
             currentY += HAUTEUR_LIGNE;
-
             boolean estStatique = att.contains("{static}");
-            String libelle =
-                att.replace(" {static}", "")
-                   .replace("{static} ", "");
-
+            String libelle = att.replace(" {static}", "").replace("{static} ", "");
             g.drawString(libelle, x + PADDING, currentY);
-
-            if (estStatique)
-            {
+            if (estStatique) {
                 FontMetrics fmLigne = g.getFontMetrics();
                 int underlineY = currentY + 2;
-                int underlineX2 =
-                    x + PADDING + fmLigne.stringWidth(libelle);
-
-                g.drawLine(
-                    x + PADDING,
-                    underlineY,
-                    underlineX2,
-                    underlineY
-                );
+                int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
+                g.drawLine(x + PADDING, underlineY, underlineX2, underlineY);
             }
+            iAtt++;
+        }
+        if (attributsAffichage.size() > maxAttributs) {
+            currentY += HAUTEUR_LIGNE;
+            g.drawString("...", x + PADDING, currentY);
         }
 
         currentY += PADDING / 2;
@@ -164,31 +160,47 @@ public class BlocClasse
 
         currentY += PADDING;
 
-        for (String met : methodesAffichage)
-        {
+        int maxMethodes = 3;
+        int nbMetAffichees = Math.min(methodesAffichage.size(), maxMethodes);
+        int nbLignesMet = nbMetAffichees + (methodesAffichage.size() > maxMethodes ? 1 : 0);
+        int iMet = 0;
+        for (String met : methodesAffichage) {
+            if (iMet >= maxMethodes) break;
             currentY += HAUTEUR_LIGNE;
-
             boolean estStatique = met.contains("{static}");
-            String libelle =
-                met.replace(" {static}", "")
-                   .replace("{static} ", "");
-
+            String libelle = met.replace(" {static}", "").replace("{static} ", "");
+            // Limiter les paramètres à 2, puis ajouter ...
+            int idxParOuv = libelle.indexOf('(');
+            int idxParFer = libelle.indexOf(')');
+            if (idxParOuv != -1 && idxParFer != -1 && idxParFer > idxParOuv + 1) {
+                String params = libelle.substring(idxParOuv + 1, idxParFer);
+                String[] paramList = params.split(",");
+                if (paramList.length > 2) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(libelle, 0, idxParOuv + 1);
+                    sb.append(paramList[0].trim());
+                    sb.append(", ");
+                    sb.append(paramList[1].trim());
+                    sb.append(", ...");
+                    sb.append(")");
+                    if (idxParFer + 1 < libelle.length()) {
+                        sb.append(libelle.substring(idxParFer + 1));
+                    }
+                    libelle = sb.toString();
+                }
+            }
             g.drawString(libelle, x + PADDING, currentY);
-
-            if (estStatique)
-            {
+            if (estStatique) {
                 FontMetrics fmLigne = g.getFontMetrics();
                 int underlineY = currentY + 2;
-                int underlineX2 =
-                    x + PADDING + fmLigne.stringWidth(libelle);
-
-                g.drawLine(
-                    x + PADDING,
-                    underlineY,
-                    underlineX2,
-                    underlineY
-                );
+                int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
+                g.drawLine(x + PADDING, underlineY, underlineX2, underlineY);
             }
+            iMet++;
+        }
+        if (methodesAffichage.size() > maxMethodes) {
+            currentY += HAUTEUR_LIGNE;
+            g.drawString("...", x + PADDING, currentY);
         }
     }
 
@@ -278,42 +290,22 @@ public class BlocClasse
     private void recalculerDimensions()
     {
         int maxLongueur = nom != null ? nom.length() : 0;
-
-        for (String att : attributsAffichage)
-        {
-            if (att == null)
-            {
-                continue;
-            }
-
-            int longueur =
-                att.replace("{static}", "").trim().length();
-
+        for (String att : attributsAffichage) {
+            if (att == null) continue;
+            int longueur = att.replace("{static}", "").trim().length();
             maxLongueur = Math.max(maxLongueur, longueur);
         }
-
-        for (String met : methodesAffichage)
-        {
-            if (met == null)
-            {
-                continue;
-            }
-
-            int longueur =
-                met.replace("{static}", "").trim().length();
-
+        for (String met : methodesAffichage) {
+            if (met == null) continue;
+            int longueur = met.replace("{static}", "").trim().length();
             maxLongueur = Math.max(maxLongueur, longueur);
         }
-
-        this.largeur = Math.max(
-            200,
-            PADDING * 2 + maxLongueur * 8
-        );
-
-        this.hauteur =
-            HAUTEUR_ENTETE
-            + (attributsAffichage.size()
-               + methodesAffichage.size()) * HAUTEUR_LIGNE
-            + PADDING * 4;
+        this.largeur = Math.max(200, PADDING * 2 + maxLongueur * 8);
+        // Calcul du nombre de lignes affichées (condensé)
+        int nbAttAffiches = Math.min(attributsAffichage.size(), 3);
+        int nbLignesAtt = nbAttAffiches + (attributsAffichage.size() > 3 ? 1 : 0);
+        int nbMetAffichees = Math.min(methodesAffichage.size(), 3);
+        int nbLignesMet = nbMetAffichees + (methodesAffichage.size() > 3 ? 1 : 0);
+        this.hauteur = HAUTEUR_ENTETE + (nbLignesAtt + nbLignesMet) * HAUTEUR_LIGNE + PADDING * 4;
     }
 }
