@@ -137,7 +137,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         private BlocClasse blocSelectionne = null;
         private int        offsetX         = 0   ;
         private int        offsetY         = 0   ;
-        private FenetrePleinEcran fenetrePleinEcran = null;
+        
 
        @Override
         public void mousePressed(MouseEvent e)
@@ -157,11 +157,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                     // Clic-droit : ouvrir la fenêtre plein écran
                     if (e.getButton() == MouseEvent.BUTTON3)
                     {
-                        if (fenetrePleinEcran != null) {
-                            fenetrePleinEcran.dispose();
-                        }
-                        fenetrePleinEcran = new FenetrePleinEcran(bloc);
-                        return;
+
                     }
 
                     blocSelectionne = bloc;
