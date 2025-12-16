@@ -166,7 +166,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
     public void actionExporter()
     {
-        controleur.exporterDiagramme("diagramme.png");
+        controleur.exporterDiagramme( );
     }
 
     public void actionOuvrirProjet()

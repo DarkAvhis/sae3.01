@@ -1,12 +1,15 @@
 package controleur;
 
 import java.awt.Point;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import modele.Sauvegarde;
 import modele.entites.AssociationObjet;
@@ -63,21 +66,39 @@ public class Controleur
     }
 
     // nouveau (permettre l'exportation)
-    public void exporterDiagramme(String cheminFichier)
+    public void exporterDiagramme()
     {
         if (this.vuePrincipale == null)
             return;
 
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Exporter le diagramme");
+        chooser.setSelectedFile(new File("diagramme.png"));
+        chooser.setFileFilter(
+            new javax.swing.filechooser.FileNameExtensionFilter("Image PNG", "png")
+        );
+
+        int choix = chooser.showSaveDialog(this.vuePrincipale);
+        if (choix != JFileChooser.APPROVE_OPTION)
+            return;
+
+        File fichier = chooser.getSelectedFile();
+
+        if (!fichier.getName().toLowerCase().endsWith(".png")) {
+            fichier = new File(fichier.getAbsolutePath() + ".png");
+        }
+
         try
         {
             ExportIHM.exportComponent(
-                this.vuePrincipale.getPanneauDiagramme(),
-                cheminFichier
+                this.vuePrincipale.getPanneauDiagramme(), // ✅ BON composant
+                fichier                               // ✅ BON type
             );
 
             JOptionPane.showMessageDialog(
                 this.vuePrincipale,
-                "Le diagramme a été exporté avec succès.\n\nFichier : " + cheminFichier,
+                "Le diagramme a été exporté avec succès.\n\nFichier :\n"
+                    + fichier.getAbsolutePath(),
                 "Export réussi",
                 JOptionPane.INFORMATION_MESSAGE
             );
@@ -86,13 +107,14 @@ public class Controleur
         {
             JOptionPane.showMessageDialog(
                 this.vuePrincipale,
-                "Erreur lors de l'export du diagramme.",
+                "Erreur lors de l'export du diagramme :\n" + e.getMessage(),
                 "Erreur",
                 JOptionPane.ERROR_MESSAGE
             );
             e.printStackTrace();
         }
     }
+
 
     /**
      * Analyse un projet Java et affiche le diagramme UML correspondant.
