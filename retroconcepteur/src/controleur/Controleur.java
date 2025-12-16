@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.JOptionPane;
+import modele.Sauvegarde;
 import modele.entites.AssociationObjet;
 import modele.entites.AttributObjet;
 import modele.entites.ClasseObjet;
