@@ -1,4 +1,4 @@
-package src.modele.entites;
+package modele.entites;
 
 
 import java.util.HashMap;
