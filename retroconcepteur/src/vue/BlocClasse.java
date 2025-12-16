@@ -1,8 +1,8 @@
+// File: vue/BlocClasse.java
 package vue;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -11,50 +11,45 @@ import java.util.List;
 
 /**
  * Représentation graphique d'une classe UML.
- * 
- * Un BlocClasse affiche le nom de la classe, ses attributs et ses méthodes
+ * * Un BlocClasse affiche le nom de la classe, ses attributs et ses méthodes
  * dans un rectangle avec un en-tête coloré. Supporte l'affichage des
  * modificateurs
  * (static) et la sélection interactive.
- * 
- * @author Quentin MORVAN, Valentin LEROY, Celim CHAOU, Enzo DUMONT, Ariunbayar
- *         BUYANBADRAKH, Yassine EL MAADI
+ * * @author Quentin MORVAN, Valentin LEROY, Celim CHAOU, Enzo DUMONT, Ariunbayar
+ * BUYANBADRAKH, Yassine EL MAADI
  * @date 12 décembre 2025
  */
 public class BlocClasse {
     private String nom;
 
-    private int x;
-    private int y;
+    private int x      ;
+    private int y      ;
     private int largeur;
     private int hauteur;
-
     private boolean estInterface;
+    private boolean estSuperClasse;
     private boolean estSelectionne;
-    private boolean estExterne;
+    private boolean estExterne; // NOUVEAU: Champ pour marquer une classe comme externe
 
     // Nouveaux champs pour stocker les détails
     private List<String> attributsAffichage;
-    private List<String> methodesAffichage;
+    private List<String> methodesAffichage ;
 
     // Constantes
-    private static final int PADDING = 10;
+    private static final int PADDING        = 10;
     private static final int HAUTEUR_ENTETE = 30;
     private static final int HAUTEUR_LIGNE = 20; // Nouvelle constante pour la hauteur d'une ligne de texte
-
     private static final Color COULEUR_FOND = new Color(230, 240, 250);
-    private static final Color COULEUR_FOND_EXTERNE = new Color(235, 235, 235);
+    private static final Color COULEUR_FOND_SUPER = new Color(235, 235, 235);
     private static final Color COULEUR_BORDURE = new Color(0, 0, 0);
     private static final Color COULEUR_ENTETE = new Color(100, 150, 200);
-    private static final Color COULEUR_ENTETE_EXTERNE = new Color(140, 140, 140);
+    private static final Color COULEUR_ENTETE_SUPER = new Color(140, 140, 140);
 
     /**
      * Constructeur principal d'un bloc classe.
-     * 
-     * Crée un bloc graphique avec calcul automatique des dimensions
+     * * Crée un bloc graphique avec calcul automatique des dimensions
      * en fonction du contenu (attributs et méthodes).
-     * 
-     * @param nom       Nom de la classe
+     * * @param nom       Nom de la classe
      * @param x         Position X du bloc
      * @param y         Position Y du bloc
      * @param attributs Liste des attributs formatés pour l'affichage
@@ -62,19 +57,20 @@ public class BlocClasse {
      */
     public BlocClasse(String nom, int x, int y, List<String> attributs, List<String> methodes) {
         this.nom = nom;
-        this.x = x;
-        this.y = y;
+        this.x   = x  ;
+        this.y   = y  ;
         this.attributsAffichage = attributs;
-        this.methodesAffichage = methodes;
+        this.methodesAffichage  = methodes;
 
         this.estInterface = false;
+        this.estSuperClasse = false;
         this.estSelectionne = false;
-        this.estExterne = false;
+        this.estExterne = false; // Initialisation du nouveau champ
 
         // Calculer la taille initiale minimale
-        int maxLgNom = nom.length() * 8; // Estimation
+        int maxLgNom       = nom.length() * 8; // Estimation
         int maxLgAttributs = attributs.stream().mapToInt(String::length).max().orElse(0) * 8;
-        int maxLgMethodes = methodes.stream().mapToInt(String::length).max().orElse(0) * 8;
+        int maxLgMethodes  = methodes.stream().mapToInt(String::length).max().orElse(0) * 8 ;
 
         // Calcul de la largeur : min(max) ou 200
         this.largeur = Math.max(200, PADDING * 2 + Math.max(maxLgNom, Math.max(maxLgAttributs, maxLgMethodes)));
@@ -86,10 +82,8 @@ public class BlocClasse {
 
     /**
      * Constructeur simplifié d'un bloc classe sans contenu.
-     * 
-     * Crée un bloc vide (sans attributs ni méthodes).
-     * 
-     * @param nom Nom de la classe
+     * * Crée un bloc vide (sans attributs ni méthodes).
+     * * @param nom Nom de la classe
      * @param x   Position X du bloc
      * @param y   Position Y du bloc
      */
@@ -99,15 +93,14 @@ public class BlocClasse {
 
     /**
      * Dessine le bloc classe dans le contexte graphique.
-     * 
-     * Affiche le rectangle du bloc avec son en-tête, ses attributs et ses méthodes.
+     * * Affiche le rectangle du bloc avec son en-tête, ses attributs et ses méthodes.
      * Les éléments statiques sont soulignés selon la notation UML.
-     * 
-     * @param g Le contexte graphique 2D pour le dessin
+     * * @param g Le contexte graphique 2D pour le dessin
      */
     public void dessiner(Graphics2D g) {
         // 1. Fond et Bord
-        g.setColor(estExterne ? COULEUR_FOND_EXTERNE : COULEUR_FOND);
+        Color couleurFond = this.estSuperClasse ? COULEUR_FOND_SUPER : COULEUR_FOND;
+        g.setColor(couleurFond);
         g.fillRect(x, y, largeur, hauteur);
 
         g.setColor(estSelectionne ? Color.BLUE : COULEUR_BORDURE);
@@ -115,7 +108,8 @@ public class BlocClasse {
         g.drawRect(x, y, largeur, hauteur);
 
         // 2. Entête (Nom de la classe)
-        g.setColor(estExterne ? COULEUR_ENTETE_EXTERNE : COULEUR_ENTETE);
+        Color couleurEntete = this.estSuperClasse ? COULEUR_ENTETE_SUPER : COULEUR_ENTETE;
+        g.setColor(couleurEntete);
         g.fillRect(x, y, largeur, HAUTEUR_ENTETE);
 
         g.setColor(Color.WHITE);
@@ -130,7 +124,8 @@ public class BlocClasse {
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        for (String att : attributsAffichage) {
+        for (String att : attributsAffichage) 
+        {
             currentY += HAUTEUR_LIGNE;
 
             boolean estStatique = att.contains("{static}");
@@ -138,10 +133,11 @@ public class BlocClasse {
 
             g.drawString(libelle, x + PADDING, currentY);
 
-            if (estStatique) {
+            if (estStatique) 
+            {
                 FontMetrics fmLigne = g.getFontMetrics();
 
-                int underlineY = currentY + 2;
+                int underlineY  = currentY + 2;
                 int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
                 g.drawLine(x + PADDING, underlineY, underlineX2, underlineY);
             }
@@ -155,158 +151,137 @@ public class BlocClasse {
         // 5. Dessin des Méthodes
         currentY += PADDING;
 
-        for (String met : methodesAffichage) {
+        for (String met : methodesAffichage) 
+        {
             currentY += HAUTEUR_LIGNE;
 
             boolean estStatique = met.contains("{static}");
-            String libelle = met.replace(" {static}", "").replace("{static} ", "");
+            String libelle      = met.replace(" {static}", "").replace("{static} ", "");
 
             g.drawString(libelle, x + PADDING, currentY);
 
-            if (estStatique) {
+            if (estStatique) 
+            {
                 FontMetrics fmLigne = g.getFontMetrics();
-                int underlineY = currentY + 2;
+                int underlineY  = currentY + 2;
                 int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
                 g.drawLine(x + PADDING, underlineY, underlineX2, underlineY);
             }
-        }
-
-        // 6. Gestion Interface (si besoin)
-        if (estInterface) {
-            // ... (logique de dessin <<interface>> conservée)
         }
     }
 
     /**
      * Vérifie si un point est contenu dans le bloc.
-     * 
-     * Utilisé pour la détection des clics souris sur le bloc.
-     * 
-     * @param px Coordonnée X du point
+     * * Utilisé pour la détection des clics souris sur le bloc.
+     * * @param px Coordonnée X du point
      * @param py Coordonnée Y du point
      * @return true si le point est dans le bloc, false sinon
      */
     public boolean contient(int px, int py) {
-        return px >= x && px <= x + largeur &&
-                py >= y && py <= y + hauteur;
+        return px >= x
+                && px <= x + largeur
+                && py >= y
+                && py <= y + hauteur;
+    }
+
+    public void setSuperClasse(boolean estSuperClasse) {
+        this.estSuperClasse = estSuperClasse;
     }
 
     // Getters et Setters
+
     public String getNom() {
         return this.nom;
     }
-
     public int getX() {
         return this.x;
     }
-
     public int getY() {
         return this.y;
     }
-
     public int getLargeur() {
         return this.largeur;
     }
-
     public int getHauteur() {
         return this.hauteur;
     }
-
-    public List<String> getAttributs() {
-        return this.attributsAffichage;
-    }
-
-    public List<String> getMethodes() {
-        return this.methodesAffichage;
-    }
-
-
     public boolean estInterface() {
         return this.estInterface;
     }
-
     public boolean estSelectionne() {
         return this.estSelectionne;
     }
-
-    public boolean estExterne() {
+    public boolean estExterne() { // NOUVEAU GETTER
         return this.estExterne;
+    }
+
+    // NOUVEAUX GETTERS pour FenetrePleinEcran.java
+    public List<String> getAttributsComplets() {
+        return this.attributsAffichage;
+    }
+    
+    public List<String> getMethodesCompletes() {
+        return this.methodesAffichage;
     }
 
     public void setX(int x) {
         this.x = x;
     }
-
     public void setY(int y) {
         this.y = y;
     }
-
     public void setInterface(boolean estInterface) {
         this.estInterface = estInterface;
     }
-
     public void setSelectionne(boolean selectionne) {
         this.estSelectionne = selectionne;
     }
-
-    public void setExterne(boolean externe) {
-        this.estExterne = externe;
+    public void setExterne(boolean estExterne) { // NOUVEAU SETTER (fixe l'erreur de compilation)
+        this.estExterne = estExterne;
     }
 
-    public void setAttributs(List<String> attributs) {
-        this.attributsAffichage = attributs;
+    public void setMethodes(List<String> methVue) 
+    {
+        this.methodesAffichage = methVue;
         recalculerDimensions();
     }
 
-    public void setMethodes(List<String> methodes) {
-        this.methodesAffichage = methodes;
+    public void setAttributs(List<String> attrVue) 
+    {
+        this.attributsAffichage = attrVue;
         recalculerDimensions();
     }
 
-    private void recalculerDimensions() {
+    /**
+     * Recalcule la largeur et la hauteur du bloc après une mise à jour des 
+     * attributs ou des méthodes.
+     */
+    private void recalculerDimensions() 
+    {
+        // 1. Déterminer la longueur maximale du contenu
+        int maxLongueur = this.nom.length(); 
 
-        // ---- LARGEUR ----
-        int maxLongueur = 0;
-
-        // 1️⃣ Nom de la classe
-        if (nom != null) {
-            maxLongueur = nom.length();
-        }
-
-        // 2️⃣ Attributs
-        for (String att : attributsAffichage) {
-            if (att == null)
-                continue;
-
-            String texte = att.replace("{static}", "").trim();
-            int longueur = texte.length();
-
-            if (longueur > maxLongueur) {
-                maxLongueur = longueur;
+        for (String att : attributsAffichage) 
+        {
+            if (att != null) 
+            {
+                maxLongueur = Math.max(maxLongueur, att.length());
             }
         }
 
-        // 3️⃣ Méthodes
-        for (String met : methodesAffichage) {
-            if (met == null)
-                continue;
-
-            String texte = met.replace("{static}", "").trim();
-            int longueur = texte.length();
-
-            if (longueur > maxLongueur) {
-                maxLongueur = longueur;
+        for (String met : methodesAffichage) 
+        {
+            if (met != null) 
+            {
+                maxLongueur = Math.max(maxLongueur, met.length());
             }
         }
 
-        // Conversion caractères → pixels (approximation)
-        this.largeur = Math.max(
-                200,
-                PADDING * 2 + maxLongueur * 8);
+        // 2. Calcul de la largeur : conversion caractères → pixels (approximation)
+        // Utiliser la même estimation que dans le constructeur (longueur * 8)
+        this.largeur = Math.max(200, PADDING * 2 + maxLongueur * 8);
 
-        // ---- HAUTEUR ----
-        this.hauteur = HAUTEUR_ENTETE
-                + (attributsAffichage.size() + methodesAffichage.size()) * HAUTEUR_LIGNE
-                + PADDING * 4;
+        // 3. Calcul de la hauteur
+        this.hauteur = HAUTEUR_ENTETE + (attributsAffichage.size() + methodesAffichage.size()) * HAUTEUR_LIGNE  + PADDING * 4;
     }
 }
