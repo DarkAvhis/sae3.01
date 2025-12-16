@@ -13,7 +13,6 @@ import modele.entites.HeritageObjet;
 import modele.entites.InterfaceObjet;
 import modele.entites.LiaisonObjet;
 import modele.entites.MethodeObjet;
-import vue.ConsoleVue;
 
 /**
  * Contrôleur principal pour l'IHM (Interface Homme-Machine).
@@ -44,26 +43,6 @@ public class AnalyseIHMControleur
 
         this.mapClasses = new HashMap<String, ClasseObjet>();
         this.analyseur = new AnalyseurUML();
-    }
-
-    // Constructeur intégral qui fait l'analyse et affiche
-    public AnalyseIHMControleur(String cheminDossier) 
-    {
-        this(); // initialise les listes
-
-        ConsoleVue vue = new ConsoleVue();
-
-        boolean ok = this.analyserDossier(cheminDossier);
-        if (!ok) 
-        {
-            vue.afficherMessage("Erreur : l'analyse a échoué pour le chemin '" + cheminDossier + "'.");
-            return;
-        }
-
-        vue.afficherClasses(this.getClasses());
-        vue.afficherAssociations(this.getAssociations());
-        vue.afficherHeritages(this.getHeritages());
-        vue.afficherImplementations(this.getImplementations());
     }
 
     /*-------------------------------------- */
@@ -173,22 +152,6 @@ public class AnalyseIHMControleur
 
         this.heritages.removeIf(h -> h.getClasseFille().getNom().equals(nomClasse) ||
                 h.getClasseMere().getNom().equals(nomClasse));
-    }
-
-    /*-------------------------------------- */
-    /* Main */
-    /*-------------------------------------- */
-    public static void main(String[] args) 
-    {
-        ConsoleVue vue = new ConsoleVue();
-
-        if (args.length == 0) 
-        {
-            vue.afficherUsage();
-            return;
-        }
-
-        new AnalyseIHMControleur(args[0]);
     }
 
     /**

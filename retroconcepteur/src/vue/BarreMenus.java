@@ -1,21 +1,12 @@
-package src.vue;
+package vue;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
-<<<<<<< HEAD
 import controleur.Controleur;
-=======
-import src.Controleur;
->>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
 
 /**
  * Barre de menus de l'application.
@@ -46,8 +37,9 @@ public class BarreMenus extends JMenuBar implements ActionListener
     private JMenuItem itemExporter;
 
     private JMenuItem aProposClasse      ;
-
     private JMenuItem exporterClasse     ;
+
+    private JCheckBoxMenuItem afficherClassesExternes;
 
     private PanneauProjets panneauProjets;
     private Controleur     controleur    ;
@@ -142,7 +134,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
         this.alignerClasse   = new JMenuItem("Aligner les symboles");
         this.optimiserClasse = new JMenuItem("Optimiser les positions");
-<<<<<<< HEAD
         this.exporterClasse  = new JMenuItem("Exporter en PNG");
         this.afficherClassesExternes = new JCheckBoxMenuItem("Afficher classes externes", true);
 
@@ -150,23 +141,12 @@ public class BarreMenus extends JMenuBar implements ActionListener
         optimiserClasse.addActionListener(this);
         exporterClasse .addActionListener(this);
         afficherClassesExternes.addActionListener(this);
-=======
-        this.itemExporter    = new JMenuItem("Exporter le diagramme (PNG)");
-
-        alignerClasse  .addActionListener(this);
-        optimiserClasse.addActionListener(this);
-        itemExporter   .addActionListener(this);
->>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
 
         menu.add(alignerClasse)  ;
         menu.add(optimiserClasse);
         menu.addSeparator();
-<<<<<<< HEAD
         menu.add(afficherClassesExternes);
         menu.add(exporterClasse) ;
-=======
-        menu.add(itemExporter);
->>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
 
         return menu;
     }
@@ -197,7 +177,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
      * 
      * @param e L'événement déclenché par un item de menu
      */
-<<<<<<< HEAD
     public void actionPerformed(ActionEvent e) {
         ;
 
@@ -227,23 +206,12 @@ public class BarreMenus extends JMenuBar implements ActionListener
             actionAfficherClassesExternes();
         else if (e.getSource() == aProposClasse)
             actionAPropos();
-=======
-    public void actionPerformed(ActionEvent e) 
-    {
-        Object src = e.getSource();
+    }
 
-        if      (src == nouvelleClasse   ) actionNouveauProjet();
-        else if (src == ouvrirClasse     ) actionOuvrirProjet ();
-        else if (src == sauvegarderClasse) actionSauvegarder  ();
-        else if (src == quitterClasse    ) System.exit(0);
-        else if (src == annulerClasse    ) actionAnnuler      ();
-        else if (src == retablirClasse   ) actionRetablir     ();
-        else if (src == supprimerClasse  ) actionSupprimer    ();
-        else if (src == alignerClasse    ) actionAligner      ();
-        else if (src == optimiserClasse  ) actionOptimiser    ();
-        else if (src == aProposClasse    ) actionAPropos      ();
-        else if (src == itemExporter     ) actionExporter     ();   
->>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
+    private void actionAfficherClassesExternes() 
+    {
+        boolean afficher = this.afficherClassesExternes.isSelected();
+        this.controleur.setAfficherClassesExternes(afficher);
     }
 
     /**
@@ -285,11 +253,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
 
             if (dossier.exists() && dossier.isDirectory()) 
             {
-<<<<<<< HEAD
                 try 
-=======
-                try
->>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
                 {
                     this.controleur.analyserEtAfficherDiagramme(dossier.getAbsolutePath());
                     JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this),
@@ -316,7 +280,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
      */
     public void actionSauvegarder() 
     {
-<<<<<<< HEAD
         // Récupère le dossier du projet ouvert dans l'UI (si présent)
         String projet = this.controleur.getCheminProjetActuel();
         String dossierCible = null;
@@ -349,9 +312,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
             "Sauvegarde réussie",
             JOptionPane.INFORMATION_MESSAGE
         );
-=======
-        this.controleur.sauvegarde();
->>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
     }
 
     public void actionAnnuler() 
@@ -407,16 +367,4 @@ public class BarreMenus extends JMenuBar implements ActionListener
                 "À propos",
                 JOptionPane.INFORMATION_MESSAGE);
     }
-<<<<<<< HEAD
-
-    /**
-     * Action pour afficher ou masquer les classes externes.
-     */
-    public void actionAfficherClassesExternes() 
-    {
-        boolean afficher = afficherClassesExternes.isSelected();
-        this.controleur.setAfficherClassesExternes(afficher);
-    }
-=======
->>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
 }

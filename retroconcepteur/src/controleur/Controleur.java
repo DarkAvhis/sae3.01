@@ -1,4 +1,4 @@
-package src;
+package controleur;
 
 import java.awt.Point;
 import java.io.IOException;
@@ -7,19 +7,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.swing.JOptionPane;
-import src.modele.entites.AssociationObjet;
-import src.modele.entites.AttributObjet;
-import src.modele.entites.ClasseObjet;
-import src.modele.entites.HeritageObjet;
-import src.modele.entites.InterfaceObjet;
-import src.modele.entites.LiaisonObjet;
-import src.modele.entites.MethodeObjet;
-import src.vue.BlocClasse;
-import src.vue.ExportIHM;
-import src.vue.FenetrePrincipale;
-import src.vue.LiaisonVue;
-import src.vue.LiaisonVue.TypeLiaison;
+
+import modele.entites.AssociationObjet;
+import modele.entites.AttributObjet;
+import modele.entites.ClasseObjet;
+import modele.entites.HeritageObjet;
+import modele.entites.InterfaceObjet;
+import modele.entites.LiaisonObjet;
+import modele.entites.MethodeObjet;
+import vue.BlocClasse;
+import vue.ExportIHM;
+import vue.FenetrePrincipale;
+import vue.LiaisonVue;
+import vue.LiaisonVue.TypeLiaison;
 
 /**
  * Contrôleur principal de l'application de génération de diagrammes UML.
@@ -34,8 +36,7 @@ import src.vue.LiaisonVue.TypeLiaison;
  *         BUYANBADRAKH, Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class Controleur
-{
+public class Controleur {
     private AnalyseIHMControleur metierComplet;
     private FenetrePrincipale vuePrincipale;
     private boolean afficherClassesExternes = true;
@@ -63,40 +64,33 @@ public class Controleur
      * Initialise le modèle d'analyse et crée la fenêtre principale de
      * l'application.
      */
-    public Controleur()
-    {
+    public Controleur() {
         this.metierComplet = new AnalyseIHMControleur();
+        this.blocsVue = new ArrayList<>();
         this.vuePrincipale = new FenetrePrincipale(this);
     }
 
     // nouveau (permettre l'exportation)
-    public void exporterDiagramme(String cheminFichier)
-    {
+    public void exporterDiagramme(String cheminFichier) {
         if (this.vuePrincipale == null)
             return;
 
-        try
-        {
+        try {
             ExportIHM.exportComponent(
-                this.vuePrincipale.getPanneauDiagramme(),
-                cheminFichier
-            );
+                    this.vuePrincipale.getPanneauDiagramme(),
+                    cheminFichier);
 
             JOptionPane.showMessageDialog(
-                this.vuePrincipale,
-                "Le diagramme a été exporté avec succès.\n\nFichier : " + cheminFichier,
-                "Export réussi",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-        }
-        catch (IOException e)
-        {
+                    this.vuePrincipale,
+                    "Le diagramme a été exporté avec succès.\n\nFichier : " + cheminFichier,
+                    "Export réussi",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(
-                this.vuePrincipale,
-                "Erreur lors de l'export du diagramme.",
-                "Erreur",
-                JOptionPane.ERROR_MESSAGE
-            );
+                    this.vuePrincipale,
+                    "Erreur lors de l'export du diagramme.",
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
@@ -113,8 +107,7 @@ public class Controleur
      * @param cheminProjet Chemin absolu vers le dossier contenant les fichiers Java
      *                     à analyser
      */
-     public void analyserEtAfficherDiagramme(String cheminProjet)
-    {
+    public void analyserEtAfficherDiagramme(String cheminProjet) {
         if (!this.metierComplet.analyserDossier(cheminProjet)) {
             return;
         }
@@ -123,14 +116,17 @@ public class Controleur
         blocsVue.clear();
 
         int x = 50, y = 50;
-        for (ClasseObjet c : classes)
-        {
+        for (ClasseObjet c : classes) {
             BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
-            if (c.getNom().contains("Interface")) bloc.setInterface(true);
+            if (c.getNom().contains("Interface"))
+                bloc.setInterface(true);
 
             blocsVue.add(bloc);
             x += 250;
-            if (x > 1000) { x = 50; y += 200; }
+            if (x > 1000) {
+                x = 50;
+                y += 200;
+            }
         }
 
         majAffichage();
@@ -139,16 +135,13 @@ public class Controleur
     /**
      * Ajoute les méthodes aux blocs existants.
      */
-    public void ajouterMethodes()
-    {
+    public void ajouterMethodes() {
         List<ClasseObjet> classes = this.metierComplet.getClasses();
 
-        for (ClasseObjet c : classes)
-        {
+        for (ClasseObjet c : classes) {
             List<String> methVue = convertirMethodes(c.getMethodes(), c);
 
-            for (BlocClasse bloc : blocsVue)
-            {
+            for (BlocClasse bloc : blocsVue) {
                 if (bloc.getNom().equals(c.getNom()))
                     bloc.setMethodes(methVue);
             }
@@ -160,16 +153,13 @@ public class Controleur
     /**
      * Ajoute les attributs aux blocs existants.
      */
-    public void ajouterAttributs()
-    {
+    public void ajouterAttributs() {
         List<ClasseObjet> classes = this.metierComplet.getClasses();
 
-        for (ClasseObjet c : classes)
-        {
+        for (ClasseObjet c : classes) {
             List<String> attrVue = convertirAttributs(c.getattributs(), c);
 
-            for (BlocClasse bloc : blocsVue)
-            {
+            for (BlocClasse bloc : blocsVue) {
                 if (bloc.getNom().equals(c.getNom()))
                     bloc.setAttributs(attrVue);
             }
@@ -178,15 +168,12 @@ public class Controleur
         majAffichage();
     }
 
-    
-
     /**
      * Met à jour l'affichage des blocs et des liaisons.
      */
-    private void majAffichage()
-    {
-        List<AssociationObjet> associations  = this.metierComplet.getAssociations();
-        List<HeritageObjet> heritages        = this.metierComplet.getHeritages();
+    private void majAffichage() {
+        List<AssociationObjet> associations = this.metierComplet.getAssociations();
+        List<HeritageObjet> heritages = this.metierComplet.getHeritages();
         List<InterfaceObjet> implementations = this.metierComplet.getImplementations();
 
         List<LiaisonVue> liaisonsVue = new ArrayList<>();
@@ -194,13 +181,13 @@ public class Controleur
         liaisonsVue.addAll(convertirLiaisons(heritages, TypeLiaison.HERITAGE));
         liaisonsVue.addAll(convertirLiaisons(implementations, TypeLiaison.IMPLEMENTATION));
 
-        if (vuePrincipale != null)
-        {
+        if (vuePrincipale != null) {
             vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocsVue);
             vuePrincipale.getPanneauDiagramme().setLiaisonsVue(liaisonsVue);
             vuePrincipale.getPanneauDiagramme().repaint();
         }
     }
+
     /**
      * Calcule les positions optimales des classes dans le diagramme.
      * 
@@ -220,8 +207,7 @@ public class Controleur
         HashMap<String, BlocClasse> blocMap = new HashMap<>();
 
         // Map de référence pour la taille et l'objet
-        for (BlocClasse bloc : blocsAvecTailles)
-        {
+        for (BlocClasse bloc : blocsAvecTailles) {
             blocMap.put(bloc.getNom(), bloc);
         }
 
@@ -230,8 +216,7 @@ public class Controleur
 
         // Grouper les classes par couche
         HashMap<Integer, List<String>> classesParCouche = new HashMap<>();
-        for (ClasseObjet classe : classes)
-        {
+        for (ClasseObjet classe : classes) {
             int couche = couches.get(classe.getNom());
             classesParCouche.computeIfAbsent(couche, k -> new ArrayList<>()).add(classe.getNom());
         }
@@ -240,8 +225,7 @@ public class Controleur
         List<Integer> indexCouches = new ArrayList<>(classesParCouche.keySet());
         Collections.sort(indexCouches);
 
-        for (int iter = 0; iter < ITERATIONS; iter++)
-        {
+        for (int iter = 0; iter < ITERATIONS; iter++) {
             for (int i = 0; i < indexCouches.size(); i++) {
                 int coucheCourante = indexCouches.get(i);
 
@@ -251,8 +235,7 @@ public class Controleur
                             classesParCouche.get(coucheSuivante), liaisons, blocMap, true);
                 }
 
-                if (i > 0)
-                {
+                if (i > 0) {
                     int couchePrecedente = indexCouches.get(i - 1);
                     minimiserCroisements(coucheCourante, classesParCouche.get(coucheCourante),
                             classesParCouche.get(couchePrecedente), liaisons, blocMap, false);
@@ -264,8 +247,7 @@ public class Controleur
         HashMap<String, Point> positions = new HashMap<>();
         int y_courant = Y_ANCHOR; // ANCRE Y
 
-        for (int couche : indexCouches)
-        {
+        for (int couche : indexCouches) {
             List<String> nomsCouche = classesParCouche.get(couche);
 
             int x_courant = X_ANCHOR; // ANCRE X
@@ -307,17 +289,14 @@ public class Controleur
      * @param liaisons Liste des liaisons entre classes
      * @return Map associant chaque nom de classe à son numéro de couche
      */
-    private HashMap<String, Integer> assignerCouches(List<ClasseObjet> classes, List<LiaisonVue> liaisons)
-    {
+    private HashMap<String, Integer> assignerCouches(List<ClasseObjet> classes, List<LiaisonVue> liaisons) {
         HashMap<String, Integer> couches = new HashMap<>();
         classes.forEach(c -> couches.put(c.getNom(), 0));
 
         boolean changed = true;
-        while (changed)
-        {
+        while (changed) {
             changed = false;
-            for (LiaisonVue liaison : liaisons)
-            {
+            for (LiaisonVue liaison : liaisons) {
                 if (liaison.getType() == TypeLiaison.HERITAGE || liaison.getType() == TypeLiaison.IMPLEMENTATION) {
 
                     String parent = liaison.getNomClasseDest();
@@ -326,8 +305,7 @@ public class Controleur
                     int coucheParent = couches.getOrDefault(parent, 0);
                     int coucheEnfant = couches.getOrDefault(enfant, 0);
 
-                    if (coucheEnfant <= coucheParent)
-                    {
+                    if (coucheEnfant <= coucheParent) {
                         couches.put(enfant, coucheParent + 1);
                         changed = true;
                     }
@@ -357,13 +335,11 @@ public class Controleur
             boolean forward) {
         HashMap<String, Double> barycentres = new HashMap<>();
 
-        for (String nomCourant : nomsCoucheCourante)
-        {
+        for (String nomCourant : nomsCoucheCourante) {
             double positionFixeTotale = 0;
             int voisins = 0;
 
-            for (LiaisonVue liaison : liaisons)
-            {
+            for (LiaisonVue liaison : liaisons) {
                 String nomVoisin = null;
 
                 if (forward && liaison.getNomClasseOrig().equals(nomCourant)
@@ -374,16 +350,14 @@ public class Controleur
                     nomVoisin = liaison.getNomClasseOrig();
                 }
 
-                if (nomVoisin != null)
-                {
+                if (nomVoisin != null) {
                     int indexVoisin = nomsCoucheFixe.indexOf(nomVoisin);
                     positionFixeTotale += indexVoisin;
                     voisins++;
                 }
             }
 
-            if (voisins > 0)
-            {
+            if (voisins > 0) {
                 barycentres.put(nomCourant, positionFixeTotale / voisins);
             } else {
                 barycentres.put(nomCourant, (double) nomsCoucheCourante.indexOf(nomCourant));
@@ -400,8 +374,7 @@ public class Controleur
      * 
      * @note Cette méthode est actuellement en développement
      */
-    public void sauvegarde()
-    {
+    public void sauvegarde() {
         if (this.vuePrincipale == null)
             return;
         List<BlocClasse> blocs = this.vuePrincipale.getPanneauDiagramme().getBlocsClasses();
@@ -413,8 +386,7 @@ public class Controleur
      * 
      * @note Cette méthode est actuellement en développement
      */
-    public void supprimerClasseSelectionnee()
-    {
+    public void supprimerClasseSelectionnee() {
         if (this.vuePrincipale == null)
             return;
         BlocClasse bloc = this.vuePrincipale.getPanneauDiagramme().getBlocsClasseSelectionnee();
@@ -432,15 +404,12 @@ public class Controleur
      * @param type     Type de liaison (ASSOCIATION, HERITAGE, IMPLEMENTATION)
      * @return Liste des liaisons prêtes pour l'affichage graphique
      */
-    private List<LiaisonVue> convertirLiaisons(List<? extends LiaisonObjet> liaisons, TypeLiaison type)
-    {
+    private List<LiaisonVue> convertirLiaisons(List<? extends LiaisonObjet> liaisons, TypeLiaison type) {
         List<LiaisonVue> liaisonsVue = new ArrayList<>();
-        for (LiaisonObjet liaison : liaisons)
-        {
+        for (LiaisonObjet liaison : liaisons) {
             // Traitement spécial pour les InterfaceObjet qui stockent les interfaces dans
             // une liste
-            if (liaison instanceof InterfaceObjet)
-            {
+            if (liaison instanceof InterfaceObjet) {
                 InterfaceObjet interfaceLiaison = (InterfaceObjet) liaison;
                 if (interfaceLiaison.getClasseFille() == null) {
                     continue;
@@ -449,16 +418,12 @@ public class Controleur
 
                 // Parcourir la liste des interfaces implémentées
                 List<ClasseObjet> interfaces = interfaceLiaison.getLstInterfaces();
-                for (ClasseObjet interfaceClass : interfaces)
-                {
-                    if (interfaceClass != null)
-                    {
+                for (ClasseObjet interfaceClass : interfaces) {
+                    if (interfaceClass != null) {
                         liaisonsVue.add(new LiaisonVue(nomClasseConcrete, interfaceClass.getNom(), type, null, null));
                     }
                 }
-            } 
-            else 
-            {
+            } else {
                 // Vérifier que les deux classes existent pour les autres liaisons
                 if (liaison.getClasseFille() == null || liaison.getClasseMere() == null) {
                     System.err.println("Attention: liaison avec classe null ignorée");
@@ -471,8 +436,7 @@ public class Controleur
                 String multOrig = null;
                 String multDest = null;
 
-                if (liaison instanceof AssociationObjet)
-                {
+                if (liaison instanceof AssociationObjet) {
                     AssociationObjet asso = (AssociationObjet) liaison;
 
                     multOrig = asso.getMultOrig() != null ? asso.getMultOrig().toString() : "1..1";
@@ -497,11 +461,9 @@ public class Controleur
      *                  conversion)
      * @return Liste des attributs formatés pour l'affichage
      */
-    private List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe)
-    {
+    private List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe) {
         List<String> liste = new ArrayList<>();
-        for (AttributObjet att : attributs)
-        {
+        for (AttributObjet att : attributs) {
             String staticFlag = att.estStatique() ? " {static}" : "";
             char visibilite = classe.changementVisibilite(att.getVisibilite());
 
@@ -524,11 +486,9 @@ public class Controleur
      *                 conversion)
      * @return Liste des méthodes formatées pour l'affichage
      */
-    private List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe)
-    {
+    private List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe) {
         List<String> liste = new ArrayList<>();
-        for (MethodeObjet met : methodes)
-        {
+        for (MethodeObjet met : methodes) {
             String staticFlag = met.estStatique() ? "{static} " : "";
             char visibilite = classe.changementVisibilite(met.getVisibilite());
 
@@ -547,9 +507,22 @@ public class Controleur
      * Déclenche l'algorithme d'optimisation de la disposition pour améliorer
      * la lisibilité du diagramme en réduisant les croisements de liaisons.
      */
-    public void optimiserDisposition()
-    {
-        return this.getCheminProjetActuel();
+    public void optimiserDisposition() {
+        if (this.vuePrincipale == null)
+            return;
+
+        List<ClasseObjet> classes = this.metierComplet.getClasses();
+        List<LiaisonVue> liaisons = new ArrayList<>();
+
+        liaisons.addAll(convertirLiaisons(this.metierComplet.getAssociations(), TypeLiaison.ASSOCIATION_UNIDI));
+        liaisons.addAll(convertirLiaisons(this.metierComplet.getHeritages(), TypeLiaison.HERITAGE));
+        liaisons.addAll(convertirLiaisons(this.metierComplet.getImplementations(), TypeLiaison.IMPLEMENTATION));
+
+        HashMap<String, Point> positionsOptimales = calculerPositionsOptimales(classes, liaisons,
+                this.vuePrincipale.getPanneauDiagramme().getBlocsClasses());
+
+        this.vuePrincipale.getPanneauDiagramme().setPositionsClasses(positionsOptimales);
+        this.vuePrincipale.getPanneauDiagramme().repaint();
     }
 
     /**
@@ -565,6 +538,14 @@ public class Controleur
         }
     }
 
+    private void afficherDiagrammeAvecDonnees() {
+
+    }
+
+    public String getCheminProjetActuel() {
+        return this.cheminProjetActuel;
+    }
+
     /**
      * Point d'entrée principal de l'application.
      * 
@@ -572,8 +553,7 @@ public class Controleur
      * 
      * @param args Arguments de la ligne de commande (non utilisés)
      */
-    public static void main(String[] args) 
-{
+    public static void main(String[] args) {
         new Controleur();
     }
 }

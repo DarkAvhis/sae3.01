@@ -1,4 +1,4 @@
-package src.vue;
+package vue;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -197,10 +197,6 @@ public class BlocClasse
     }
 
     // Getters et Setters
-<<<<<<< HEAD
-    public String getNom() {
-        return this.nom;
-=======
     public String  getNom        () {    return this.nom            ;  }
     public int     getX          () {    return this.x              ;  }
     public int     getY          () {    return this.y              ;  }
@@ -219,7 +215,6 @@ public class BlocClasse
     {
         this.attributsAffichage = attributs;
         recalculerDimensions();
->>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
     }
 
     public void setMethodes(List<String> methodes) 
@@ -239,70 +234,14 @@ public class BlocClasse
             maxLongueur = nom.length();
         }
 
-<<<<<<< HEAD
-    public void setX(int x) {
-        this.x = x;
-    }
-=======
         // 2️⃣ Attributs
-        for (String att : attributsAffichage) {
-            if (att == null) continue;
->>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
-
-            String texte = att.replace("{static}", "").trim();
-            int longueur = texte.length();
-
-<<<<<<< HEAD
-    public void setInterface(boolean estInterface) {
-        this.estInterface = estInterface;
-    }
-
-    public void setSelectionne(boolean selectionne) {
-        this.estSelectionne = selectionne;
-    }
-=======
-            if (longueur > maxLongueur) {
-                maxLongueur = longueur;
+        for (String att : attributsAffichage) 
+        {
+            int lg = att.replace(" {static}", "").replace("{static} ", "").length();
+            if (lg > maxLongueur) 
+            {
+                maxLongueur = lg;
             }
         }
-
-        // 3️⃣ Méthodes
-        for (String met : methodesAffichage) {
-            if (met == null) continue;
->>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
-
-            String texte = met.replace("{static}", "").trim();
-            int longueur = texte.length();
-
-<<<<<<< HEAD
-    public boolean estSelectionne() {
-        return this.estSelectionne;
-    }
-
-    public void setMethodes(List<String> methVue) 
-    {
-        this.methodesAffichage = methVue;
-    }
-
-    public void setAttributs(List<String> attrVue) 
-    {
-        this.attributsAffichage = attrVue;
-=======
-            if (longueur > maxLongueur) {
-                maxLongueur = longueur;
-            }
-        }
-
-        // Conversion caractères → pixels (approximation)
-        this.largeur = Math.max(
-                200,
-                PADDING * 2 + maxLongueur * 8
-        );
-
-        // ---- HAUTEUR ----
-        this.hauteur = HAUTEUR_ENTETE
-                + (attributsAffichage.size() + methodesAffichage.size()) * HAUTEUR_LIGNE
-                + PADDING * 4;
->>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
     }
 }

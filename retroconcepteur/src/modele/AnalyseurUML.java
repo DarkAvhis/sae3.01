@@ -1,4 +1,4 @@
-package src.modele;
+package modele;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
-import static src.modele.outil.ParsingUtil.*;
-import src.modele.entites.*;
+import modele.outil.ParsingUtil;
+import modele.entites.*;
 
 /**
  * Classe utilitaire responsable de l'analyse syntaxique (parsing) manuelle des fichiers Java.
@@ -141,7 +141,7 @@ public class AnalyseurUML
                             {
                                 int idxDebut = ligneBrute.indexOf(motCle) + motCle.length();
                                 String suite = ligneBrute.substring(idxDebut).trim();
-                                String nom = lireNom(suite);
+                                String nom = ParsingUtil.lireNom(suite);
 
                                 if (!nom.isEmpty()) nomEntite = nom;
                             }
@@ -156,7 +156,7 @@ public class AnalyseurUML
                         int idxExtends = ligneBrute.indexOf("extends") + 7;
                         String suite   = ligneBrute.substring(idxExtends).trim();
 
-                        String possibleParent = lireNom(suite);
+                        String possibleParent = ParsingUtil.lireNom(suite);
 
                         if (!possibleParent.isEmpty()) nomParent = possibleParent;
                     }
@@ -178,12 +178,15 @@ public class AnalyseurUML
                             String interBrute = suite.substring(indexDebut, indexVirgule).trim();
                             if (!interBrute.isEmpty())
                             {
-                                int idxSpace = indexEspace(interBrute);
+                                int idxSpace   = ParsingUtil.indexEspace(interBrute);
                                 int idxChevron = interBrute.indexOf('<');
-                                int idxFinNom = interBrute.length();
-                                if (idxSpace != -1) idxFinNom = Math.min(idxFinNom, idxSpace);
+                                int idxFinNom  = interBrute.length();
+
+                                if (idxSpace != -1)   idxFinNom = Math.min(idxFinNom, idxSpace);
                                 if (idxChevron != -1) idxFinNom = Math.min(idxFinNom, idxChevron);
+
                                 String nomInterface = interBrute.substring(0, idxFinNom).trim();
+
                                 if (!nomInterface.isEmpty())
                                     interfacesDetectees.add(nomInterface);
                             }
@@ -200,11 +203,11 @@ public class AnalyseurUML
                             args = args.trim();
                             if (!args.isEmpty())
                             {
-                                List<String> params = decoupage(args);
+                                List<String> params = ParsingUtil.decoupage(args);
                                 for (String p : params)
                                 {
                                     String trimmed      = p.trim();
-                                    List<String> tokens = separerMots(trimmed);
+                                    List<String> tokens = ParsingUtil.separerMots(trimmed);
                                     if (tokens.size() >= 2)
                                     {
                                         String nom  = tokens.get(tokens.size() - 1);
@@ -238,23 +241,23 @@ public class AnalyseurUML
                     {
                         if (ligneBrute.endsWith(";") && !ligneBrute.contains("("))
                         {
-                            extraireAttribut(ligneBrute, true, true, attributs);
+                            ParsingUtil.extraireAttribut(ligneBrute, true, true, attributs);
                         }
                         else if (ligneBrute.contains("(") && ligneBrute.contains(")"))
                         {
-                            extraireMethode(ligneBrute, estStatique, nomEntite, methodes);
+                            ParsingUtil.extraireMethode(ligneBrute, estStatique, nomEntite, methodes);
                         }
                     }
                     else if (!estRecord)
                     {
                         if (aVisibilite && ligneBrute.endsWith(";") && !ligneBrute.contains("("))
                         {
-                            extraireAttribut(ligneBrute, estStatique, estFinal, attributs);
+                            ParsingUtil.extraireAttribut(ligneBrute, estStatique, estFinal, attributs);
                         }
 
                         else if (aVisibilite && ligneBrute.contains("(") && !ligneBrute.contains("class "))
                         {
-                            extraireMethode(ligneBrute, estStatique, nomEntite, methodes);
+                            ParsingUtil.extraireMethode(ligneBrute, estStatique, nomEntite, methodes);
                         }
                     }
                 }
