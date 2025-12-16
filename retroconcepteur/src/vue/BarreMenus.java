@@ -1,12 +1,10 @@
 package vue;
 
+import controleur.Controleur;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
 import javax.swing.*;
-
-import controleur.Controleur;
 
 /**
  * Barre de menus de l'application.
@@ -231,7 +229,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
      */
     public void actionExporter()
     {
-        //controleur.exporterDiagramme("diagramme.png");
+        controleur.exporterDiagramme("diagramme.png");
     }
 
     /**
