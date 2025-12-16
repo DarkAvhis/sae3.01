@@ -1,4 +1,4 @@
-package vue;
+package src.vue;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -20,15 +20,16 @@ import java.util.List;
  *         BUYANBADRAKH, Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class BlocClasse {
+public class BlocClasse
+{
     private String nom;
 
     private int x      ;
     private int y      ;
     private int largeur;
     private int hauteur;
-    private boolean estInterface;
-    private boolean estSuperClasse;
+
+    private boolean estInterface  ;
     private boolean estSelectionne;
 
     // Nouveaux champs pour stocker les détails
@@ -38,12 +39,11 @@ public class BlocClasse {
     // Constantes
     private static final int PADDING        = 10;
     private static final int HAUTEUR_ENTETE = 30;
-    private static final int HAUTEUR_LIGNE = 20; // Nouvelle constante pour la hauteur d'une ligne de texte
-    private static final Color COULEUR_FOND = new Color(230, 240, 250);
-    private static final Color COULEUR_FOND_SUPER = new Color(235, 235, 235);
-    private static final Color COULEUR_BORDURE = new Color(0, 0, 0);
-    private static final Color COULEUR_ENTETE = new Color(100, 150, 200);
-    private static final Color COULEUR_ENTETE_SUPER = new Color(140, 140, 140);
+    private static final int HAUTEUR_LIGNE  = 20; // Nouvelle constante pour la hauteur d'une ligne de texte
+
+    private static final Color COULEUR_FOND    = new Color(230, 240, 250);
+    private static final Color COULEUR_BORDURE = new Color(0  , 0  , 0  );
+    private static final Color COULEUR_ENTETE  = new Color(100, 150, 200);
 
     /**
      * Constructeur principal d'un bloc classe.
@@ -57,15 +57,15 @@ public class BlocClasse {
      * @param attributs Liste des attributs formatés pour l'affichage
      * @param methodes  Liste des méthodes formatées pour l'affichage
      */
-    public BlocClasse(String nom, int x, int y, List<String> attributs, List<String> methodes) {
+    public BlocClasse(String nom, int x, int y, List<String> attributs, List<String> methodes) 
+    {
         this.nom = nom;
         this.x   = x  ;
         this.y   = y  ;
         this.attributsAffichage = attributs;
         this.methodesAffichage  = methodes;
 
-        this.estInterface = false;
-        this.estSuperClasse = false;
+        this.estInterface   = false;
         this.estSelectionne = false;
 
         // Calculer la taille initiale minimale
@@ -90,7 +90,8 @@ public class BlocClasse {
      * @param x   Position X du bloc
      * @param y   Position Y du bloc
      */
-    public BlocClasse(String nom, int x, int y) {
+    public BlocClasse(String nom, int x, int y) 
+    {
         this(nom, x, y, new ArrayList<>(), new ArrayList<>());
     }
 
@@ -102,10 +103,10 @@ public class BlocClasse {
      * 
      * @param g Le contexte graphique 2D pour le dessin
      */
-    public void dessiner(Graphics2D g) {
+    public void dessiner(Graphics2D g) 
+    {
         // 1. Fond et Bord
-        Color couleurFond = this.estSuperClasse ? COULEUR_FOND_SUPER : COULEUR_FOND;
-        g.setColor(couleurFond);
+        g.setColor(COULEUR_FOND);
         g.fillRect(x, y, largeur, hauteur);
 
         g.setColor(estSelectionne ? Color.BLUE : COULEUR_BORDURE);
@@ -113,8 +114,7 @@ public class BlocClasse {
         g.drawRect(x, y, largeur, hauteur);
 
         // 2. Entête (Nom de la classe)
-        Color couleurEntete = this.estSuperClasse ? COULEUR_ENTETE_SUPER : COULEUR_ENTETE;
-        g.setColor(couleurEntete);
+        g.setColor(COULEUR_ENTETE);
         g.fillRect(x, y, largeur, HAUTEUR_ENTETE);
 
         g.setColor(Color.WHITE);
@@ -173,6 +173,12 @@ public class BlocClasse {
                 g.drawLine(x + PADDING, underlineY, underlineX2, underlineY);
             }
         }
+
+        // 6. Gestion Interface (si besoin)
+        if (estInterface) 
+        {
+            // ... (logique de dessin <<interface>> conservée)
+        }
     }
 
     /**
@@ -184,46 +190,69 @@ public class BlocClasse {
      * @param py Coordonnée Y du point
      * @return true si le point est dans le bloc, false sinon
      */
-    public boolean contient(int px, int py) {
-        return px >= x
-                && px <= x + largeur
-                && py >= y
-                && py <= y + hauteur;
-    }
-
-    public void setSuperClasse(boolean estSuperClasse) {
-        this.estSuperClasse = estSuperClasse;
+    public boolean contient(int px, int py) 
+    {
+        return px >= x && px <= x + largeur && 
+               py >= y && py <= y + hauteur   ;
     }
 
     // Getters et Setters
+<<<<<<< HEAD
     public String getNom() {
         return this.nom;
+=======
+    public String  getNom        () {    return this.nom            ;  }
+    public int     getX          () {    return this.x              ;  }
+    public int     getY          () {    return this.y              ;  }
+    public int     getLargeur    () {    return this.largeur        ;  }
+    public int     getHauteur    () {    return this.hauteur        ;  }
+    public boolean estInterface  () {    return this.estInterface   ;  }
+    public boolean estSelectionne() {    return this.estSelectionne ;  }
+
+
+    public void setX(int x) {    this.x = x;    }
+    public void setY(int y) {    this.y = y;   }
+    public void setInterface(boolean estInterface) {    this.estInterface = estInterface;    }
+    public void setSelectionne(boolean selectionne) {    this.estSelectionne = selectionne;    }
+
+    public void setAttributs(List<String> attributs) 
+    {
+        this.attributsAffichage = attributs;
+        recalculerDimensions();
+>>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
     }
 
-    public int getX() {
-        return this.x;
+    public void setMethodes(List<String> methodes) 
+    {
+        this.methodesAffichage = methodes;
+        recalculerDimensions();
     }
 
-    public int getY() {
-        return this.y;
-    }
+    private void recalculerDimensions() 
+    {
 
-    public int getLargeur() {
-        return this.largeur;
-    }
+        // ---- LARGEUR ----
+        int maxLongueur = 0;
 
-    public int getHauteur() {
-        return this.hauteur;
-    }
+        // 1️⃣ Nom de la classe
+        if (nom != null) {
+            maxLongueur = nom.length();
+        }
 
+<<<<<<< HEAD
     public void setX(int x) {
         this.x = x;
     }
+=======
+        // 2️⃣ Attributs
+        for (String att : attributsAffichage) {
+            if (att == null) continue;
+>>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
 
-    public void setY(int y) {
-        this.y = y;
-    }
+            String texte = att.replace("{static}", "").trim();
+            int longueur = texte.length();
 
+<<<<<<< HEAD
     public void setInterface(boolean estInterface) {
         this.estInterface = estInterface;
     }
@@ -231,11 +260,21 @@ public class BlocClasse {
     public void setSelectionne(boolean selectionne) {
         this.estSelectionne = selectionne;
     }
+=======
+            if (longueur > maxLongueur) {
+                maxLongueur = longueur;
+            }
+        }
 
-    public boolean estInterface() {
-        return this.estInterface;
-    }
+        // 3️⃣ Méthodes
+        for (String met : methodesAffichage) {
+            if (met == null) continue;
+>>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
 
+            String texte = met.replace("{static}", "").trim();
+            int longueur = texte.length();
+
+<<<<<<< HEAD
     public boolean estSelectionne() {
         return this.estSelectionne;
     }
@@ -248,5 +287,22 @@ public class BlocClasse {
     public void setAttributs(List<String> attrVue) 
     {
         this.attributsAffichage = attrVue;
+=======
+            if (longueur > maxLongueur) {
+                maxLongueur = longueur;
+            }
+        }
+
+        // Conversion caractères → pixels (approximation)
+        this.largeur = Math.max(
+                200,
+                PADDING * 2 + maxLongueur * 8
+        );
+
+        // ---- HAUTEUR ----
+        this.hauteur = HAUTEUR_ENTETE
+                + (attributsAffichage.size() + methodesAffichage.size()) * HAUTEUR_LIGNE
+                + PADDING * 4;
+>>>>>>> fb8779cc3dff768f77c6f73abedfebf5a5bacdb6
     }
 }

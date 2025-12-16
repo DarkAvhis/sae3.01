@@ -1,4 +1,4 @@
-package modele.entites;
+package src.modele.entites;
 
 /**
  * Représente une liaison générique entre deux classes dans un diagramme UML.

@@ -8,7 +8,7 @@ if [ $? -eq 0 ]; then
     echo "Compilation réussie"
     echo ""
     echo "=== Exécution de l'application ==="
-    java -cp class controleur.Controleur
+    java -cp class src.Controleur
 else
     echo "Erreur lors de la compilation"
     exit 1

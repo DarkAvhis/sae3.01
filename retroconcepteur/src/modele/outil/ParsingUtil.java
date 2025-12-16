@@ -1,11 +1,11 @@
-package modele.outil;
+package src.modele.outil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import modele.entites.AttributObjet;
-import modele.entites.MethodeObjet;
+import src.modele.entites.AttributObjet;
+import src.modele.entites.MethodeObjet;
 
 
 public class ParsingUtil
