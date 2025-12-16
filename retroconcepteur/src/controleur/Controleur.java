@@ -589,7 +589,8 @@ public class Controleur
         // a faire cet aprem j'ai faim la 
     }
 
-    public String getCheminProjetActuel() {
+    public String getCheminProjetActuel() 
+    {
         return this.cheminProjetActuel;
     }
 

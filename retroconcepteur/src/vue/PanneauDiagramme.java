@@ -1,5 +1,6 @@
 package vue;
 
+import controleur.Controleur;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -21,8 +22,6 @@ import java.util.Optional;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
-
-import controleur.Controleur;
 import vue.LiaisonVue.TypeLiaison;
 
 /**
@@ -138,6 +137,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         private BlocClasse blocSelectionne = null;
         private int        offsetX         = 0   ;
         private int        offsetY         = 0   ;
+        private FenetrePleinEcran fenetrePleinEcran = null;
 
        @Override
         public void mousePressed(MouseEvent e)
@@ -154,6 +154,16 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
 
                 if (bloc.contient(mouseX, mouseY))
                 {
+                    // Clic-droit : ouvrir la fenêtre plein écran
+                    if (e.getButton() == MouseEvent.BUTTON3)
+                    {
+                        if (fenetrePleinEcran != null) {
+                            fenetrePleinEcran.dispose();
+                        }
+                        fenetrePleinEcran = new FenetrePleinEcran(bloc);
+                        return;
+                    }
+
                     blocSelectionne = bloc;
                     offsetX = mouseX - bloc.getX();
                     offsetY = mouseY - bloc.getY();
@@ -186,8 +196,6 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                 repaint();
             }
         }
-
-
         @Override
         public void mouseReleased(MouseEvent e)
         {
