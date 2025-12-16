@@ -1,10 +1,16 @@
 package vue;
 
-import controleur.Controleur;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+import controleur.Controleur;
 
 /**
  * Barre de menus de l'application.
@@ -65,13 +71,11 @@ public class BarreMenus extends JMenuBar implements ActionListener
     {
         JMenu menu = new JMenu("Fichier");
 
-       
         this.ouvrirClasse      = new JMenuItem("Ouvrir projet");
         this.sauvegarderClasse = new JMenuItem("Sauvegarder au format txt");
         this.itemExporter    = new JMenuItem("Exporter le diagramme (PNG)");
         this.quitterClasse     = new JMenuItem("Quitter");
 
-      
         this.ouvrirClasse     .addActionListener(this);
         this.sauvegarderClasse.addActionListener(this);
         this.itemExporter     .addActionListener(this);
@@ -146,14 +150,14 @@ public class BarreMenus extends JMenuBar implements ActionListener
     {
         Object src = e.getSource();
 
-        if (src == ouvrirClasse     ) actionOuvrirProjet ();
-        if (src == sauvegarderClasse) actionSauvegarder  ();
-        if (src == supprimerClasse  ) actionSupprimer    ();
-        if (src == alignerClasse    ) actionAligner      ();
-        if (src == optimiserClasse  ) actionOptimiser    ();
-        if (src == aProposClasse    ) actionAPropos      ();
-        if (src == itemExporter     ) actionExporter     ();   
-        if (src == quitterClasse    ) System.exit(0);
+         if (src == ouvrirClasse     ) actionOuvrirProjet ();
+         if (src == sauvegarderClasse) actionSauvegarder  ();
+         if (src == supprimerClasse  ) actionSupprimer    ();
+         if (src == alignerClasse    ) actionAligner      ();
+         if (src == optimiserClasse  ) actionOptimiser    ();
+         if (src == aProposClasse    ) actionAPropos      ();
+         if (src == itemExporter     ) actionExporter     ();   
+         if (src == quitterClasse    ) System.exit(0);
     }
 
     /**
@@ -245,7 +249,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
             JOptionPane.INFORMATION_MESSAGE
         );
     }
-
 
     public void actionSupprimer() 
     {

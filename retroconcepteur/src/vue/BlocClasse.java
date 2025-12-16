@@ -32,14 +32,20 @@ public class BlocClasse
     private boolean estInterface  ;
     private boolean estSelectionne;
 
-    // Nouveaux champs pour stocker les détails
-    private List<String> attributsAffichage;
-    private List<String> methodesAffichage ;
+    // Champs pour stocker les détails complets et limités
+    private List<String> attributsComplets;
+    private List<String> methodesCompletes;
+    private List<String> attributsAffichage;  // version limitée ou complète selon le mode
+    private List<String> methodesAffichage ;  // version limitée ou complète selon le mode
+    private boolean enModeCondense = true;    // true = affichage condensé, false = affichage complet
 
     // Constantes
     private static final int PADDING        = 10;
     private static final int HAUTEUR_ENTETE = 30;
-    private static final int HAUTEUR_LIGNE  = 20; // Nouvelle constante pour la hauteur d'une ligne de texte
+    private static final int HAUTEUR_LIGNE  = 20;
+    private static final int MAX_ATTRIBUTS_AFFICHAGE = 3;
+    private static final int MAX_METHODES_AFFICHAGE = 3;
+    private static final int MAX_PARAMS = 2;
 
     private static final Color COULEUR_FOND    = new Color(230, 240, 250);
     private static final Color COULEUR_BORDURE = new Color(0  , 0  , 0  );
@@ -62,23 +68,16 @@ public class BlocClasse
         this.nom = nom;
         this.x   = x  ;
         this.y   = y  ;
-        this.attributsAffichage = attributs;
-        this.methodesAffichage  = methodes;
+        this.attributsComplets = new ArrayList<>(attributs);
+        this.methodesCompletes = new ArrayList<>(methodes);
+        
+        // Initialiser l'affichage condensé
+        mettreAJourAffichageCondense();
 
         this.estInterface   = false;
         this.estSelectionne = false;
-
-        // Calculer la taille initiale minimale
-        int maxLgNom       = nom.length() * 8; // Estimation
-        int maxLgAttributs = attributs.stream().mapToInt(String::length).max().orElse(0) * 8;
-        int maxLgMethodes  = methodes.stream().mapToInt(String::length).max().orElse(0) * 8 ;
-
-        // Calcul de la largeur : min(max) ou 200
-        this.largeur = Math.max(200, PADDING * 2 + Math.max(maxLgNom, Math.max(maxLgAttributs, maxLgMethodes)));
-
-        // Calcul de la hauteur : Entête + (Attributs + Méthodes) * HAUTEUR_LIGNE +
-        // PADDINGS
-        this.hauteur = HAUTEUR_ENTETE + (attributs.size() + methodes.size()) * HAUTEUR_LIGNE + PADDING * 4;
+        
+        recalculerDimensions();
     }
 
     /**
@@ -213,14 +212,105 @@ public class BlocClasse
 
     public void setAttributs(List<String> attributs) 
     {
-        this.attributsAffichage = attributs;
+        this.attributsComplets = new ArrayList<>(attributs);
+        mettreAJourAffichageCondense();
         recalculerDimensions();
     }
 
     public void setMethodes(List<String> methodes) 
     {
-        this.methodesAffichage = methodes;
+        this.methodesCompletes = new ArrayList<>(methodes);
+        mettreAJourAffichageCondense();
         recalculerDimensions();
+    }
+
+    /**
+     * Limite l'affichage des attributs à 3 et ajoute "..." si nécessaire.
+     * Limite aussi les paramètres des méthodes à 2.
+     */
+    private void mettreAJourAffichageCondense()
+    {
+        this.attributsAffichage = new ArrayList<>();
+        for (int i = 0; i < Math.min(MAX_ATTRIBUTS_AFFICHAGE, attributsComplets.size()); i++) {
+            this.attributsAffichage.add(attributsComplets.get(i));
+        }
+        if (attributsComplets.size() > MAX_ATTRIBUTS_AFFICHAGE) {
+            this.attributsAffichage.add("...");
+        }
+
+        this.methodesAffichage = new ArrayList<>();
+        for (int i = 0; i < Math.min(MAX_METHODES_AFFICHAGE, methodesCompletes.size()); i++) {
+            String methode = methodesCompletes.get(i);
+            // Limiter les paramètres à 2
+            String methodeLimitee = limiterParametres(methode);
+            this.methodesAffichage.add(methodeLimitee);
+        }
+        if (methodesCompletes.size() > MAX_METHODES_AFFICHAGE) {
+            this.methodesAffichage.add("...");
+        }
+    }
+
+    /**
+     * Limite les paramètres d'une méthode à MAX_PARAMS et ajoute "..." si nécessaire.
+     * Format: "visibility staticFlag nom(param1, param2, ...)returnType"
+     */
+    private String limiterParametres(String methode)
+    {
+        // Chercher les parenthèses pour identifier les paramètres
+        int openParen = methode.indexOf('(');
+        int closeParen = methode.lastIndexOf(')');
+        
+        if (openParen == -1 || closeParen == -1) {
+            return methode; // Format anormal, retourner tel quel
+        }
+        
+        String avant = methode.substring(0, openParen + 1);
+        String params = methode.substring(openParen + 1, closeParen);
+        String apres = methode.substring(closeParen);
+        
+        if (params.trim().isEmpty()) {
+            return methode;
+        }
+        
+        String[] paramsArray = params.split(",\\s*");
+        if (paramsArray.length > MAX_PARAMS) {
+            StringBuilder limited = new StringBuilder();
+            for (int i = 0; i < MAX_PARAMS; i++) {
+                if (i > 0) limited.append(", ");
+                limited.append(paramsArray[i]);
+            }
+            limited.append(", ...");
+            return avant + limited.toString() + apres;
+        }
+        
+        return methode;
+    }
+
+    /**
+     * Bascule entre le mode condensé et le mode complet.
+     */
+    public void basculerMode()
+    {
+        this.enModeCondense = !this.enModeCondense;
+        if (this.enModeCondense) {
+            mettreAJourAffichageCondense();
+        } else {
+            this.attributsAffichage = new ArrayList<>(attributsComplets);
+            this.methodesAffichage = new ArrayList<>(methodesCompletes);
+        }
+        recalculerDimensions();
+    }
+
+    public boolean estEnModeCondense() {
+        return this.enModeCondense;
+    }
+
+    public List<String> getAttributsComplets() {
+        return new ArrayList<>(attributsComplets);
+    }
+
+    public List<String> getMethodesCompletes() {
+        return new ArrayList<>(methodesCompletes);
     }
 
     private void recalculerDimensions() 
