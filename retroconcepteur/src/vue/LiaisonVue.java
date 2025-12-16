@@ -1,4 +1,4 @@
-package vue;
+package src.vue;
 
 /**
  * Représentation graphique d'une liaison entre deux classes.

@@ -1,15 +1,13 @@
-package vue;
+package src.vue;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -17,8 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
-import controleur.Controleur;
+import src.Controleur;
 
 /**
  * Panneau de navigation des projets.
@@ -30,7 +27,8 @@ import controleur.Controleur;
  *         BUYANBADRAKH, Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class PanneauProjets extends JPanel implements ActionListener {
+public class PanneauProjets extends JPanel implements ActionListener
+{
     private FenetrePrincipale fenetrePrincipale;
     private PanneauDiagramme panneauDiagramme; // nouveau
     private Controleur controleur ; 
@@ -50,16 +48,17 @@ public class PanneauProjets extends JPanel implements ActionListener {
      * @param fenetrePrincipale La fenêtre principale de l'application
      * @param controleur        Le contrôleur principal
      */
-    public PanneauProjets(FenetrePrincipale fenetrePrincipale, Controleur controleur,
-            PanneauDiagramme panneauDiagramme) {
+    public PanneauProjets(FenetrePrincipale fenetrePrincipale, Controleur controleur, PanneauDiagramme panneauDiagramme) 
+{
         this.fenetrePrincipale = fenetrePrincipale;
-        this.panneauDiagramme = panneauDiagramme;
+        this.panneauDiagramme = panneauDiagramme; // nouveau
+        this.controleur        = controleur ; 
 
-        this.cheminDossiers = this.resoudreCheminTestFinal();
+        this.cheminDossiers = "src";
 
         this.setLayout(new BorderLayout());
         this.setBackground(new Color(245, 245, 245));
-        this.setBorder(BorderFactory.createTitledBorder("Projets :"));
+        this.setBorder(BorderFactory.createTitledBorder("test"));
 
         // Titre
         titreLabel = new JLabel("Liste des Projets");
@@ -102,35 +101,29 @@ public class PanneauProjets extends JPanel implements ActionListener {
         this.add(panelBouton, BorderLayout.SOUTH);
     }
 
-    /**
-     * Détermine le chemin du dossier testFinal en fonction du répertoire courant
-     * (exécution depuis la racine ou depuis src).
-     */
-    private String resoudreCheminTestFinal() {
-        String[] chemins = { "./testFinal", "./src/testFinal", "../testFinal" };
-        for (String c : chemins) {
-            if (new File(c).isDirectory()) {
-                return c;
-            }
-        }
-        return "./testFinal"; // défaut
-    }
-
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) 
+    {
 
-        if (e.getSource() == boutonActualiser) {
+         
+        if( e.getSource() == boutonActualiser )
+        {
             panelProjets.removeAll();
             this.chargerProjets(panelProjets);
             panelProjets.revalidate();
             panelProjets.repaint();
 
-            /*
-             * nouveau permet de clear le panneauDiagramme que
-             * si il est pas null
-             */
-            if (this.panneauDiagramme != null)
-                this.panneauDiagramme.clearDiagram();
+            if( this.panneauDiagramme != null ) this.panneauDiagramme.clearDiagram();
+        }
+
+        if( e.getSource() == boutonAttributs )
+        {
+            controleur.ajouterAttributs() ; 
+        }
+
+        if( e.getSource() == boutonMethodes )
+        {
+            controleur.ajouterMethodes() ; 
         }
     }
 
@@ -141,7 +134,8 @@ public class PanneauProjets extends JPanel implements ActionListener {
      * 
      * @param cheminProjet Chemin absolu vers le dossier du projet
      */
-    public void ajouterProjet(String cheminProjet) {
+    public void ajouterProjet(String cheminProjet) 
+    {
         File projet = new File(cheminProjet);
 
         // Vérifier que le chemin existe et est un dossier
@@ -151,9 +145,11 @@ public class PanneauProjets extends JPanel implements ActionListener {
         JScrollPane scrollPane = (JScrollPane) this.getComponent(1);
         JPanel panelProjets    = (JPanel) scrollPane.getViewport().getView();
 
-        // Vérifier si le projet existe déjà dans le panel
-        for (Component comp : panelProjets.getComponents()) {
-            if (comp instanceof JButton) {
+        // 🔍 Vérifier si le projet existe déjà dans le panel
+        for (Component comp : panelProjets.getComponents()) 
+        {
+            if (comp instanceof JButton) 
+            {
                 JButton btn = (JButton) comp;
 
                 // Ici je suppose que le texte du bouton = nom du dossier
@@ -182,23 +178,28 @@ public class PanneauProjets extends JPanel implements ActionListener {
      * 
      * @param panelProjets Le panneau dans lequel afficher les boutons de projets
      */
-    public void chargerProjets(JPanel panelProjets) {
+    public void chargerProjets(JPanel panelProjets) 
+    {
         File dossier = new File(cheminDossiers);
+
+        if (!dossier.exists() || !dossier.isDirectory()) 
+    {
+            JLabel labelErreur = new JLabel("Dossier non trouvé");
+            labelErreur.setForeground(Color.RED);
+            panelProjets.add(labelErreur);
+        }
 
         File[] projets = dossier.listFiles(File::isDirectory);
 
-        if (projets == null) {
-            System.err.println("Le dossier des projets n'existe pas : " + cheminDossiers);
-            return;
-        }
-
-        if (projets == null || projets.length == 0) {
+        if (projets == null || projets.length == 0) 
+        {
             JLabel labelVide = new JLabel("Aucun projet");
             labelVide.setForeground(Color.GRAY);
             panelProjets.add(labelVide);
         }
 
-        for (File projet : projets) {
+        for (File projet : projets) 
+        {
             JButton boutonProjet = creerBoutonProjet(projet);
             panelProjets.add(boutonProjet);
             panelProjets.add(Box.createVerticalStrut(5));
@@ -213,7 +214,8 @@ public class PanneauProjets extends JPanel implements ActionListener {
      * @param projet Le dossier du projet
      * @return Le bouton configuré
      */
-    public JButton creerBoutonProjet(File projet) {
+    public JButton creerBoutonProjet(File projet) 
+    {
         JButton bouton = new JButton(projet.getName());
 
         bouton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -222,15 +224,14 @@ public class PanneauProjets extends JPanel implements ActionListener {
         bouton.setForeground(Color.WHITE);
         bouton.setFocusPainted(false);
 
-        bouton.addActionListener(e -> {
+        bouton.addActionListener(e ->
+        {
             fenetrePrincipale.chargerProjet(projet.getAbsolutePath());
         });
 
         return bouton;
     }
 
-    public JPanel getPanelProjets() {
-        return this.panelProjets;
-    }
+    public JPanel getPanelProjets() {return this.panelProjets;} 
 
 }

@@ -8,8 +8,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.JOptionPane;
-
-import src.modele.Sauvegarde;
 import src.modele.entites.AssociationObjet;
 import src.modele.entites.AttributObjet;
 import src.modele.entites.ClasseObjet;
@@ -41,7 +39,6 @@ public class Controleur
     private AnalyseIHMControleur metierComplet;
     private FenetrePrincipale vuePrincipale;
     private List<BlocClasse> blocsVue = new ArrayList<>();
-    private String cheminProjetActuel; // nouveau champ
 
     // --- Constantes pour le Layout Hiérarchique ---
     private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
@@ -59,7 +56,6 @@ public class Controleur
     {
         this.metierComplet = new AnalyseIHMControleur();
         this.vuePrincipale = new FenetrePrincipale(this);
-        this.cheminProjetActuel = null ; 
     }
 
     // nouveau (permettre l'exportation)
@@ -111,8 +107,6 @@ public class Controleur
         if (!this.metierComplet.analyserDossier(cheminProjet)) {
             return;
         }
-
-        this.cheminProjetActuel = cheminProjet;
 
         List<ClasseObjet> classes = this.metierComplet.getClasses();
         blocsVue.clear();
@@ -403,11 +397,6 @@ public class Controleur
         System.out.println("Sauvegarde des positions de " + blocs.size() + " blocs.");
     }
 
-    public void sauvegarde( String dossier , String fichier )
-    {
-        Sauvegarde.sauvegarder(dossier , fichier ) ; 
-    }
-
     /**
      * Supprime la classe actuellement sélectionnée du diagramme.
      * 
@@ -552,12 +541,6 @@ public class Controleur
             this.vuePrincipale.getPanneauDiagramme().optimiserDisposition();
         }
     }
-
-    public String getCheminProjetActuel() 
-    {
-        return this.cheminProjetActuel;
-    }
-
 
     /**
      * Point d'entrée principal de l'application.

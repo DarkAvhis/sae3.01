@@ -1,4 +1,4 @@
-package modele.entites;
+package src.modele.entites;
 
 /**
  * Représente la multiplicité d'une relation UML.

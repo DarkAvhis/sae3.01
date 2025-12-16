@@ -1,11 +1,10 @@
-package vue;
+package src.vue;
 
 import java.util.List;
-
-import modele.entites.AssociationObjet;
-import modele.entites.ClasseObjet;
-import modele.entites.HeritageObjet;
-import modele.entites.InterfaceObjet;
+import src.modele.entites.AssociationObjet;
+import src.modele.entites.ClasseObjet;
+import src.modele.entites.HeritageObjet;
+import src.modele.entites.InterfaceObjet;
 
 /**
  * Vue console minimale : centralise l'affichage .

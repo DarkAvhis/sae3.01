@@ -1,4 +1,4 @@
-package modele.entites;
+package src.modele.entites;
 
 /**
  * Représente un attribut dans une classe UML.
