@@ -2,8 +2,6 @@ package data;
 
 public class Carre extends Rectangle
 {
-    
-
     protected double longueur;
     protected double largeur;
 

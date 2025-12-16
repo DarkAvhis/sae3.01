@@ -51,6 +51,7 @@ public class Controleur {
     private List<LiaisonVue> dernieresToutesLiaisonsVue;
     private HashMap<String, Point> dernieresPositions;
     private String cheminProjetActuel;
+    private java.util.HashSet<String> classesExternesAGriser;
 
     // --- Constantes pour le Layout Hiérarchique ---
     private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
@@ -67,6 +68,7 @@ public class Controleur {
     public Controleur() {
         this.metierComplet = new AnalyseIHMControleur();
         this.blocsVue = new ArrayList<>();
+        this.classesExternesAGriser = new java.util.HashSet<>();
         this.vuePrincipale = new FenetrePrincipale(this);
     }
 
@@ -116,14 +118,16 @@ public class Controleur {
         blocsVue.clear();
 
         int x = 50, y = 50;
-        for (ClasseObjet c : classes) {
+        for (ClasseObjet c : classes) 
+        {
             BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
             if (c.getNom().contains("Interface"))
                 bloc.setInterface(true);
 
             blocsVue.add(bloc);
             x += 250;
-            if (x > 1000) {
+            if (x > 1000) 
+            {
                 x = 50;
                 y += 200;
             }
