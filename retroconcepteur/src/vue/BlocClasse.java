@@ -1,3 +1,4 @@
+// File: vue/BlocClasse.java
 package vue;
 
 import java.awt.BasicStroke;
@@ -26,17 +27,17 @@ public class BlocClasse
 {
     private String nom;
 
-    private int x;
-    private int y;
+    private int x      ;
+    private int y      ;
     private int largeur;
     private int hauteur;
-
     private boolean estInterface;
+    private boolean estSuperClasse;
     private boolean estSelectionne;
-    private boolean estExterne;
+    private boolean estExterne; // NOUVEAU: Champ pour marquer une classe comme externe
 
     private List<String> attributsAffichage;
-    private List<String> methodesAffichage;
+    private List<String> methodesAffichage ;
 
     private static final int PADDING = 10;
     private static final int HAUTEUR_ENTETE = 30;
@@ -62,14 +63,15 @@ public class BlocClasse
     )
     {
         this.nom = nom;
-        this.x = x;
-        this.y = y;
+        this.x   = x  ;
+        this.y   = y  ;
         this.attributsAffichage = attributs;
-        this.methodesAffichage = methodes;
+        this.methodesAffichage  = methodes;
 
         this.estInterface = false;
+        this.estSuperClasse = false;
         this.estSelectionne = false;
-        this.estExterne = false;
+        this.estExterne = false; // Initialisation du nouveau champ
 
         int maxLgNom = nom.length() * 8;
         int maxLgAttributs =
