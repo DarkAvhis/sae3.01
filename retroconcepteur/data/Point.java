@@ -1,5 +1,7 @@
-package testFinal;
-public class Point {
+package data;
+
+public class Point 
+{
     // ------------------------------------------------
     // Attributs (variables d'instance)
     // ------------------------------------------------
@@ -16,7 +18,8 @@ public class Point {
      * @param x La coordonnée x du point.
      * @param y La coordonnée y du point.
      */
-    public Point(String nom, int x, int y) {
+    public Point(String nom, int x, int y) 
+    {
         this.nom = nom;
         this.x = x;
         this.y = y;
@@ -29,7 +32,8 @@ public class Point {
      * Retourne la coordonnée x du point.
      * @return La valeur de x.
      */
-    public int getX() {
+    public int getX() 
+    {
         return x;
     }
 
@@ -37,7 +41,8 @@ public class Point {
      * Retourne la coordonnée y du point.
      * @return La valeur de y.
      */
-    public int getY() {
+    public int getY() 
+    {
         return y;
     }
     
@@ -45,7 +50,8 @@ public class Point {
      * Retourne le nom du point.
      * @return Le nom du point.
      */
-    public String getNom() {
+    public String getNom() 
+    {
         return nom;
     }
 
@@ -56,7 +62,8 @@ public class Point {
      * Modifie la coordonnée x du point.
      * @param x La nouvelle valeur de x.
      */
-    public void setX(int x) {
+    public void setX(int x) 
+    {
         this.x = x;
     }
 
@@ -64,7 +71,8 @@ public class Point {
      * Modifie la coordonnée y du point.
      * @param y La nouvelle valeur de y.
      */
-    public void setY(int y) {
+    public void setY(int y) 
+    {
         this.y = y;
     }
     
@@ -72,7 +80,8 @@ public class Point {
      * Modifie le nom du point.
      * @param nom Le nouveau nom du point.
      */
-    public void setNom(String nom) {
+    public void setNom(String nom) 
+    {
         this.nom = nom;
     }
 }

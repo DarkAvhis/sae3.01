@@ -1,9 +1,16 @@
-package testFinal;
+package data;
 
 public class Carre extends Rectangle
 {
     protected double longueur;
     protected double largeur;
+
+    public Carre(double cote) 
+    {
+        super(cote, cote);
+        this.longueur = cote;
+        this.largeur  = cote;
+    }
 
     public double getLongueur()
     {
@@ -37,5 +44,17 @@ public class Carre extends Rectangle
     public String toString() 
     {
         return "Rectangle [longueur=" + longueur + ", largeur=" + largeur + "]";
+    }
+
+    @Override
+    public int zero() 
+    {
+        return 0;
+    }
+
+    @Override
+    public double calculSurface() 
+    {
+        return surface();
     }
 }
