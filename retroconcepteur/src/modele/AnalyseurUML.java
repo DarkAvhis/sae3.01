@@ -8,8 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
+import modele.entites.AttributObjet;
+import modele.entites.AssociationObjet;
+import modele.entites.ClasseObjet;
+import modele.entites.HeritageObjet;
+import modele.entites.InterfaceObjet;
+import modele.entites.LiaisonObjet;
+import modele.entites.MethodeObjet;
+import modele.entites.MultipliciteObjet;
 import modele.outil.ParsingUtil;
-import modele.entites.*;
 
 /**
  * Classe utilitaire responsable de l'analyse syntaxique (parsing) manuelle des fichiers Java.
@@ -178,15 +185,12 @@ public class AnalyseurUML
                             String interBrute = suite.substring(indexDebut, indexVirgule).trim();
                             if (!interBrute.isEmpty())
                             {
-                                int idxSpace   = ParsingUtil.indexEspace(interBrute);
+                                int idxSpace = ParsingUtil.indexEspace(interBrute);
                                 int idxChevron = interBrute.indexOf('<');
-                                int idxFinNom  = interBrute.length();
-
-                                if (idxSpace != -1)   idxFinNom = Math.min(idxFinNom, idxSpace);
+                                int idxFinNom = interBrute.length();
+                                if (idxSpace != -1) idxFinNom = Math.min(idxFinNom, idxSpace);
                                 if (idxChevron != -1) idxFinNom = Math.min(idxFinNom, idxChevron);
-
                                 String nomInterface = interBrute.substring(0, idxFinNom).trim();
-
                                 if (!nomInterface.isEmpty())
                                     interfacesDetectees.add(nomInterface);
                             }

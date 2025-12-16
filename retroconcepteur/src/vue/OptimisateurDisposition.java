@@ -1,11 +1,11 @@
 package vue;
 
+import java.util.List;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Classe responsable de l'optimisation des positions des blocs de classe
@@ -319,7 +319,8 @@ public class OptimisateurDisposition
         for (int i = 0; i < blocsClasses.size(); i++) 
        
         {
-            if (i == indexPrincipal) { continue; }    
+            if (i == indexPrincipal) continue;
+            
             double angle = (2 * Math.PI * (i < indexPrincipal ? i : i - 1)) / nbAutresBlocs;
             
             int x = (int) (centreX + rayon * Math.cos(angle));

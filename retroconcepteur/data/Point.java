@@ -1,6 +1,5 @@
-package data;
-public class Point 
-{
+package testFinal;
+public class Point {
     // ------------------------------------------------
     // Attributs (variables d'instance)
     // ------------------------------------------------

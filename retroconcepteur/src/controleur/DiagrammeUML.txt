@@ -1,0 +1,51 @@
+=== DIAGRAMME UML ===
+
+Classe : AnalyseIHMControleur.java
+--------------------------
+Attributs:
+      private List<ClasseObjet>               classes;
+      private HashMap<String, ClasseObjet>    mapClasses;
+      private List<AssociationObjet>          associations;
+      private List<HeritageObjet>             heritages;
+      private List<InterfaceObjet>            implementations;
+      private AnalyseurUML                    analyseur;
+
+Méthodes:
+      public AnalyseIHMControleur() 
+      public AnalyseIHMControleur(String cheminDossier) 
+      public boolean analyserDossier(String cheminDossier) 
+      public void supprimerClasse(String nomClasse) 
+      public static void main(String[] args) 
+
+
+Classe : Controleur.java
+--------------------------
+Attributs:
+      private AnalyseIHMControleur metierComplet;
+      private FenetrePrincipale vuePrincipale;
+      private String cheminProjetActuel;
+      private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
+      private static final int Y_ANCHOR = 50; // Ancrage Y
+      private static final int X_ANCHOR = 50; // Ancrage X
+      private static final int ITERATIONS = 10; // Nombre d'itérations pour la minimisation des croisements
+
+Méthodes:
+      public Controleur()
+      public void exporterDiagramme(String cheminFichier)
+       public void analyserEtAfficherDiagramme(String cheminProjet)
+      public void ajouterMethodes()
+      public void ajouterAttributs()
+      private void majAffichage()
+      private HashMap<String, Integer> assignerCouches(List<ClasseObjet> classes, List<LiaisonVue> liaisons)
+      public void sauvegarde()
+      public void sauvegarde( String dossier , String fichier )
+      public void supprimerClasseSelectionnee()
+      private List<LiaisonVue> convertirLiaisons(List<? extends LiaisonObjet> liaisons, TypeLiaison type)
+      private List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe)
+      private List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe)
+      public void optimiserDisposition()
+      private void afficherDiagrammeAvecDonnees() 
+      public String getCheminProjetActuel() {
+      public static void main(String[] args) 
+
+
