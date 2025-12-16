@@ -1,4 +1,4 @@
-package src.vue;
+package vue;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

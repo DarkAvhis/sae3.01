@@ -1,4 +1,6 @@
 ./src/modele/AnalyseurUML.java
+./src/modele/Sauvegarde.java
+
 ./src/modele/entites/AssociationObjet.java
 ./src/modele/entites/AttributObjet.java
 ./src/modele/entites/ClasseObjet.java
@@ -12,11 +14,12 @@
 ./src/vue/BarreMenus.java
 ./src/vue/BlocClasse.java
 ./src/vue/ConsoleVue.java
+./src/vue/ExportIHM.java
 ./src/vue/FenetrePrincipale.java
 ./src/vue/LiaisonVue.java
 ./src/vue/OptimisateurDisposition.java
 ./src/vue/PanneauDiagramme.java
 ./src/vue/PanneauProjets.java
 
-./src/AnalyseIHMControleur.java
-./src/Controleur.java
+./src/controleur/AnalyseIHMControleur.java
+./src/controleur/Controleur.java

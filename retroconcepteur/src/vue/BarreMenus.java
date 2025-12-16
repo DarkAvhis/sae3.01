@@ -1,4 +1,4 @@
-package src.vue;
+package vue;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,7 +9,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import src.Controleur;
+
+import controleur.Controleur;
 
 /**
  * Barre de menus de l'application.

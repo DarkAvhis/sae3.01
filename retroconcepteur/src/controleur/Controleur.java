@@ -1,4 +1,4 @@
-package src;
+package controleur;
 
 import java.awt.Point;
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class Controleur
     private AnalyseIHMControleur metierComplet;
     private FenetrePrincipale vuePrincipale;
     private List<BlocClasse> blocsVue = new ArrayList<>();
-    private String cheminProjetActuel; // nouveau champ
+    private String cheminProjetActuel;
 
     // --- Constantes pour le Layout Hiérarchique ---
     private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
@@ -417,8 +417,13 @@ public class Controleur
     {
         if (this.vuePrincipale == null)
             return;
+
         BlocClasse bloc = this.vuePrincipale.getPanneauDiagramme().getBlocsClasseSelectionnee();
-        // ... (Logique de suppression inchangée) ...
+        
+        if (bloc != null)
+        {
+            System.out.println("Suppression de la classe : " + bloc.getNom());
+        }
     }
 
     /**

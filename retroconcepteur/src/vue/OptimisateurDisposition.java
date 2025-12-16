@@ -1,4 +1,4 @@
-package src.vue;
+package vue;
 
 import java.util.List;
 import java.util.HashMap;

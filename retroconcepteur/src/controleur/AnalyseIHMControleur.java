@@ -1,17 +1,17 @@
-package src;
+package controleur;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import src.modele.entites.ClasseObjet;
-import src.modele.entites.AssociationObjet;
-import src.modele.entites.HeritageObjet;
-import src.modele.entites.InterfaceObjet;
-import src.modele.entites.LiaisonObjet;
-import src.modele.AnalyseurUML;
-import src.vue.ConsoleVue;
+import modele.entites.ClasseObjet;
+import modele.entites.AssociationObjet;
+import modele.entites.HeritageObjet;
+import modele.entites.InterfaceObjet;
+import modele.entites.LiaisonObjet;
+import modele.AnalyseurUML;
+import vue.ConsoleVue;
 
 /**
  * Contrôleur principal pour l'IHM (Interface Homme-Machine).
