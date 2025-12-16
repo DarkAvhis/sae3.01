@@ -116,8 +116,7 @@ public class PanneauProjets extends JPanel implements ActionListener
             if( this.panneauDiagramme != null ) this.panneauDiagramme.clearDiagram();
         }
 
-        if (e.getSource() == boutonAttributs) 
-        {
+        if (e.getSource() == boutonAttributs) {
             controleur.ajouterAttributs();
         }
 
