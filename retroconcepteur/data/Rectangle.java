@@ -1,7 +1,9 @@
-package testFinal;
+package data;
 
 public abstract class Rectangle implements ISurface 
 {
+    protected double longueur;
+    protected double largeur;
 
     // Constructeur
     public Rectangle(double longueur, double largeur) 

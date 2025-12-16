@@ -1,5 +1,5 @@
 // Fichier : testFinal/Disque.java
-package testFinal;
+package data;
 
 public class Disque implements ISurface
 {
@@ -32,7 +32,7 @@ public class Disque implements ISurface
     // Surcharge
     public Disque(double rayon)
     {
-        this.centre = new Point[]{ new Point(0,0) };
+        this.centre = new Point[]{ new Point("",0,0) };
         this.rayon  = rayon;
         this.nom    = "Origine";
         this.idInterne = ++compteurDisques;
@@ -80,6 +80,7 @@ public class Disque implements ISurface
     public double calculSurface()
     {
         return aire();
+    }
  
     protected void renommer(String nouveauNom)
     {
@@ -121,5 +122,16 @@ public class Disque implements ISurface
         double dy = y - c.getY();
         return Math.sqrt(dx*dx + dy*dy);
     }
-}
+
+    @Override
+    public int zero() 
+    {
+        return 0;
+    }
+
+    @Override
+    public double surface() 
+    {
+        return aire();
+    }
 }
