@@ -542,8 +542,9 @@ public class Controleur {
         }
     }
 
-    private void afficherDiagrammeAvecDonnees() {
-
+    private void afficherDiagrammeAvecDonnees() 
+    {
+        // a faire cet aprem j'ai faim la 
     }
 
     public String getCheminProjetActuel() {
