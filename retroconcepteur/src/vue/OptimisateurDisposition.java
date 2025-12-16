@@ -319,8 +319,7 @@ public class OptimisateurDisposition
         for (int i = 0; i < blocsClasses.size(); i++) 
        
         {
-            if (i == indexPrincipal) continue;
-            
+            if (i == indexPrincipal) { continue; }    
             double angle = (2 * Math.PI * (i < indexPrincipal ? i : i - 1)) / nbAutresBlocs;
             
             int x = (int) (centreX + rayon * Math.cos(angle));

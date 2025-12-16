@@ -18,7 +18,8 @@ import vue.ConsoleVue;
 /**
  * Contrôleur principal pour l'IHM (Interface Homme-Machine).
  */
-public class AnalyseIHMControleur {
+public class AnalyseIHMControleur 
+{
     /*-------------------------------------- */
     /* Attributs */
     /*-------------------------------------- */
@@ -34,7 +35,8 @@ public class AnalyseIHMControleur {
     /*-------------------------------------- */
 
     // Constructeur par défaut
-    public AnalyseIHMControleur() {
+    public AnalyseIHMControleur() 
+    {
         this.classes = new ArrayList<ClasseObjet>();
         this.associations = new ArrayList<AssociationObjet>();
         this.heritages = new ArrayList<HeritageObjet>();
@@ -45,13 +47,15 @@ public class AnalyseIHMControleur {
     }
 
     // Constructeur intégral qui fait l'analyse et affiche
-    public AnalyseIHMControleur(String cheminDossier) {
+    public AnalyseIHMControleur(String cheminDossier) 
+    {
         this(); // initialise les listes
 
         ConsoleVue vue = new ConsoleVue();
 
         boolean ok = this.analyserDossier(cheminDossier);
-        if (!ok) {
+        if (!ok) 
+        {
             vue.afficherMessage("Erreur : l'analyse a échoué pour le chemin '" + cheminDossier + "'.");
             return;
         }
@@ -65,19 +69,23 @@ public class AnalyseIHMControleur {
     /*-------------------------------------- */
     /* Les Accesseurs */
     /*-------------------------------------- */
-    public List<ClasseObjet> getClasses() {
+    public List<ClasseObjet> getClasses() 
+    {
         return this.classes;
     }
 
-    public List<AssociationObjet> getAssociations() {
+    public List<AssociationObjet> getAssociations() 
+    {
         return this.associations;
     }
 
-    public List<HeritageObjet> getHeritages() {
+    public List<HeritageObjet> getHeritages() 
+    {
         return this.heritages;
     }
 
-    public List<InterfaceObjet> getImplementations() {
+    public List<InterfaceObjet> getImplementations() 
+    {
         return this.implementations;
     }
 
@@ -88,9 +96,11 @@ public class AnalyseIHMControleur {
     /**
      * Analyse complète du dossier.
      */
-    public boolean analyserDossier(String cheminDossier) {
+    public boolean analyserDossier(String cheminDossier) 
+    {
         File cible = new File(cheminDossier);
-        if (!cible.isDirectory()) {
+        if (!cible.isDirectory()) 
+        {
             return false;
         }
 
@@ -103,9 +113,11 @@ public class AnalyseIHMControleur {
 
         List<File> fichiersJava = analyseur.ClassesDuDossier(cheminDossier);
 
-        for (File f : fichiersJava) {
+        for (File f : fichiersJava) 
+        {
             ClasseObjet c = analyseur.analyserFichierUnique(f.getAbsolutePath());
-            if (c != null) {
+            if (c != null) 
+            {
                 this.classes.add(c);
                 this.mapClasses.put(c.getNom(), c);
             }
@@ -131,21 +143,26 @@ public class AnalyseIHMControleur {
     /**
      * Suppression d'une classe et des relations associées.
      */
-    public void supprimerClasse(String nomClasse) {
-        if (nomClasse == null || nomClasse.isEmpty()) {
+    public void supprimerClasse(String nomClasse) 
+    {
+        if (nomClasse == null || nomClasse.isEmpty()) 
+        {
             return;
         }
 
         ClasseObjet aSupprimer = null;
 
-        for (ClasseObjet c : this.classes) {
-            if (nomClasse.equals(c.getNom())) {
+        for (ClasseObjet c : this.classes) 
+        {
+            if (nomClasse.equals(c.getNom())) 
+            {
                 aSupprimer = c;
                 break;
             }
         }
 
-        if (aSupprimer != null) {
+        if (aSupprimer != null) 
+        {
             this.classes.remove(aSupprimer);
         }
 
@@ -161,10 +178,12 @@ public class AnalyseIHMControleur {
     /*-------------------------------------- */
     /* Main */
     /*-------------------------------------- */
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         ConsoleVue vue = new ConsoleVue();
 
-        if (args.length == 0) {
+        if (args.length == 0) 
+        {
             vue.afficherUsage();
             return;
         }
@@ -177,21 +196,26 @@ public class AnalyseIHMControleur {
      * que
      * le diagramme affiche aussi les ArrayList, JMenuBar, etc.
      */
-    private void ajouterClassesExternes() {
+    private void ajouterClassesExternes() 
+    {
         HashSet<String> dejaAjoutees = new HashSet<String>(this.mapClasses.keySet());
 
         // Héritages détectés
-        for (String enfant : this.analyseur.getIntentionsHeritage().keySet()) {
+        for (String enfant : this.analyseur.getIntentionsHeritage().keySet()) 
+        {
             String parent = this.analyseur.getIntentionsHeritage().get(enfant);
-            if (parent != null && !parent.equals("Object")) {
+            if (parent != null && !parent.equals("Object")) 
+            {
                 this.ajouterClasseExterneSiNecessaire(parent, dejaAjoutees);
             }
         }
 
         // Interfaces implémentées
-        for (String classe : this.analyseur.getInterfaces().keySet()) {
+        for (String classe : this.analyseur.getInterfaces().keySet()) 
+        {
             ArrayList<String> interfaces = this.analyseur.getInterfaces().get(classe);
-            for (String nomInterface : interfaces) {
+            for (String nomInterface : interfaces) 
+            {
                 this.ajouterClasseExterneSiNecessaire(nomInterface, dejaAjoutees);
             }
         }
@@ -199,43 +223,53 @@ public class AnalyseIHMControleur {
         // Types des attributs (créer une copie pour éviter
         // ConcurrentModificationException)
         List<ClasseObjet> classesSnapshot = new ArrayList<>(this.classes);
-        for (ClasseObjet classeCourante : classesSnapshot) {
-            if (classeCourante.getattributs() == null) {
+        for (ClasseObjet classeCourante : classesSnapshot) 
+        {
+            if (classeCourante.getattributs() == null) 
+            {
                 continue;
             }
 
-            for (AttributObjet attribut : classeCourante.getattributs()) {
+            for (AttributObjet attribut : classeCourante.getattributs()) 
+            {
                 this.ajouterClassesExternesDepuisType(attribut.getType(), dejaAjoutees);
             }
         }
     }
 
-    private void ajouterClassesExternesDepuisType(String typeBrut, HashSet<String> dejaAjoutees) {
-        if (typeBrut == null) {
+    private void ajouterClassesExternesDepuisType(String typeBrut, HashSet<String> dejaAjoutees) 
+    {
+        if (typeBrut == null) 
+        {
             return;
         }
 
         String typeNettoye = typeBrut.trim();
-        if (typeNettoye.isEmpty()) {
+        if (typeNettoye.isEmpty()) 
+        {
             return;
         }
 
         // Type externe direct (ArrayList<...> => ArrayList)
         String typeExterne = typeNettoye;
         int idxChevron = typeNettoye.indexOf('<');
-        if (idxChevron != -1) {
+        if (idxChevron != -1) 
+        {
             typeExterne = typeNettoye.substring(0, idxChevron).trim();
         }
         typeExterne = typeExterne.replace("[]", "").trim();
         this.ajouterClasseExterneSiNecessaire(typeExterne, dejaAjoutees);
 
         // Types internes aux génériques (ArrayList<Point> => Point)
-        if (idxChevron != -1) {
+        if (idxChevron != -1) 
+        {
             int idxFin = typeNettoye.indexOf('>', idxChevron);
-            if (idxFin != -1) {
+            if (idxFin != -1) 
+            {
                 String internes = typeNettoye.substring(idxChevron + 1, idxFin);
                 String[] candidats = internes.split(",");
-                for (String cand : candidats) {
+                for (String cand : candidats) 
+                {
                     String nettoye = cand.replace("? extends", "").replace("? super", "").trim();
                     nettoye = nettoye.replace("[]", "").trim();
                     this.ajouterClasseExterneSiNecessaire(nettoye, dejaAjoutees);
@@ -244,12 +278,15 @@ public class AnalyseIHMControleur {
         }
     }
 
-    private void ajouterClasseExterneSiNecessaire(String nomType, HashSet<String> dejaAjoutees) {
-        if (nomType == null || nomType.isEmpty()) {
+    private void ajouterClasseExterneSiNecessaire(String nomType, HashSet<String> dejaAjoutees) 
+    {
+        if (nomType == null || nomType.isEmpty()) 
+        {
             return;
         }
 
-        if (this.estTypePrimitif(nomType) || dejaAjoutees.contains(nomType)) {
+        if (this.estTypePrimitif(nomType) || dejaAjoutees.contains(nomType)) 
+        {
             return;
         }
 
@@ -260,7 +297,8 @@ public class AnalyseIHMControleur {
         dejaAjoutees.add(nomType);
     }
 
-    private boolean estTypePrimitif(String nomType) {
+    private boolean estTypePrimitif(String nomType) 
+    {
         return nomType.equals("int") || nomType.equals("double") || nomType.equals("float") ||
                 nomType.equals("boolean") || nomType.equals("char") || nomType.equals("byte") ||
                 nomType.equals("short") || nomType.equals("long") || nomType.equals("void");

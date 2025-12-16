@@ -8,7 +8,7 @@ import modele.entites.AttributObjet;
 import modele.entites.MethodeObjet;
 
 
-public final class ParsingUtil
+public class ParsingUtil
 {
     private ParsingUtil() { }
 
@@ -289,7 +289,6 @@ public final class ParsingUtil
                 }
             }
         }
-
         methodes.add(new MethodeObjet(nomMethode, params, typeRetour, visibilite, estStatique));
     }
 }

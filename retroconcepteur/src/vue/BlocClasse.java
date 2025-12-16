@@ -196,29 +196,8 @@ public class BlocClasse {
     }
 
     // Getters et Setters
-<<<<<<< HEAD
     public String getNom() {
         return this.nom;
-=======
-    public String  getNom        () {  return this.nom            ; }
-    public int     getX          () {  return this.x              ; }
-    public int     getY          () {  return this.y              ; }
-    public int     getLargeur    () {  return this.largeur        ; }
-    public int     getHauteur    () {  return this.hauteur        ; }
-    public boolean estInterface  () {  return this.estInterface   ; }
-    public boolean estSelectionne() {  return this.estSelectionne ; }
-
-
-    public void setX(int x) { this.x = x;}
-    public void setY(int y) { this.y = y;}
-    public void setInterface  (boolean estInterface) { this.estInterface   = estInterface; }
-    public void setSelectionne(boolean selectionne ) { this.estSelectionne = selectionne ; }
-
-    public void setAttributs(List<String> attributs) 
-    {
-        this.attributsAffichage = attributs;
-        recalculerDimensions();
->>>>>>> d7c4ca2 (efesfesf)
     }
 
     public int getX() {
@@ -237,22 +216,14 @@ public class BlocClasse {
         return this.hauteur;
     }
 
-<<<<<<< HEAD
     public void setX(int x) {
         this.x = x;
     }
-=======
-        // 2️⃣ Attributs
-        for (String att : attributsAffichage) 
-        {
-            if (att == null) continue;
->>>>>>> d7c4ca2 (efesfesf)
 
     public void setY(int y) {
         this.y = y;
     }
 
-<<<<<<< HEAD
     public void setInterface(boolean estInterface) {
         this.estInterface = estInterface;
     }
@@ -260,40 +231,13 @@ public class BlocClasse {
     public void setSelectionne(boolean selectionne) {
         this.estSelectionne = selectionne;
     }
-=======
-            if (longueur > maxLongueur) 
-            {
-                maxLongueur = longueur;
-            }
-        }
-
-        // 3️⃣ Méthodes
-        for (String met : methodesAffichage) 
-        {
-            if (met == null) continue;
->>>>>>> d7c4ca2 (efesfesf)
 
     public boolean estInterface() {
         return this.estInterface;
     }
 
-<<<<<<< HEAD
     public boolean estSelectionne() {
         return this.estSelectionne;
-=======
-            if (longueur > maxLongueur) 
-            {
-                maxLongueur = longueur;
-            }
-        }
-
-        // Conversion caractères → pixels (approximation)
-        this.largeur = Math.max(200,PADDING * 2 + maxLongueur * 8);
-
-        // ---- HAUTEUR ----
-        this.hauteur = HAUTEUR_ENTETE + (attributsAffichage.size() + methodesAffichage.size()) * 
-                       HAUTEUR_LIGNE  + PADDING * 4;
->>>>>>> d7c4ca2 (efesfesf)
     }
 
     public void setMethodes(List<String> methVue) 

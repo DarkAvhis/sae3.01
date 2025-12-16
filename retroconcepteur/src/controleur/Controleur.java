@@ -48,6 +48,7 @@ public class Controleur {
     private List<BlocClasse> blocsVue;
     private List<LiaisonVue> dernieresToutesLiaisonsVue;
     private HashMap<String, Point> dernieresPositions;
+    private String cheminProjetActuel;
 
     // --- Constantes pour le Layout Hiérarchique ---
     private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
@@ -499,7 +500,9 @@ public class Controleur {
                         liaisonsVue.add(new LiaisonVue(nomClasseConcrete, interfaceClass.getNom(), type, null, null));
                     }
                 }
-            } else {
+            } 
+            else 
+            {
                 // Vérifier que les deux classes existent pour les autres liaisons
                 if (liaison.getClasseFille() == null || liaison.getClasseMere() == null) {
                     System.err.println("Attention: liaison avec classe null ignorée");
@@ -592,7 +595,7 @@ public class Controleur {
     // nouveau getter pour récupérer le dossier de projet actuellement ouvert
     public String getCheminProjetActuel() 
     {
-        return this.cheminProjetActuel;
+        return this.getCheminProjetActuel();
     }
 
     /**
