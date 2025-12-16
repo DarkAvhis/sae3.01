@@ -1,5 +1,6 @@
 package vue;
 
+import controleur.Controleur;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -9,7 +10,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -17,8 +17,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
-import controleur.Controleur;
 
 /**
  * Panneau de navigation des projets.
@@ -119,9 +117,8 @@ public class PanneauProjets extends JPanel implements ActionListener
             if( this.panneauDiagramme != null ) this.panneauDiagramme.clearDiagram();
         }
 
-        if( e.getSource() == boutonAttributs )
-        {
-            controleur.ajouterAttributs() ; 
+        if (e.getSource() == boutonAttributs) {
+            controleur.afficherAttribut();
         }
 
         if( e.getSource() == boutonMethodes )
