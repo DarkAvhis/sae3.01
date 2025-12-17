@@ -28,11 +28,8 @@ public class Disque  implements ISurface
         return 0;
     }
 
-    private class Cacakiprout
+    private class TestInterne
     {
-        int cacakiprout;
-        String nbVomikipu;
-        int cacaSauceProutParsemédePipiChaud;
 
     }
 }
