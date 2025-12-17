@@ -17,6 +17,7 @@ import modele.entites.LiaisonObjet;
 import modele.entites.MethodeObjet;
 import modele.entites.MultipliciteObjet;
 import modele.outil.ParsingUtil;
+import java.util.Stack;
 
 /**
  * Classe utilitaire responsable de l'analyse syntaxique (parsing) manuelle des fichiers Java.
@@ -49,245 +50,122 @@ public class AnalyseurUML
     {
         File file = new File(chemin);
         String nomFichier = file.getName().replace(".java", "");
-        ArrayList<AttributObjet> attributs = new ArrayList<AttributObjet>();
-        ArrayList<MethodeObjet>  methodes  = new ArrayList<MethodeObjet>();
         
-        String  nomParent            = null      ;
-        String  nomEntite            = nomFichier; 
-        String  specifique           = ""        ;
+        // NOUVEAU : Utilisation d'une pile pour gérer la hiérarchie des classes
+        java.util.Stack<ClasseObjet> pileClasses = new java.util.Stack<>();
+        ClasseObjet classeRacine = null;
 
-        String ligneBrute                        ;
-
-        boolean estInterface         = false     ;
-        boolean estRecord            = false     ;
-        boolean enTeteTrouve         = false     ; 
-        boolean commentaireBlocActif = false     ;
-        boolean estHeritier          = false     ;
-
-        int finCom                               ;
-
-        ArrayList<String> interfacesDetectees = new ArrayList<String>();
-        String[] tabSpecifique = {"abstract class", "interface", "enum", "record"}; 
+        // NOUVEAU : Compteur pour suivre la profondeur des blocs { }
+        int niveauAccolades = 0;
+        
+        String ligneBrute;
+        boolean commentaireBlocActif = false;
 
         try (Scanner sc = new Scanner(file))
         {
             while (sc.hasNextLine())
             {
                 ligneBrute = sc.nextLine().trim();
-                if (ligneBrute.isEmpty()) 
-                {
-                    continue;
-                }
-                
-                if (commentaireBlocActif)
-                {
-                    if (ligneBrute.contains("*/"))
-                    {
+                if (ligneBrute.isEmpty()) continue;
+
+                // --- GESTION DES COMMENTAIRES (Logique existante conservée) ---
+                if (commentaireBlocActif) {
+                    if (ligneBrute.contains("*/")) {
                         commentaireBlocActif = false;
-                        if (ligneBrute.endsWith("*/")) 
-                        {
-                            continue;
-                        }
+                        if (ligneBrute.endsWith("*/")) continue;
                         ligneBrute = ligneBrute.substring(ligneBrute.indexOf("*/") + 2).trim();
-                    }
-                    else
-                    {
-                         continue;
-                    } 
+                    } else continue;
                 }
-                
-                if (ligneBrute.startsWith("/*"))
-                {
-                    if (!ligneBrute.contains("*/"))
-                    {
-                        commentaireBlocActif = true;
-                        continue;
-                    }
-                    else
-                    {
-                        finCom = ligneBrute.lastIndexOf("*/");
-                        if (finCom + 2 < ligneBrute.length())
-                            ligneBrute = ligneBrute.substring(finCom + 2).trim();
-                        else
-                        {
-                            continue;
-                        }      
+                if (ligneBrute.startsWith("/*")) {
+                    if (!ligneBrute.contains("*/")) { commentaireBlocActif = true; continue; }
+                    else {
+                        int finCom = ligneBrute.lastIndexOf("*/");
+                        if (finCom + 2 < ligneBrute.length()) ligneBrute = ligneBrute.substring(finCom + 2).trim();
+                        else continue;
                     }
                 }
+                if (ligneBrute.startsWith("//")) continue;
+                if (ligneBrute.contains("//")) ligneBrute = ligneBrute.substring(0, ligneBrute.indexOf("//")).trim();
+                if (ligneBrute.startsWith("package") || ligneBrute.startsWith("import")) continue;
 
-                if (ligneBrute.startsWith("//")) { continue; }
+                // --- DÉTECTION D'UNE DÉCLARATION DE CLASSE (RACINE OU INTERNE) ---
+                if (ligneBrute.contains(" class ")     || ligneBrute.contains("interface ") || 
+                    ligneBrute.contains(" record ")    || ligneBrute.contains(" enum ")      ||
+                    ligneBrute.startsWith("class ")    || ligneBrute.startsWith("public class ") ||
+                    ligneBrute.startsWith("interface ")|| ligneBrute.startsWith("public interface "))
+                {
+                    String specifique = "";
+                    if (ligneBrute.contains("interface")) specifique = "interface";
+                    else if (ligneBrute.contains("enum")) specifique = "enum";
+                    else if (ligneBrute.contains("record")) specifique = "record";
+                    else if (ligneBrute.contains("abstract class")) specifique = "abstract class";
 
-                if (ligneBrute.contains("//"))
-                {
-                    ligneBrute = ligneBrute.substring(0, ligneBrute.indexOf("//")).trim();
-                }
-                //ignorer package / import
-                if (ligneBrute.startsWith("package") || ligneBrute.startsWith("import")) 
-                {
+                    // Extraction du nom de l'entité
+                    String reste = ligneBrute;
+                    if (!specifique.equals("")) reste = ligneBrute.substring(ligneBrute.indexOf(specifique) + specifique.length()).trim();
+                    else if (ligneBrute.contains("class ")) reste = ligneBrute.substring(ligneBrute.indexOf("class ") + 6).trim();
+                    
+                    String nomEntite = ParsingUtil.lireNom(reste);
+                    if (nomEntite.isEmpty()) nomEntite = nomFichier;
+
+                    // Création du nouvel objet classe
+                    ClasseObjet nouvelleClasse = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nomEntite, specifique);
+
+                    // LOGIQUE DE PILE : Si la pile n'est pas vide, c'est une classe interne
+                    if (classeRacine == null) {
+                        classeRacine = nouvelleClasse;
+                    } else if (!pileClasses.isEmpty()) {
+                        pileClasses.peek().ajouterClasseInterne(nouvelleClasse);
+                    }
+                    
+                    // On pousse la classe sur la pile pour y ajouter ses membres
+                    pileClasses.push(nouvelleClasse);
+
+                    // Gestion héritage (logique simplifiée pour l'exemple)
+                    if (ligneBrute.contains("extends")) {
+                        String parent = ParsingUtil.lireNom(ligneBrute.substring(ligneBrute.indexOf("extends") + 7).trim());
+                        this.lstIntentionHeritage.put(nomEntite, parent);
+                    }
+                    
+                    // Si la ligne contient déjà l'accolade ouvrante, on l'incrémente ici
+                    if (ligneBrute.contains("{")) niveauAccolades++;
                     continue;
                 }
 
-                if (ligneBrute.equals("}")) { continue; }
+                // --- GESTION DES ACCOLADES ET ISOLATION DES MEMBRES ---
+                if (ligneBrute.contains("{") && !ligneBrute.contains(" class ")) niveauAccolades++;
 
-                if (!enTeteTrouve && (ligneBrute.contains(" class "   ) || 
-                                      ligneBrute.contains("interface ") || 
-                                      ligneBrute.contains("record "   ) || 
-                                      ligneBrute.contains("enum "     ) ))
+                // ISOLATION : On n'extrait que si on est au niveau de la classe (niveau == taille pile)
+                // Cela évite de prendre les variables locales dans les méthodes (niveau > taille pile)
+                if (!pileClasses.isEmpty() && niveauAccolades == pileClasses.size())
                 {
-                    enTeteTrouve = true;
-                    
-                    for (String motCle : tabSpecifique)
-                    {
-                        if (ligneBrute.contains(motCle))
-                        {
-                            specifique = motCle;
-                            if (motCle.contains("interface")) estInterface = true;
-                            if (motCle.contains("record"   )) estRecord    = true;
-                            
-                            if (estInterface || estRecord)
-                            {
-                                int idxDebut = ligneBrute.indexOf(motCle) + motCle.length();
-                                String suite = ligneBrute.substring(idxDebut).trim();
-                                String nom = ParsingUtil.lireNom(suite);
-
-                                if (!nom.isEmpty()) nomEntite = nom;
-                            }
-                            break;
-                        }
-                    }
-
-                    if (ligneBrute.contains("extends"))
-                    {
-                        estHeritier    = true;
-
-                        int idxExtends = ligneBrute.indexOf("extends") + 7;
-                        String suite   = ligneBrute.substring(idxExtends).trim();
-
-                        String possibleParent = ParsingUtil.lireNom(suite);
-
-                        if (!possibleParent.isEmpty()) nomParent = possibleParent;
-                    }
-
-                    if (ligneBrute.contains("implements"))
-                    {
-                        int idxImpl = ligneBrute.indexOf("implements") + 10;
-                        String suite = ligneBrute.substring(idxImpl).trim();
-                        int idxFin = suite.indexOf('{');
-                        if (idxFin != -1) suite = suite.substring(0, idxFin);
-                        
-                        int indexDebut = 0;
-                        int indexVirgule;
-                        
-                        while (indexDebut < suite.length())
-                        {
-                            indexVirgule = suite.indexOf(',', indexDebut);
-                            if (indexVirgule == -1) indexVirgule = suite.length();
-                            String interBrute = suite.substring(indexDebut, indexVirgule).trim();
-                            if (!interBrute.isEmpty())
-                            {
-                                int idxSpace = ParsingUtil.indexEspace(interBrute);
-                                int idxChevron = interBrute.indexOf('<');
-                                int idxFinNom = interBrute.length();
-                                if (idxSpace != -1) idxFinNom = Math.min(idxFinNom, idxSpace);
-                                if (idxChevron != -1) idxFinNom = Math.min(idxFinNom, idxChevron);
-                                String nomInterface = interBrute.substring(0, idxFinNom).trim();
-                                if (!nomInterface.isEmpty())
-                                    interfacesDetectees.add(nomInterface);
-                            }
-                            indexDebut = indexVirgule + 1;
-                            if (indexVirgule == suite.length()) break;
-                        }
-                    }
-                    
-                    if (estRecord)
-                    {
-                        if (ligneBrute.contains("(") && ligneBrute.contains(")"))
-                        {
-                            String args = ligneBrute.substring(ligneBrute.indexOf('(') + 1, ligneBrute.lastIndexOf(')'));
-                            args = args.trim();
-                            if (!args.isEmpty())
-                            {
-                                List<String> params = ParsingUtil.decoupage(args);
-                                for (String p : params)
-                                {
-                                    String trimmed      = p.trim();
-                                    List<String> tokens = ParsingUtil.separerMots(trimmed);
-                                    if (tokens.size() >= 2)
-                                    {
-                                        String nom  = tokens.get(tokens.size() - 1);
-                                        String type = "";
-                                        for (int i = 0; i < tokens.size() - 1; i++)
-                                        {
-                                            if (i > 0) type += ' ';
-                                            type += tokens.get(i);
-                                        }
-                                        attributs.add(new AttributObjet(nom, "instance", type, "private", false, true));
-                                        HashMap<String, String> emptyParams = new HashMap<String, String>();
-                                        methodes.add(new MethodeObjet(nom, emptyParams, type, "public", false)); 
-                                    }
-                                }
-                            }
-                        }
-                        continue; 
-                    }
-                    continue;
-                }
-
-                if (enTeteTrouve)
-                {
+                    ClasseObjet classeCourante = pileClasses.peek();
                     boolean estStatique = ligneBrute.contains("static");
-                    boolean estFinal    = ligneBrute.contains("final" );
-                    boolean aVisibilite = (ligneBrute.startsWith("public"   )|| 
-                                           ligneBrute.startsWith("private"  )|| 
-                                           ligneBrute.startsWith("protected"));
-                    
-                    if (estInterface)
-                    {
-                        if (ligneBrute.endsWith(";") && !ligneBrute.contains("("))
-                        {
-                            ParsingUtil.extraireAttribut(ligneBrute, true, true, attributs);
-                        }
-                        else if (ligneBrute.contains("(") && ligneBrute.contains(")"))
-                        {
-                            ParsingUtil.extraireMethode(ligneBrute, estStatique, nomEntite, methodes);
-                        }
-                    }
-                    else if (!estRecord)
-                    {
-                        if (aVisibilite && ligneBrute.endsWith(";") && !ligneBrute.contains("("))
-                        {
-                            ParsingUtil.extraireAttribut(ligneBrute, estStatique, estFinal, attributs);
-                        }
+                    boolean estFinal    = ligneBrute.contains("final");
 
-                        else if (aVisibilite && ligneBrute.contains("(") && !ligneBrute.contains("class "))
-                        {
-                            ParsingUtil.extraireMethode(ligneBrute, estStatique, nomEntite, methodes);
-                        }
+                    // Extraction Attributs
+                    if (ligneBrute.endsWith(";") && !ligneBrute.contains("(")) {
+                        ParsingUtil.extraireAttribut(ligneBrute, estStatique, estFinal, classeCourante.getattributs());
                     }
+                    // Extraction Méthodes (nécessite une visibilité pour éviter les blocs statiques)
+                    else if (ligneBrute.contains("(") && (ligneBrute.contains("public") || ligneBrute.contains("private") || ligneBrute.contains("protected"))) {
+                        ParsingUtil.extraireMethode(ligneBrute, estStatique, classeCourante.getNom(), classeCourante.getMethodes());
+                    }
+                }
+
+                // SORTIE DE CONTEXTE : On dépile quand on ferme une classe
+                if (ligneBrute.contains("}")) {
+                    // Si l'accolade fermante correspond à la fin d'une classe
+                    if (niveauAccolades == pileClasses.size() && !pileClasses.isEmpty()) {
+                        pileClasses.pop();
+                    }
+                    niveauAccolades--;
                 }
             }
         }
-        catch (FileNotFoundException e)
-        {
-            System.out.println("Fichier non trouvé: " + chemin);
-            return null;
-        }
+        catch (FileNotFoundException e) { return null; }
 
-        ClasseObjet nouvelleClasse = new ClasseObjet(attributs, methodes, nomEntite, specifique);
-
-        if (estHeritier && nomParent != null)
-        {
-            this.lstIntentionHeritage.put(nomEntite, nomParent);
-        }
-        for (String iface : interfacesDetectees)
-        {
-            if (!this.lstInterfaces.containsKey(nomEntite))
-            {
-                this.lstInterfaces.put(nomEntite, new ArrayList<String>());
-            }
-            this.lstInterfaces.get(nomEntite).add(iface);
-        }
-        return nouvelleClasse;
+        return classeRacine;
     }
 
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses)
