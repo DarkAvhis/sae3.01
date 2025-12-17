@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import modele.Sauvegarde;
@@ -549,11 +548,24 @@ public class Controleur
     private List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe)
     {
         List<String> liste = new ArrayList<>();
+        // Récupérer les associations pour cette classe
+        List<AssociationObjet> associations = this.metierComplet.getAssociations();
+        // Pour chaque attribut, vérifier s'il est déjà représenté par une association
         for (AttributObjet att : attributs)
         {
+            boolean estAssociation = false;
+            for (AssociationObjet asso : associations) {
+                // Si la classe courante est la source (classeFille) et l'attribut correspond à la cible
+                if (asso.getClasseFille() != null && asso.getClasseFille().getNom().equals(classe.getNom())
+                    && asso.getNomAttribut() != null && asso.getNomAttribut().equals(att.getNom())) {
+                    estAssociation = true;
+                    break;
+                }
+            }
+            if (estAssociation) continue; // Ne pas afficher cet attribut
+
             String staticFlag = att.estStatique() ? " {static}" : "";
             char visibilite = classe.changementVisibilite(att.getVisibilite());
-
             String s = visibilite + " " + att.getNom() + " : " + att.getType() + staticFlag;
             liste.add(s);
         }

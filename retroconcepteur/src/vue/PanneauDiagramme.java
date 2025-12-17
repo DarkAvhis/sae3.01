@@ -339,11 +339,10 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      */
     private void dessinerMultiplicite(Graphics2D g2d, Point pStart, Point pEnd, String multiplicity, boolean isSource)
     {
-
         Point pAnchor = isSource ? pStart : pEnd;
 
-        int offsetFromAnchor    = 15;
-        int offsetPerpendicular = 10;
+        int offsetFromAnchor    = 25; // plus loin de la flèche
+        int offsetPerpendicular = 16; // plus loin sur le côté
 
         double angle = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
         double perpAngle = angle + Math.PI / 2;
@@ -356,8 +355,16 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
 
         FontMetrics fm = g2d.getFontMetrics();
         int textWidth  = fm.stringWidth(multiplicity);
+        int textHeight = fm.getHeight();
 
         xText -= (int) (textWidth * 0.5);
+        yText += (int) (textHeight * 0.3); // ajuster pour centrer verticalement
+
+        // Dessiner un fond blanc sous la multiplicité pour la rendre toujours lisible
+        Color oldColor = g2d.getColor();
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(xText - 2, yText - fm.getAscent(), textWidth + 4, textHeight);
+        g2d.setColor(oldColor);
 
         g2d.drawString(multiplicity, xText, yText);
     }
