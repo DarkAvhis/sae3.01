@@ -245,15 +245,10 @@ public class Controleur {
         List<HeritageObjet> heritages = this.metierComplet.getHeritages();
         List<InterfaceObjet> implementations = this.metierComplet.getImplementations();
 
-        System.out.println("DEBUG majAffichage: " + implementations.size() + " implémentation(s) trouvée(s)");
-
         List<LiaisonVue> liaisonsVue = new ArrayList<>();
         liaisonsVue.addAll(convertirLiaisons(associations, TypeLiaison.ASSOCIATION_UNIDI));
         liaisonsVue.addAll(convertirLiaisons(heritages, TypeLiaison.HERITAGE));
         liaisonsVue.addAll(convertirLiaisons(implementations, TypeLiaison.IMPLEMENTATION));
-
-        System.out.println("DEBUG: Total liaisons créées: " + liaisonsVue.size());
-        System.out.println("DEBUG: Nombre de blocs: " + blocsVue.size());
 
         if (vuePrincipale != null) {
             vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocsVue);
