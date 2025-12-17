@@ -201,6 +201,17 @@ public class Controleur {
         majAffichage();
     }
 
+    private BlocClasse trouverBlocParNom(List<BlocClasse> liste, String nom) 
+    {
+        for (BlocClasse b : liste) {
+            if (b.getNom().equals(nom)) return b;
+            // Recherche dans les enfants
+            BlocClasse enfant = trouverBlocParNom(b.getBlocsInternes(), nom);
+            if (enfant != null) return enfant;
+        }
+        return null;
+    }
+
     /**
      * Ajoute les méthodes aux blocs existants.
      */

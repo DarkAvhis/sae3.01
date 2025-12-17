@@ -256,6 +256,26 @@ public class BlocClasse {
                 && py >= y && py <= y + hauteur;
     }
 
+        /**
+     * Ajoute un bloc de classe interne à ce bloc et déclenche le recalcul des dimensions.
+     */
+    public void ajouterBlocInterne(BlocClasse bloc) 
+    {
+        if (bloc != null) {
+            this.blocsInternes.add(bloc);
+            recalculerDimensions(); // Indispensable pour que le parent s'agrandisse
+        }
+    }
+
+    /**
+     * Retourne la liste des blocs de classes internes contenus dans ce bloc.
+     */
+    public List<BlocClasse> getBlocsInternes() 
+    {
+        return this.blocsInternes;
+    }
+
+
     public String getNom() {
         return nom;
     }
