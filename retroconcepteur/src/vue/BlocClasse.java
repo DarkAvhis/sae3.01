@@ -44,10 +44,10 @@ public class BlocClasse {
     private static final int HAUTEUR_ENTETE = 30;
     private static final int HAUTEUR_LIGNE = 20;
 
-    private static final Color COULEUR_FOND = new Color(230, 240, 250);
+    private static final Color COULEUR_FOND = new Color(255, 255, 255);
     private static final Color COULEUR_FOND_EXTERNE = new Color(235, 235, 235);
     private static final Color COULEUR_BORDURE = new Color(0, 0, 0);
-    private static final Color COULEUR_ENTETE = new Color(100, 150, 200);
+    private static final Color COULEUR_ENTETE = new Color(0, 0, 0);
     private static final Color COULEUR_ENTETE_EXTERNE = new Color(140, 140, 140);
 
     public BlocClasse(
