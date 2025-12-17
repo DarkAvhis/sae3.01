@@ -677,11 +677,15 @@ public class Controleur {
     private BlocClasse creerBlocComplet(ClasseObjet c, int x, int y) 
     {
     // 1. Création du bloc principal
-        BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
-        
+        BlocClasse bloc = new BlocClasse(c.getNom(), x, y , new ArrayList<>(), new ArrayList<>());
+
         // 2. Configuration des propriétés (interface, externe...)
-        if (c.getNom().contains("Interface") || (c.getSpecifique() != null && c.getSpecifique().equals("interface")))
+        if (c.getNom().contains("Interface") || (c.getSpecifique() != null && c.getSpecifique().equals("interface"))) {
             bloc.setInterface(true);
+            bloc.setTypeSpecifique("interface");
+        } else if (c.getSpecifique() != null && (c.getSpecifique().equals("record") || c.getSpecifique().equals("abstract class"))) {
+            bloc.setTypeSpecifique(c.getSpecifique());
+        }
         if (c.getSpecifique() != null && c.getSpecifique().equals("externe"))
             bloc.setExterne(true);
 

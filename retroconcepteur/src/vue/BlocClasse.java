@@ -24,6 +24,16 @@ import java.util.List;
  * @date 12 décembre 2025
  */
 public class BlocClasse {
+        // Ajout d'un champ pour le type spécifique (interface, record, abstract class)
+        private String typeSpecifique = null;
+
+        public void setTypeSpecifique(String type) {
+            this.typeSpecifique = type;
+        }
+
+        public String getTypeSpecifique() {
+            return this.typeSpecifique;
+        }
     private boolean modeComplet = false;
     private String nom;
 
@@ -67,21 +77,35 @@ public class BlocClasse {
         this.estSelectionne = false;
         this.estExterne = false; // Initialisation du nouveau champ
 
-        int maxLgNom = nom.length() * 8;
+        // Calcul précis de la largeur du nom et du sous-titre avec la police réelle
+        java.awt.Font fontNom = new Font("Arial", Font.BOLD, 12);
+        java.awt.Font fontSousTitre = new Font("Arial", Font.ITALIC, 11);
+        java.awt.Canvas c = new java.awt.Canvas();
+        java.awt.FontMetrics fmNom = c.getFontMetrics(fontNom);
+        java.awt.FontMetrics fmSousTitre = c.getFontMetrics(fontSousTitre);
+
+        int largeurNom = fmNom.stringWidth(nom);
+        int largeurSousTitre = 0;
+        if (typeSpecifique != null && !typeSpecifique.isEmpty()) {
+            largeurSousTitre = fmSousTitre.stringWidth("<<" + typeSpecifique + ">>");
+        } else if (estInterface) {
+            largeurSousTitre = fmSousTitre.stringWidth("<<interface>>");
+        }
+
         int maxLgAttributs = attributs.stream()
-                .mapToInt(String::length)
-                .max()
-                .orElse(0) * 8;
+            .mapToInt(String::length)
+            .max()
+            .orElse(0) * 8;
         int maxLgMethodes = methodes.stream()
-                .mapToInt(String::length)
-                .max()
-                .orElse(0) * 8;
+            .mapToInt(String::length)
+            .max()
+            .orElse(0) * 8;
+
+        int maxLgEntete = Math.max(largeurNom, largeurSousTitre);
 
         this.largeur = Math.max(
-                200,
-                PADDING * 2 + Math.max(
-                        maxLgNom,
-                        Math.max(maxLgAttributs, maxLgMethodes)));
+            200,
+            PADDING * 2 + Math.max(maxLgEntete, Math.max(maxLgAttributs, maxLgMethodes)));
 
         this.hauteur = HAUTEUR_ENTETE
                 + (attributs.size() + methodes.size()) * HAUTEUR_LIGNE
@@ -167,21 +191,45 @@ public class BlocClasse {
     }
 
     // Affiche le nom de la classe et retourne la position Y pour la suite du dessin
-    private int dessinerNom(Graphics2D g) 
-    {
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 12));
-        FontMetrics fm = g.getFontMetrics();
-        
-        // Centrage du texte dans l'en-tête
-        int textX = x + (largeur - fm.stringWidth(nom)) / 2;
-        int textY = y + HAUTEUR_ENTETE - (HAUTEUR_ENTETE - fm.getAscent()) / 2;
-        
-        g.drawString(nom, textX, textY);
-        
-        // Retourne la position Y de départ pour les attributs (après l'en-tête + padding)
-        return y + HAUTEUR_ENTETE + PADDING;
+private int dessinerNom(Graphics2D g) 
+{
+    // On élargit l'en-tête vers le haut uniquement si typeSpecifique est défini
+    boolean avecTypeSpecifique = typeSpecifique != null && !typeSpecifique.isEmpty();
+
+    // Calcul de la position Y du rectangle bleu
+    int yEntete = y - (avecTypeSpecifique ? 5 : 0);
+    int hauteurEnteteReelle = HAUTEUR_ENTETE + (avecTypeSpecifique ? 5 : 0);
+
+    g.setColor(Color.WHITE);
+
+    // ---- NOM ----
+    g.setFont(new Font("Arial", Font.BOLD, 12));
+    FontMetrics fmNom = g.getFontMetrics();
+    int nomX = x + (largeur - fmNom.stringWidth(nom)) / 2;
+    int nomY;
+
+    if (avecTypeSpecifique) {
+        nomY = yEntete + 18; // position du nom plus bas si type affiché
+    } else {
+        nomY = y + HAUTEUR_ENTETE - (HAUTEUR_ENTETE - fmNom.getAscent()) / 2;
     }
+
+    g.drawString(nom, nomX, nomY);
+
+    // ---- TYPE ----
+    if (avecTypeSpecifique) {
+        String sousTitre = "<<" + typeSpecifique + ">>";
+        g.setFont(new Font("Arial", Font.ITALIC, 11));
+        FontMetrics fmSous = g.getFontMetrics();
+        int sousX = x + (largeur - fmSous.stringWidth(sousTitre)) / 2;
+        int sousY = nomY + fmSous.getHeight();
+        g.drawString(sousTitre, sousX, sousY);
+    }
+
+    // Retour Y pour les attributs
+    return yEntete + hauteurEnteteReelle + PADDING;
+}
+
 
     private int dessinerAttributs(Graphics2D g, int currentY) {
         g.setColor(Color.BLACK);
