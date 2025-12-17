@@ -1,5 +1,6 @@
 package vue;
 
+import controleur.Controleur;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,12 +19,9 @@ import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
-
-import controleur.Controleur;
 import vue.LiaisonVue.TypeLiaison;
 
 /**
@@ -132,19 +130,17 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
         @Override
         public void mousePressed(MouseEvent e) {
             blocSelectionne = null;
-            int mouseX = (int) (e.getX() / zoom);
-            int mouseY = (int) (e.getY() / zoom);
+            int mouseX = (int)(e.getX() / zoom);
+            int mouseY = (int)(e.getY() / zoom);
             for (int i = blocsClasses.size() - 1; i >= 0; i--) {
                 BlocClasse bloc = blocsClasses.get(i);
                 if (bloc.contient(mouseX, mouseY)) {
                     if (e.getButton() == MouseEvent.BUTTON3) {
                         bloc.setModeComplet(true);
                         bloc.setSelectionne(true);
-
                         repaint();
                         return;
                     }
-
                     blocSelectionne = bloc;
                     offsetX = mouseX - bloc.getX();
                     offsetY = mouseY - bloc.getY();
@@ -224,9 +220,11 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
                 int newX = mouseX - offsetX;
                 int newY = mouseY - offsetY;
 
-                // Limiter pour que le bloc reste dans le panel
-                newX = Math.max(0, Math.min(newX, getWidth()  - blocSelectionne.getLargeur()));
-                newY = Math.max(0, Math.min(newY, getHeight() - blocSelectionne.getHauteur()));
+                // Empêcher de sortir du panel (même en zoom/dézoom)
+                int maxX = (int)((getWidth() / zoom) - blocSelectionne.getLargeur());
+                int maxY = (int)((getHeight() / zoom) - blocSelectionne.getHauteur());
+                newX = Math.max(0, Math.min(newX, maxX));
+                newY = Math.max(0, Math.min(newY, maxY));
 
                 blocSelectionne.setX(newX);
                 blocSelectionne.setY(newY);
