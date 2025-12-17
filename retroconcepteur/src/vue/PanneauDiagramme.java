@@ -221,8 +221,15 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
                 int mouseX = (int) (e.getX() / zoom);
                 int mouseY = (int) (e.getY() / zoom);
 
-                blocSelectionne.setX(mouseX - offsetX);
-                blocSelectionne.setY(mouseY - offsetY);
+                int newX = mouseX - offsetX;
+                int newY = mouseY - offsetY;
+
+                // Limiter pour que le bloc reste dans le panel
+                newX = Math.max(0, Math.min(newX, getWidth()  - blocSelectionne.getLargeur()));
+                newY = Math.max(0, Math.min(newY, getHeight() - blocSelectionne.getHauteur()));
+
+                blocSelectionne.setX(newX);
+                blocSelectionne.setY(newY);
 
                 calculerTailleDynamique();
                 repaint();
@@ -405,9 +412,17 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
         int yText = (int) (yLine + offsetPerpendicular * Math.sin(perpAngle));
 
         FontMetrics fm = g2d.getFontMetrics();
-        int textWidth = fm.stringWidth(multiplicity);
+        int largeurTxt  = fm.stringWidth(multiplicity);
+        int hauteurTxt = fm.getHeight();
 
-        xText -= (int) (textWidth * 0.5);
+        xText -= (int) (largeurTxt * 0.5);
+        yText += (int) (hauteurTxt * 0.3); // ajuster pour centrer verticalement
+
+        // Dessiner un fond blanc sous la multiplicité pour la rendre toujours lisible
+        Color oldColor = g2d.getColor();
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(xText - 2, yText - fm.getAscent(), largeurTxt + 4, hauteurTxt);
+        g2d.setColor(oldColor);
 
         g2d.drawString(multiplicity, xText, yText);
     }
