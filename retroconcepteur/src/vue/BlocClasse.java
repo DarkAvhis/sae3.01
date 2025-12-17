@@ -38,6 +38,7 @@ public class BlocClasse
 
     private List<String> attributsAffichage;
     private List<String> methodesAffichage ;
+    private List<BlocClasse> blocsInternes = new ArrayList<>();
 
     private static final int PADDING = 10;
     private static final int HAUTEUR_ENTETE = 30;
@@ -102,6 +103,15 @@ public class BlocClasse
     public BlocClasse(String nom, int x, int y)
     {
         this(nom, x, y, new ArrayList<>(), new ArrayList<>());
+    }
+
+    public void ajouterBlocInterne(BlocClasse bloc) 
+    {
+        if (bloc != null) 
+        {
+            this.blocsInternes.add(bloc);
+            recalculerDimensions();
+        }
     }
 
     public void dessiner(Graphics2D g)
@@ -216,6 +226,11 @@ public class BlocClasse
     public int getLargeur()
     {
         return largeur;
+    }
+
+    public void setLargeur(int largeur) 
+    {
+        this.largeur = largeur;
     }
 
     public int getHauteur()
