@@ -128,107 +128,127 @@ public class BlocClasse {
         return avant + paramsTab[0].trim() + ", " + paramsTab[1].trim() + ", ..." + apres;
     }
 
-    public void dessiner(Graphics2D g) {
+   public void dessiner(Graphics2D g) 
+   {
+        dessinerFondEtBordure(g);
+        int currentY = dessinerNom(g);
+        
+        // Appel des méthodes de dessin internes
+        currentY = dessinerAttributs(g, currentY);
+        currentY = dessinerSeparateur(g, currentY);
+        currentY = dessinerMethodes(g, currentY);
+
+        // DESSIN RÉCURSIF DES CLASSES INTERNES (Option B)
+        for (BlocClasse inner : blocsInternes) {
+            // Positionnement relatif au parent
+            inner.setX(this.x + PADDING * 2); 
+            inner.setY(currentY);
+            inner.setLargeur(this.largeur - PADDING * 4); // Plus étroit que le parent
+            
+            inner.dessiner(g); // Récursivité
+            currentY += inner.getHauteur() + PADDING; 
+        }
+    }
+    // Affiche le fond et la bordure du bloc
+    private void dessinerFondEtBordure(Graphics2D g) 
+    {
+        // Choix de la couleur de fond selon que la classe est externe ou non
         g.setColor(estExterne ? COULEUR_FOND_EXTERNE : COULEUR_FOND);
         g.fillRect(x, y, largeur, hauteur);
-
+        
+        // Dessin de la bordure (en bleu si sélectionnée)
         g.setColor(estSelectionne ? Color.BLUE : COULEUR_BORDURE);
         g.setStroke(new BasicStroke(estSelectionne ? 2 : 1));
         g.drawRect(x, y, largeur, hauteur);
-
+        
+        // Dessin de l'en-tête (rectangle coloré en haut)
         g.setColor(estExterne ? COULEUR_ENTETE_EXTERNE : COULEUR_ENTETE);
         g.fillRect(x, y, largeur, HAUTEUR_ENTETE);
+    }
 
+    // Affiche le nom de la classe et retourne la position Y pour la suite du dessin
+    private int dessinerNom(Graphics2D g) 
+    {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 12));
-
         FontMetrics fm = g.getFontMetrics();
+        
+        // Centrage du texte dans l'en-tête
         int textX = x + (largeur - fm.stringWidth(nom)) / 2;
-        int textY = y + HAUTEUR_ENTETE
-                - (HAUTEUR_ENTETE - fm.getAscent()) / 2;
-
+        int textY = y + HAUTEUR_ENTETE - (HAUTEUR_ENTETE - fm.getAscent()) / 2;
+        
         g.drawString(nom, textX, textY);
+        
+        // Retourne la position Y de départ pour les attributs (après l'en-tête + padding)
+        return y + HAUTEUR_ENTETE + PADDING;
+    }
 
-        int currentY = y + HAUTEUR_ENTETE + PADDING;
+    private int dessinerAttributs(Graphics2D g, int currentY) {
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 12));
-
-        // Affichage des attributs (limité à 3 si mode condensé)
+        
         int maxAttributs = modeComplet ? Integer.MAX_VALUE : 3;
         int iAtt = 0;
+        
         for (String att : attributsAffichage) {
-            if (iAtt >= maxAttributs)
-                break;
+            if (iAtt >= maxAttributs) break;
             currentY += HAUTEUR_LIGNE;
-
+            
             boolean estStatique = att.contains("{static}");
-            String libelle = att.replace(" {static}", "")
-                    .replace("{static} ", "");
-
+            String libelle = att.replace("{static}", "").trim();
+            
             g.drawString(libelle, x + PADDING, currentY);
-
+            
             if (estStatique) {
-                FontMetrics fmLigne = g.getFontMetrics();
-                int underlineY = currentY + 2;
-                int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
-
-                g.drawLine(
-                        x + PADDING,
-                        underlineY,
-                        underlineX2,
-                        underlineY);
+                FontMetrics fm = g.getFontMetrics();
+                g.drawLine(x + PADDING, currentY + 2, x + PADDING + fm.stringWidth(libelle), currentY + 2);
             }
             iAtt++;
         }
-        // Afficher "..." si plus d'attributs
+        
         if (!modeComplet && attributsAffichage.size() > maxAttributs) {
             currentY += HAUTEUR_LIGNE;
             g.drawString("...", x + PADDING, currentY);
         }
+        return currentY;
+    }
 
+    // Affiche le séparateur et retourne la position Y courante
+    private int dessinerSeparateur(Graphics2D g, int currentY) {
         currentY += PADDING / 2;
         g.setColor(COULEUR_BORDURE);
         g.drawLine(x, currentY, x + largeur, currentY);
-
         currentY += PADDING;
+        return currentY;
+    }
 
-        // Affichage des méthodes (limité à 3 si mode condensé)
+    // Affiche les méthodes et retourne la position Y finale
+    private int dessinerMethodes(Graphics2D g, int currentY) 
+    {
         int maxMethodes = modeComplet ? Integer.MAX_VALUE : 3;
         int iMet = 0;
+        
         for (String met : methodesAffichage) {
-            if (iMet >= maxMethodes)
-                break;
+            if (iMet >= maxMethodes) break;
             currentY += HAUTEUR_LIGNE;
-
+            
             boolean estStatique = met.contains("{static}");
-            String libelle = met.replace(" {static}", "")
-                    .replace("{static} ", "");
-
-            // Limiter les paramètres à 2 si mode condensé
-            if (!modeComplet) {
-                libelle = limiterParametres(libelle);
-            }
-
+            String libelle = met.replace("{static}", "").trim();
+            
             g.drawString(libelle, x + PADDING, currentY);
-
+            
             if (estStatique) {
-                FontMetrics fmLigne = g.getFontMetrics();
-                int underlineY = currentY + 2;
-                int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
-
-                g.drawLine(
-                        x + PADDING,
-                        underlineY,
-                        underlineX2,
-                        underlineY);
+                FontMetrics fm = g.getFontMetrics();
+                g.drawLine(x + PADDING, currentY + 2, x + PADDING + fm.stringWidth(libelle), currentY + 2);
             }
             iMet++;
         }
-        // Afficher "..." si plus de méthodes
+        
         if (!modeComplet && methodesAffichage.size() > maxMethodes) {
             currentY += HAUTEUR_LIGNE;
             g.drawString("...", x + PADDING, currentY);
         }
+        return currentY;
     }
 
     public boolean contient(int px, int py) {

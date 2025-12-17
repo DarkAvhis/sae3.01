@@ -178,31 +178,26 @@ public class Controleur {
      * Reconstruit les blocs affichés selon le filtre d'affichage des classes
      * externes.
      */
-    private void reafficherAvecFiltreExternes() {
+    private void reafficherAvecFiltreExternes() 
+    {
         List<ClasseObjet> classes = this.metierComplet.getClasses();
         blocsVue.clear();
 
         int x = 50, y = 50;
         for (ClasseObjet c : classes) {
+            // Filtre externe
             boolean estExterne = (c.getSpecifique() != null && c.getSpecifique().equals("externe"));
-            if (!afficherClassesExternes && estExterne) {
-                continue;
-            }
+            if (!afficherClassesExternes && estExterne) continue;
 
-            BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
-            if (c.getSpecifique() != null && c.getSpecifique().equals("interface"))
-                bloc.setInterface(true);
-            if (estExterne)
-                bloc.setExterne(true);
+            // Utilisation de la création récursive
+            BlocClasse bloc = creerBlocComplet(c, x, y);
 
             blocsVue.add(bloc);
+            
+            // Espacement pour la grille
             x += 250;
-            if (x > 1000) {
-                x = 50;
-                y += 200;
-            }
+            if (x > 1000) { x = 50; y += 400; } // Augmenté Y car les blocs avec internes sont plus hauts
         }
-
         majAffichage();
     }
 
@@ -649,6 +644,28 @@ public class Controleur {
             liste.add(s);
         }
         return liste;
+    }
+
+    private BlocClasse creerBlocComplet(ClasseObjet c, int x, int y) 
+    {
+    // 1. Création du bloc principal
+        BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
+        
+        // 2. Configuration des propriétés (interface, externe...)
+        if (c.getNom().contains("Interface") || (c.getSpecifique() != null && c.getSpecifique().equals("interface")))
+            bloc.setInterface(true);
+        if (c.getSpecifique() != null && c.getSpecifique().equals("externe"))
+            bloc.setExterne(true);
+
+        // 3. NOUVEAU : Appel récursif pour les classes internes
+        for (ClasseObjet inner : c.getClassesInternes()) {
+            // Le X/Y de l'enfant sera géré par la méthode dessiner() du parent, 
+            // on passe 0,0 ici par défaut.
+            BlocClasse blocEnfant = creerBlocComplet(inner, 0, 0); 
+            bloc.ajouterBlocInterne(blocEnfant);
+        }
+
+        return bloc;
     }
 
     /**
