@@ -37,7 +37,8 @@ public class BlocClasse {
     private boolean estExterne; // NOUVEAU: Champ pour marquer une classe comme externe
 
     private List<String> attributsAffichage;
-    private List<String> methodesAffichage;
+    private List<String> methodesAffichage ;
+    private List<BlocClasse> blocsInternes = new ArrayList<>();
 
     private static final int PADDING = 10;
     private static final int HAUTEUR_ENTETE = 30;
@@ -251,7 +252,13 @@ public class BlocClasse {
         return largeur;
     }
 
-    public int getHauteur() {
+    public void setLargeur(int largeur) 
+    {
+        this.largeur = largeur;
+    }
+
+    public int getHauteur()
+    {
         return hauteur;
     }
 
