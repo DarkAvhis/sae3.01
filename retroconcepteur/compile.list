@@ -1,5 +1,6 @@
 ./src/modele/AnalyseurUML.java
 ./src/modele/Sauvegarde.java
+./src/modele/SauvegardeDiagramme.java
 
 ./src/modele/entites/AssociationObjet.java
 ./src/modele/entites/AttributObjet.java
@@ -17,6 +18,7 @@
 ./src/vue/ExportIHM.java
 ./src/vue/FenetrePrincipale.java
 ./src/vue/LiaisonVue.java
+./src/vue/EditeurLiaisonDialog.java
 ./src/vue/OptimisateurDisposition.java
 ./src/vue/PanneauDiagramme.java
 ./src/vue/PanneauProjets.java

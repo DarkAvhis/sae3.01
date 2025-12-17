@@ -1,0 +1,17 @@
+{
+  "blocs": [
+    {"nom": "Carre", "x": 50, "y": 50, "largeur": 200, "hauteur": 70},
+    {"nom": "Disque", "x": 300, "y": 50, "largeur": 200, "hauteur": 70},
+    {"nom": "ISurface", "x": 550, "y": 50, "largeur": 200, "hauteur": 70},
+    {"nom": "Point", "x": 800, "y": 50, "largeur": 200, "hauteur": 70},
+    {"nom": "Rectangle", "x": 50, "y": 250, "largeur": 200, "hauteur": 70},
+    {"nom": "String", "x": 300, "y": 250, "largeur": 200, "hauteur": 70}
+  ],
+  "liaisons": [
+    {"orig": "Disque", "dest": "Point", "type": "ASSOCIATION_UNIDI", "multOrig": "1..1", "multDest": "0..*", "roleOrig": "", "roleDest": "", "roleOrigOffsetAlong": 20, "roleOrigOffsetPerp": 15, "roleDestOffsetAlong": 20, "roleDestOffsetPerp": 15},
+    {"orig": "Point", "dest": "String", "type": "ASSOCIATION_UNIDI", "multOrig": "1..1", "multDest": "1..1", "roleOrig": "", "roleDest": "", "roleOrigOffsetAlong": 20, "roleOrigOffsetPerp": 15, "roleDestOffsetAlong": 20, "roleDestOffsetPerp": 15},
+    {"orig": "Carre", "dest": "Rectangle", "type": "HERITAGE", "multOrig": "", "multDest": "", "roleOrig": "", "roleDest": "", "roleOrigOffsetAlong": 20, "roleOrigOffsetPerp": 15, "roleDestOffsetAlong": 20, "roleDestOffsetPerp": 15},
+    {"orig": "Disque", "dest": "ISurface", "type": "IMPLEMENTATION", "multOrig": "", "multDest": "", "roleOrig": "", "roleDest": "", "roleOrigOffsetAlong": 20, "roleOrigOffsetPerp": 15, "roleDestOffsetAlong": 20, "roleDestOffsetPerp": 15},
+    {"orig": "Rectangle", "dest": "ISurface", "type": "IMPLEMENTATION", "multOrig": "", "multDest": "", "roleOrig": "", "roleDest": "", "roleOrigOffsetAlong": 20, "roleOrigOffsetPerp": 15, "roleDestOffsetAlong": 20, "roleDestOffsetPerp": 15}
+  ]
+}
