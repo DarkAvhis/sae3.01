@@ -23,16 +23,11 @@ import java.util.List;
  *         Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class BlocClasse {
+public class BlocClasse 
+{
     private boolean modeComplet = false;
 
-    public boolean isModeComplet() {
-        return modeComplet;
-    }
-    public void setModeComplet(boolean complet) {
-        this.modeComplet = complet;
-        recalculerDimensions();
-    }
+
     private String nom;
 
     private int x      ;
@@ -81,25 +76,8 @@ public class BlocClasse {
         this.estSelectionne = false;
         this.estExterne = false; // Initialisation du nouveau champ
 
-        int maxLgNom = nom.length() * 8;
-        int maxLgAttributs =
-            attributs.stream()
-                     .mapToInt(String::length)
-                     .max()
-                     .orElse(0) * 8;
-        int maxLgMethodes =
-            methodes.stream()
-                    .mapToInt(String::length)
-                    .max()
-                    .orElse(0) * 8;
-
-        this.largeur = Math.max(
-            200,
-            PADDING * 2 + Math.max(
-                maxLgNom,
-                Math.max(maxLgAttributs, maxLgMethodes)
-            )
-        );
+        // Largeur fixe pour simplifier le code 
+        this.largeur = 200;
 
         this.hauteur =
             HAUTEUR_ENTETE
@@ -112,33 +90,51 @@ public class BlocClasse {
         this(nom, x, y, new ArrayList<>(), new ArrayList<>());
     }
 
+    public boolean isModeComplet() 
+    {
+        return modeComplet;
+    }
+    public void setModeComplet(boolean complet) 
+    {
+        this.modeComplet = complet;
+        recalculerDimensions();
+    }
+
     public void dessiner(Graphics2D g)
     {
+        dessinerFondEtBordure(g);
+        int currentY = dessinerNom(g);
+        currentY = dessinerAttributs(g, currentY);
+        currentY = dessinerSeparateur(g, currentY);
+        dessinerMethodes(g, currentY);
+    }
+
+    // Affiche le fond et la bordure du bloc
+    private void dessinerFondEtBordure(Graphics2D g) {
         g.setColor(estExterne ? COULEUR_FOND_EXTERNE : COULEUR_FOND);
         g.fillRect(x, y, largeur, hauteur);
-
         g.setColor(estSelectionne ? Color.BLUE : COULEUR_BORDURE);
         g.setStroke(new BasicStroke(estSelectionne ? 2 : 1));
         g.drawRect(x, y, largeur, hauteur);
-
         g.setColor(estExterne ? COULEUR_ENTETE_EXTERNE : COULEUR_ENTETE);
         g.fillRect(x, y, largeur, HAUTEUR_ENTETE);
+    }
 
+    // Affiche le nom de la classe et retourne la position Y courante
+    private int dessinerNom(Graphics2D g) {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 12));
-
         FontMetrics fm = g.getFontMetrics();
         int textX = x + (largeur - fm.stringWidth(nom)) / 2;
-        int textY =
-            y + HAUTEUR_ENTETE
-            - (HAUTEUR_ENTETE - fm.getAscent()) / 2;
-
+        int textY = y + HAUTEUR_ENTETE - (HAUTEUR_ENTETE - fm.getAscent()) / 2;
         g.drawString(nom, textX, textY);
+        return y + HAUTEUR_ENTETE + PADDING;
+    }
 
-        int currentY = y + HAUTEUR_ENTETE + PADDING;
+    // Affiche les attributs et retourne la position Y courante
+    private int dessinerAttributs(Graphics2D g, int currentY) {
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 12));
-
         int maxAttributs = modeComplet ? Integer.MAX_VALUE : 3;
         int iAtt = 0;
         for (String att : attributsAffichage) {
@@ -159,13 +155,20 @@ public class BlocClasse {
             currentY += HAUTEUR_LIGNE;
             g.drawString("...", x + PADDING, currentY);
         }
+        return currentY;
+    }
 
+    // Affiche le séparateur entre attributs et méthodes et retourne la position Y courante
+    private int dessinerSeparateur(Graphics2D g, int currentY) {
         currentY += PADDING / 2;
         g.setColor(COULEUR_BORDURE);
         g.drawLine(x, currentY, x + largeur, currentY);
-
         currentY += PADDING;
+        return currentY;
+    }
 
+    // Affiche les méthodes
+    private void dessinerMethodes(Graphics2D g, int currentY) {
         int maxMethodes = modeComplet ? Integer.MAX_VALUE : 3;
         int iMet = 0;
         for (String met : methodesAffichage) {
@@ -173,24 +176,12 @@ public class BlocClasse {
             currentY += HAUTEUR_LIGNE;
             boolean estStatique = met.contains("{static}");
             String libelle = met.replace(" {static}", "").replace("{static} ", "");
-            // Limiter les paramètres à 2, puis ajouter ...
             int idxParOuv = libelle.indexOf('(');
             int idxParFer = libelle.indexOf(')');
             if (!modeComplet && idxParOuv != -1 && idxParFer != -1 && idxParFer > idxParOuv + 1) {
                 String params = libelle.substring(idxParOuv + 1, idxParFer);
-                String[] paramList = params.split(",");
-                if (paramList.length > 2) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(libelle, 0, idxParOuv + 1);
-                    sb.append(paramList[0].trim());
-                    sb.append(", ");
-                    sb.append(paramList[1].trim());
-                    sb.append(", ...");
-                    sb.append(")");
-                    if (idxParFer + 1 < libelle.length()) {
-                        sb.append(libelle.substring(idxParFer + 1));
-                    }
-                    libelle = sb.toString();
+                if (params.length() > 10) {
+                    libelle = libelle.substring(0, idxParOuv + 1) + params.substring(0, 10) + "...)";
                 }
             }
             g.drawString(libelle, x + PADDING, currentY);
@@ -207,6 +198,7 @@ public class BlocClasse {
             g.drawString("...", x + PADDING, currentY);
         }
     }
+    
 
     public boolean contient(int px, int py)
     {

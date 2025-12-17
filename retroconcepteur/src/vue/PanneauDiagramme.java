@@ -151,8 +151,11 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                     if (e.getButton() == MouseEvent.BUTTON3) {
                         bloc.setModeComplet(true);
                         bloc.setSelectionne(true);
-                        repaint();
+                        // Permettre le déplacement avec clic droit
                         blocSelectionne = bloc;
+                        offsetX = mouseX - bloc.getX();
+                        offsetY = mouseY - bloc.getY();
+                        repaint();
                         return;
                     }
                     blocSelectionne = bloc;
