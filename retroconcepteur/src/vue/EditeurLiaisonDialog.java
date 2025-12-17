@@ -3,7 +3,6 @@ package vue;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -51,7 +50,7 @@ public class EditeurLiaisonDialog extends JDialog {
 		form.add(tfOrigAlong);
 		form.add(new JLabel("Orig offset (perp):"));
 		form.add(tfOrigPerp);
-		form.add(new JLabel("Dest offset (le long):"));
+		form.add(new JLabel("Dest offset (le q long):"));
 		form.add(tfDestAlong);
 		form.add(new JLabel("Dest offset (perp):"));
 		form.add(tfDestPerp);
