@@ -8,10 +8,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-
 import modele.Sauvegarde;
 import modele.entites.AssociationObjet;
 import modele.entites.AttributObjet;
@@ -598,7 +596,31 @@ public class Controleur {
      */
     private List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe) {
         List<String> liste = new ArrayList<>();
+        // Récupérer la liste des noms de classes du projet (dans le même package)
+        List<String> nomsClassesProjet = new ArrayList<>();
+        for (ClasseObjet c : this.metierComplet.getClasses()) {
+            nomsClassesProjet.add(c.getNom());
+        }
+
         for (AttributObjet att : attributs) {
+            String type = att.getType();
+            String typeSimple = type;
+            // Gérer les collections/génériques/array
+            if (type.contains("<") && type.contains(">")) {
+                int idx1 = type.indexOf('<');
+                int idx2 = type.indexOf('>', idx1 + 1);
+                if (idx1 != -1 && idx2 != -1 && idx2 > idx1) {
+                    typeSimple = type.substring(idx1 + 1, idx2).trim();
+                }
+            } else if (type.endsWith("[]")) {
+                typeSimple = type.replace("[]", "").trim();
+            }
+
+            // Si le type correspond à une classe du projet, on ne l'affiche pas
+            if (nomsClassesProjet.contains(typeSimple) && !typeSimple.equals(classe.getNom())) {
+                continue;
+            }
+
             String staticFlag = att.estStatique() ? " {static}" : "";
             String finalFlag = att.estFinale() ? " {final}" : "";
             char visibilite = classe.changementVisibilite(att.getVisibilite());
