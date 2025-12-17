@@ -18,6 +18,8 @@ public class ClasseObjet {
 	private ArrayList<AttributObjet> attributs;
 	private ArrayList<MethodeObjet> methodes;
 	private String specifique;
+	private ArrayList<ClasseObjet> classesInternes = new ArrayList<>();
+
 
 	private static final String ANSI_SOUSTITRE = "\u001B[4m";
 	private static final String ANSI_GRAS = "\u001B[1m";
@@ -53,6 +55,13 @@ public class ClasseObjet {
 		return this.specifique;
 	}
 
+	public ArrayList<ClasseObjet> getClassesInternes() 
+	{
+        return this.classesInternes;
+    }
+
+    
+
 	/*-------------------------------------- */
 	/* Modificateurs */
 	/*-------------------------------------- */
@@ -60,13 +69,23 @@ public class ClasseObjet {
 		this.nom = nom;
 	}
 
-	public void setattributs(ArrayList<AttributObjet> attributs) {
+	public void setattributs(ArrayList<AttributObjet> attributs) 
+	{
 		this.attributs = attributs;
 	}
 
-	public void setmethodes(ArrayList<MethodeObjet> methodes) {
+	public void setmethodes(ArrayList<MethodeObjet> methodes) 
+	{
 		this.methodes = methodes;
 	}
+
+	public void ajouterClasseInterne(ClasseObjet inner) 
+	{
+        if (inner != null) 
+		{
+            this.classesInternes.add(inner);
+        }
+    }
 
 	/*-------------------------------------- */
 	/* Methode autre */
@@ -197,7 +216,8 @@ public class ClasseObjet {
 		sRet += "-------------------------------------------------------------------------------------------\n";
 
 		// --- AFFICHAGE DES METHODES ---
-		for (MethodeObjet met : methodes) {
+		for (MethodeObjet met : methodes) 
+		{
 			// Application du soulignement aux méthodes statiques
 			String nomMethodeBrut = met.getNom();
 			String methodeBaseFormatte = String.format("%-25s", nomMethodeBrut);
@@ -217,6 +237,7 @@ public class ClasseObjet {
 		}
 
 		sRet += "-------------------------------------------------------------------------------------------\n";
+
 		sRet += "\n\n\n";
 		return sRet;
 	}
