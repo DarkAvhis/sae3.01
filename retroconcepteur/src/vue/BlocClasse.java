@@ -23,12 +23,12 @@ import java.util.List;
  *         Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class BlocClasse
-{
+public class BlocClasse {
+    private boolean modeComplet = false;
     private String nom;
 
-    private int x      ;
-    private int y      ;
+    private int x;
+    private int y;
     private int largeur;
     private int hauteur;
     private boolean estInterface;
@@ -44,30 +44,23 @@ public class BlocClasse
     private static final int HAUTEUR_ENTETE = 30;
     private static final int HAUTEUR_LIGNE = 20;
 
-    private static final Color COULEUR_FOND =
-        new Color(230, 240, 250);
-    private static final Color COULEUR_FOND_EXTERNE =
-        new Color(235, 235, 235);
-    private static final Color COULEUR_BORDURE =
-        new Color(0, 0, 0);
-    private static final Color COULEUR_ENTETE =
-        new Color(100, 150, 200);
-    private static final Color COULEUR_ENTETE_EXTERNE =
-        new Color(140, 140, 140);
+    private static final Color COULEUR_FOND = new Color(230, 240, 250);
+    private static final Color COULEUR_FOND_EXTERNE = new Color(235, 235, 235);
+    private static final Color COULEUR_BORDURE = new Color(0, 0, 0);
+    private static final Color COULEUR_ENTETE = new Color(100, 150, 200);
+    private static final Color COULEUR_ENTETE_EXTERNE = new Color(140, 140, 140);
 
     public BlocClasse(
-        String nom,
-        int x,
-        int y,
-        List<String> attributs,
-        List<String> methodes
-    )
-    {
+            String nom,
+            int x,
+            int y,
+            List<String> attributs,
+            List<String> methodes) {
         this.nom = nom;
-        this.x   = x  ;
-        this.y   = y  ;
+        this.x = x;
+        this.y = y;
         this.attributsAffichage = attributs;
-        this.methodesAffichage  = methodes;
+        this.methodesAffichage = methodes;
 
         this.estInterface = false;
         this.estSuperClasse = false;
@@ -75,47 +68,67 @@ public class BlocClasse
         this.estExterne = false; // Initialisation du nouveau champ
 
         int maxLgNom = nom.length() * 8;
-        int maxLgAttributs =
-            attributs.stream()
-                     .mapToInt(String::length)
-                     .max()
-                     .orElse(0) * 8;
-        int maxLgMethodes =
-            methodes.stream()
-                    .mapToInt(String::length)
-                    .max()
-                    .orElse(0) * 8;
+        int maxLgAttributs = attributs.stream()
+                .mapToInt(String::length)
+                .max()
+                .orElse(0) * 8;
+        int maxLgMethodes = methodes.stream()
+                .mapToInt(String::length)
+                .max()
+                .orElse(0) * 8;
 
         this.largeur = Math.max(
-            200,
-            PADDING * 2 + Math.max(
-                maxLgNom,
-                Math.max(maxLgAttributs, maxLgMethodes)
-            )
-        );
+                200,
+                PADDING * 2 + Math.max(
+                        maxLgNom,
+                        Math.max(maxLgAttributs, maxLgMethodes)));
 
-        this.hauteur =
-            HAUTEUR_ENTETE
-            + (attributs.size() + methodes.size()) * HAUTEUR_LIGNE
-            + PADDING * 4;
+        this.hauteur = HAUTEUR_ENTETE
+                + (attributs.size() + methodes.size()) * HAUTEUR_LIGNE
+                + PADDING * 4;
     }
 
-    public BlocClasse(String nom, int x, int y)
-    {
+    public BlocClasse(String nom, int x, int y) {
         this(nom, x, y, new ArrayList<>(), new ArrayList<>());
     }
 
-    public void ajouterBlocInterne(BlocClasse bloc) 
-    {
-        if (bloc != null) 
-        {
-            this.blocsInternes.add(bloc);
-            recalculerDimensions();
-        }
+    public boolean isModeComplet() {
+        return modeComplet;
     }
 
-    public void dessiner(Graphics2D g)
-    {
+    public void setModeComplet(boolean complet) {
+        this.modeComplet = complet;
+        recalculerDimensions();
+    }
+
+    /**
+     * Limite l'affichage des paramètres d'une méthode à 2 paramètres.
+     * Si plus de 2 paramètres, affiche les 2 premiers suivis de "..."
+     */
+    private String limiterParametres(String methode) {
+        int idxParenthese = methode.indexOf('(');
+        if (idxParenthese < 0)
+            return methode;
+
+        int idxFermante = methode.lastIndexOf(')');
+        if (idxFermante < 0)
+            return methode;
+
+        String avant = methode.substring(0, idxParenthese + 1);
+        String params = methode.substring(idxParenthese + 1, idxFermante);
+        String apres = methode.substring(idxFermante);
+
+        if (params.trim().isEmpty())
+            return methode;
+
+        String[] paramsTab = params.split(",");
+        if (paramsTab.length <= 2)
+            return methode;
+
+        return avant + paramsTab[0].trim() + ", " + paramsTab[1].trim() + ", ..." + apres;
+    }
+
+    public void dessiner(Graphics2D g) {
         g.setColor(estExterne ? COULEUR_FOND_EXTERNE : COULEUR_FOND);
         g.fillRect(x, y, largeur, hauteur);
 
@@ -131,9 +144,8 @@ public class BlocClasse
 
         FontMetrics fm = g.getFontMetrics();
         int textX = x + (largeur - fm.stringWidth(nom)) / 2;
-        int textY =
-            y + HAUTEUR_ENTETE
-            - (HAUTEUR_ENTETE - fm.getAscent()) / 2;
+        int textY = y + HAUTEUR_ENTETE
+                - (HAUTEUR_ENTETE - fm.getAscent()) / 2;
 
         g.drawString(nom, textX, textY);
 
@@ -141,31 +153,37 @@ public class BlocClasse
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        for (String att : attributsAffichage)
-        {
+        // Affichage des attributs (limité à 3 si mode condensé)
+        int maxAttributs = modeComplet ? Integer.MAX_VALUE : 3;
+        int iAtt = 0;
+        for (String att : attributsAffichage) {
+            if (iAtt >= maxAttributs)
+                break;
             currentY += HAUTEUR_LIGNE;
 
             boolean estStatique = att.contains("{static}");
-            String libelle =
-                att.replace(" {static}", "")
-                   .replace("{static} ", "");
+            String libelle = att.replace(" {static}", "")
+                    .replace("{static} ", "");
 
             g.drawString(libelle, x + PADDING, currentY);
 
-            if (estStatique)
-            {
+            if (estStatique) {
                 FontMetrics fmLigne = g.getFontMetrics();
                 int underlineY = currentY + 2;
-                int underlineX2 =
-                    x + PADDING + fmLigne.stringWidth(libelle);
+                int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
 
                 g.drawLine(
-                    x + PADDING,
-                    underlineY,
-                    underlineX2,
-                    underlineY
-                );
+                        x + PADDING,
+                        underlineY,
+                        underlineX2,
+                        underlineY);
             }
+            iAtt++;
+        }
+        // Afficher "..." si plus d'attributs
+        if (!modeComplet && attributsAffichage.size() > maxAttributs) {
+            currentY += HAUTEUR_LIGNE;
+            g.drawString("...", x + PADDING, currentY);
         }
 
         currentY += PADDING / 2;
@@ -174,57 +192,63 @@ public class BlocClasse
 
         currentY += PADDING;
 
-        for (String met : methodesAffichage)
-        {
+        // Affichage des méthodes (limité à 3 si mode condensé)
+        int maxMethodes = modeComplet ? Integer.MAX_VALUE : 3;
+        int iMet = 0;
+        for (String met : methodesAffichage) {
+            if (iMet >= maxMethodes)
+                break;
             currentY += HAUTEUR_LIGNE;
 
             boolean estStatique = met.contains("{static}");
-            String libelle =
-                met.replace(" {static}", "")
-                   .replace("{static} ", "");
+            String libelle = met.replace(" {static}", "")
+                    .replace("{static} ", "");
+
+            // Limiter les paramètres à 2 si mode condensé
+            if (!modeComplet) {
+                libelle = limiterParametres(libelle);
+            }
 
             g.drawString(libelle, x + PADDING, currentY);
 
-            if (estStatique)
-            {
+            if (estStatique) {
                 FontMetrics fmLigne = g.getFontMetrics();
                 int underlineY = currentY + 2;
-                int underlineX2 =
-                    x + PADDING + fmLigne.stringWidth(libelle);
+                int underlineX2 = x + PADDING + fmLigne.stringWidth(libelle);
 
                 g.drawLine(
-                    x + PADDING,
-                    underlineY,
-                    underlineX2,
-                    underlineY
-                );
+                        x + PADDING,
+                        underlineY,
+                        underlineX2,
+                        underlineY);
             }
+            iMet++;
+        }
+        // Afficher "..." si plus de méthodes
+        if (!modeComplet && methodesAffichage.size() > maxMethodes) {
+            currentY += HAUTEUR_LIGNE;
+            g.drawString("...", x + PADDING, currentY);
         }
     }
 
-    public boolean contient(int px, int py)
-    {
+    public boolean contient(int px, int py) {
         return px >= x && px <= x + largeur
-            && py >= y && py <= y + hauteur;
+                && py >= y && py <= y + hauteur;
     }
 
-    public String getNom()
-    {
+    public String getNom() {
         return nom;
     }
 
-    public int getX()
-    {
+    public int getX() {
         return x;
     }
 
-    public int getY()
-    {
+    public int getY() {
         return y;
     }
 
-    public int getLargeur()
-    {
+    public int getLargeur() {
         return largeur;
     }
 
@@ -238,97 +262,92 @@ public class BlocClasse
         return hauteur;
     }
 
-    public boolean estInterface()
-    {
+    public boolean estInterface() {
         return estInterface;
     }
 
-    public boolean estSelectionne()
-    {
+    public boolean estSelectionne() {
         return estSelectionne;
     }
 
-    public boolean estExterne()
-    {
+    public boolean estExterne() {
         return estExterne;
     }
 
-    public void setX(int x)
-    {
+    public void setX(int x) {
         this.x = x;
     }
 
-    public void setY(int y)
-    {
+    public void setY(int y) {
         this.y = y;
     }
 
-    public void setInterface(boolean estInterface)
-    {
+    public void setInterface(boolean estInterface) {
         this.estInterface = estInterface;
     }
 
-    public void setSelectionne(boolean selectionne)
-    {
+    public void setSelectionne(boolean selectionne) {
         this.estSelectionne = selectionne;
     }
 
-    public void setExterne(boolean externe)
-    {
+    public void setExterne(boolean externe) {
         this.estExterne = externe;
     }
 
-    public void setAttributs(List<String> attributs)
-    {
+    public void setAttributs(List<String> attributs) {
         this.attributsAffichage = attributs;
         recalculerDimensions();
     }
 
-    public void setMethodes(List<String> methodes)
-    {
+    public void setMethodes(List<String> methodes) {
         this.methodesAffichage = methodes;
         recalculerDimensions();
     }
 
-    private void recalculerDimensions()
-    {
+    private void recalculerDimensions() {
         int maxLongueur = nom != null ? nom.length() : 0;
 
-        for (String att : attributsAffichage)
-        {
-            if (att == null)
-            {
+        for (String att : attributsAffichage) {
+            if (att == null) {
                 continue;
             }
 
-            int longueur =
-                att.replace("{static}", "").trim().length();
+            int longueur = att.replace("{static}", "").trim().length();
 
             maxLongueur = Math.max(maxLongueur, longueur);
         }
 
-        for (String met : methodesAffichage)
-        {
-            if (met == null)
-            {
+        for (String met : methodesAffichage) {
+            if (met == null) {
                 continue;
             }
 
-            int longueur =
-                met.replace("{static}", "").trim().length();
+            int longueur = met.replace("{static}", "").trim().length();
 
             maxLongueur = Math.max(maxLongueur, longueur);
         }
 
         this.largeur = Math.max(
-            200,
-            PADDING * 2 + maxLongueur * 8
-        );
+                200,
+                PADDING * 2 + maxLongueur * 8);
 
-        this.hauteur =
-            HAUTEUR_ENTETE
-            + (attributsAffichage.size()
-               + methodesAffichage.size()) * HAUTEUR_LIGNE
-            + PADDING * 4;
+        // Calculer hauteur en fonction du mode
+        int nbLignesAtt, nbLignesMet;
+        if (modeComplet) {
+            nbLignesAtt = attributsAffichage.size();
+            nbLignesMet = methodesAffichage.size();
+        } else {
+            // Mode condensé : max 3 attributs + ligne "..." si nécessaire
+            int nbAttAffiches = Math.min(attributsAffichage.size(), 3);
+            nbLignesAtt = nbAttAffiches + (attributsAffichage.size() > 3 ? 1 : 0);
+
+            // Mode condensé : max 3 méthodes + ligne "..." si nécessaire
+            int nbMetAffichees = Math.min(methodesAffichage.size(), 3);
+            nbLignesMet = nbMetAffichees + (methodesAffichage.size() > 3 ? 1 : 0);
+        }
+
+        this.hauteur = HAUTEUR_ENTETE
+                + (nbLignesAtt + nbLignesMet) * HAUTEUR_LIGNE
+                + PADDING * 4;
     }
 }
