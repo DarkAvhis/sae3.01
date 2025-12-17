@@ -139,38 +139,28 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         private int        offsetY         = 0   ;
         // private FenetrePleinEcran fenetrePleinEcran = null;
 
-       @Override
+        @Override
         public void mousePressed(MouseEvent e)
         {
             blocSelectionne = null;
-
-            // Transformer les coordonnées de la souris en coordonnées "logiques"
             int mouseX = (int)(e.getX() / zoom);
             int mouseY = (int)(e.getY() / zoom);
-
-            for (int i = blocsClasses.size() - 1; i >= 0; i--)
-            {
+            for (int i = blocsClasses.size() - 1; i >= 0; i--) {
                 BlocClasse bloc = blocsClasses.get(i);
-
-                if (bloc.contient(mouseX, mouseY))
-                {
-                    /*
-                    // Clic-droit : ouvrir la fenêtre plein écran
-                    if (e.getButton() == MouseEvent.BUTTON3)
-                    {
-
+                if (bloc.contient(mouseX, mouseY)) {
+                    if (e.getButton() == MouseEvent.BUTTON3) {
+                        bloc.setModeComplet(true);
+                        bloc.setSelectionne(true);
+                        repaint();
+                        blocSelectionne = bloc;
+                        return;
                     }
-                    */
-
                     blocSelectionne = bloc;
                     offsetX = mouseX - bloc.getX();
                     offsetY = mouseY - bloc.getY();
-
-                    for (BlocClasse b : blocsClasses)
-                    {
+                    for (BlocClasse b : blocsClasses) {
                         b.setSelectionne(false);
                     }
-
                     bloc.setSelectionne(true);
                     repaint();
                     break;
@@ -197,6 +187,15 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         @Override
         public void mouseReleased(MouseEvent e)
         {
+            // Si clic droit relâché, repasser en mode condensé
+            if (e.getButton() == MouseEvent.BUTTON3) {
+                for (BlocClasse bloc : blocsClasses) {
+                    if (bloc.isModeComplet()) {
+                        bloc.setModeComplet(false);
+                        repaint();
+                    }
+                }
+            }
             blocSelectionne = null;
             offsetX         = 0   ;
             offsetY         = 0   ;

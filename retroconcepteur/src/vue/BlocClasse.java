@@ -23,8 +23,16 @@ import java.util.List;
  *         Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class BlocClasse
-{
+public class BlocClasse {
+    private boolean modeComplet = false;
+
+    public boolean isModeComplet() {
+        return modeComplet;
+    }
+    public void setModeComplet(boolean complet) {
+        this.modeComplet = complet;
+        recalculerDimensions();
+    }
     private String nom;
 
     private int x      ;
@@ -131,9 +139,7 @@ public class BlocClasse
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        int maxAttributs = 3;
-        int nbAttAffiches = Math.min(attributsAffichage.size(), maxAttributs);
-        int nbLignesAtt = nbAttAffiches + (attributsAffichage.size() > maxAttributs ? 1 : 0);
+        int maxAttributs = modeComplet ? Integer.MAX_VALUE : 3;
         int iAtt = 0;
         for (String att : attributsAffichage) {
             if (iAtt >= maxAttributs) break;
@@ -149,7 +155,7 @@ public class BlocClasse
             }
             iAtt++;
         }
-        if (attributsAffichage.size() > maxAttributs) {
+        if (!modeComplet && attributsAffichage.size() > maxAttributs) {
             currentY += HAUTEUR_LIGNE;
             g.drawString("...", x + PADDING, currentY);
         }
@@ -160,9 +166,7 @@ public class BlocClasse
 
         currentY += PADDING;
 
-        int maxMethodes = 3;
-        int nbMetAffichees = Math.min(methodesAffichage.size(), maxMethodes);
-        int nbLignesMet = nbMetAffichees + (methodesAffichage.size() > maxMethodes ? 1 : 0);
+        int maxMethodes = modeComplet ? Integer.MAX_VALUE : 3;
         int iMet = 0;
         for (String met : methodesAffichage) {
             if (iMet >= maxMethodes) break;
@@ -172,7 +176,7 @@ public class BlocClasse
             // Limiter les paramètres à 2, puis ajouter ...
             int idxParOuv = libelle.indexOf('(');
             int idxParFer = libelle.indexOf(')');
-            if (idxParOuv != -1 && idxParFer != -1 && idxParFer > idxParOuv + 1) {
+            if (!modeComplet && idxParOuv != -1 && idxParFer != -1 && idxParFer > idxParOuv + 1) {
                 String params = libelle.substring(idxParOuv + 1, idxParFer);
                 String[] paramList = params.split(",");
                 if (paramList.length > 2) {
@@ -198,7 +202,7 @@ public class BlocClasse
             }
             iMet++;
         }
-        if (methodesAffichage.size() > maxMethodes) {
+        if (!modeComplet && methodesAffichage.size() > maxMethodes) {
             currentY += HAUTEUR_LIGNE;
             g.drawString("...", x + PADDING, currentY);
         }
@@ -290,22 +294,47 @@ public class BlocClasse
     private void recalculerDimensions()
     {
         int maxLongueur = nom != null ? nom.length() : 0;
-        for (String att : attributsAffichage) {
-            if (att == null) continue;
-            int longueur = att.replace("{static}", "").trim().length();
+
+        for (String att : attributsAffichage)
+        {
+            if (att == null)
+            {
+                continue;
+            }
+
+            int longueur =
+                att.replace("{static}", "").trim().length();
+
             maxLongueur = Math.max(maxLongueur, longueur);
         }
-        for (String met : methodesAffichage) {
-            if (met == null) continue;
-            int longueur = met.replace("{static}", "").trim().length();
+
+        for (String met : methodesAffichage)
+        {
+            if (met == null)
+            {
+                continue;
+            }
+
+            int longueur =
+                met.replace("{static}", "").trim().length();
+
             maxLongueur = Math.max(maxLongueur, longueur);
         }
-        this.largeur = Math.max(200, PADDING * 2 + maxLongueur * 8);
-        // Calcul du nombre de lignes affichées (condensé)
-        int nbAttAffiches = Math.min(attributsAffichage.size(), 3);
-        int nbLignesAtt = nbAttAffiches + (attributsAffichage.size() > 3 ? 1 : 0);
-        int nbMetAffichees = Math.min(methodesAffichage.size(), 3);
-        int nbLignesMet = nbMetAffichees + (methodesAffichage.size() > 3 ? 1 : 0);
+
+        this.largeur = Math.max(
+            200,
+            PADDING * 2 + maxLongueur * 8
+        );
+        int nbLignesAtt, nbLignesMet;
+        if (modeComplet) {
+            nbLignesAtt = attributsAffichage.size();
+            nbLignesMet = methodesAffichage.size();
+        } else {
+            int nbAttAffiches = Math.min(attributsAffichage.size(), 3);
+            nbLignesAtt = nbAttAffiches + (attributsAffichage.size() > 3 ? 1 : 0);
+            int nbMetAffichees = Math.min(methodesAffichage.size(), 3);
+            nbLignesMet = nbMetAffichees + (methodesAffichage.size() > 3 ? 1 : 0);
+        }
         this.hauteur = HAUTEUR_ENTETE + (nbLignesAtt + nbLignesMet) * HAUTEUR_LIGNE + PADDING * 4;
     }
 }
