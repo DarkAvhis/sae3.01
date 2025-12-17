@@ -180,8 +180,19 @@ public class BlocClasse
             int idxParFer = libelle.indexOf(')');
             if (!modeComplet && idxParOuv != -1 && idxParFer != -1 && idxParFer > idxParOuv + 1) {
                 String params = libelle.substring(idxParOuv + 1, idxParFer);
-                if (params.length() > 10) {
-                    libelle = libelle.substring(0, idxParOuv + 1) + params.substring(0, 10) + "...)";
+                int virgule1 = params.indexOf(',');
+                if (virgule1 == -1) {
+                    // 0 ou 1 paramètre, on affiche tout
+                } else {
+                    int virgule2 = params.indexOf(',', virgule1 + 1);
+                    if (virgule2 == -1) {
+                        // 2 paramètres, on affiche tout
+                    } else {
+                        // Plus de 2 paramètres, on affiche les 2 premiers puis ...
+                        String p1 = params.substring(0, virgule1).trim();
+                        String p2 = params.substring(virgule1 + 1, virgule2).trim();
+                        libelle = libelle.substring(0, idxParOuv + 1) + p1 + ", " + p2 + ", ... )";
+                    }
                 }
             }
             g.drawString(libelle, x + PADDING, currentY);
