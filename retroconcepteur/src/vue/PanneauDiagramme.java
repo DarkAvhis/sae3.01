@@ -403,11 +403,12 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                         g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
 
                         // Multiplicités (seulement pour les associations)
-                        if (!liaison.getMultipliciteOrig().isEmpty()) 
+                        if (liaison.getMultipliciteOrig() != null && !liaison.getMultipliciteOrig().isEmpty()) 
                         {
                             dessinerMultiplicite(g2d, p1, p2, liaison.getMultipliciteOrig(), true);
                         }
-                        if (!liaison.getMultipliciteDest().isEmpty()) 
+
+                        if (liaison.getMultipliciteDest() != null && !liaison.getMultipliciteDest().isEmpty()) 
                         {
                             dessinerMultiplicite(g2d, p1, p2, liaison.getMultipliciteDest(), false);
                         }
@@ -458,38 +459,48 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * @param isSource     true pour la multiplicité source, false pour la
      *                     destination
      */
-    private void dessinerMultiplicite(Graphics2D g2d, Point pStart, Point pEnd, String multiplicity, boolean isSource) 
-    {
+    private void dessinerMultiplicite(
+            Graphics2D g2d,
+            Point pStart,
+            Point pEnd,
+            String multiplicite,
+            boolean coteOrigine
+    ) {
+        // Direction de la ligne
+        double angle = Math.atan2(
+                pEnd.y - pStart.y,
+                pEnd.x - pStart.x
+        );
 
-        Point pAnchor = isSource ? pStart : pEnd;
+        // Position le long de la flèche
+        int offsetAlong = coteOrigine ? 25 : -25;
 
-        int offsetFromAnchor = 15;
-        int offsetPerpendicular = 10;
+        int xBase = coteOrigine ? pStart.x : pEnd.x;
+        int yBase = coteOrigine ? pStart.y : pEnd.y;
 
-        double angle = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
+        int xLine = (int) (xBase + offsetAlong * Math.cos(angle));
+        int yLine = (int) (yBase + offsetAlong * Math.sin(angle));
+
+        // Décalage perpendiculaire (au-dessus de la ligne)
         double perpAngle = angle + Math.PI / 2;
+        int offsetPerp = 12;
 
-        int xLine = (int) (pAnchor.x + offsetFromAnchor * Math.cos(angle));
-        int yLine = (int) (pAnchor.y + offsetFromAnchor * Math.sin(angle));
-
-        int xText = (int) (xLine + offsetPerpendicular * Math.cos(perpAngle));
-        int yText = (int) (yLine + offsetPerpendicular * Math.sin(perpAngle));
+        int xText = (int) (xLine + offsetPerp * Math.cos(perpAngle));
+        int yText = (int) (yLine + offsetPerp * Math.sin(perpAngle));
 
         FontMetrics fm = g2d.getFontMetrics();
-        int largeurTxt  = fm.stringWidth(multiplicity);
-        int hauteurTxt = fm.getHeight();
+        int w = fm.stringWidth(multiplicite);
+        int h = fm.getAscent();
 
-        xText -= (int) (largeurTxt * 0.5);
-        yText += (int) (hauteurTxt * 0.3); // ajuster pour centrer verticalement
-
-        // Dessiner un fond blanc sous la multiplicité pour la rendre toujours lisible
-        Color oldColor = g2d.getColor();
+        // Fond blanc (jamais caché)
         g2d.setColor(Color.WHITE);
-        g2d.fillRect(xText - 2, yText - fm.getAscent(), largeurTxt + 4, hauteurTxt);
-        g2d.setColor(oldColor);
+        g2d.fillRect(xText - w / 2 - 3, yText - h, w + 6, h + 4);
 
-        g2d.drawString(multiplicity, xText, yText);
+        g2d.setColor(Color.BLACK);
+        g2d.drawString(multiplicite, xText - w / 2, yText);
     }
+
+
 
     /**
      * Affiche un rôle (libellé) au voisinage d'une extrémité de la liaison.
