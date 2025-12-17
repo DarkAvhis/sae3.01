@@ -436,6 +436,9 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                             dessinerProprietes(g2d, p1, p2, liaison.getProprietes());
                         }
                         break;
+                    case NESTED:
+                        dessinerLiaisonContenance(g2d, p1, p2); // p1 est l'interne, p2 est l'hôte
+                        break;
                 }
 
                 // Contrainte éventuelle (affichée au centre, côté opposé aux propriétés)
@@ -571,6 +574,29 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         xText -= (int) (textWidth * 0.5);
 
         g2d.drawString(contrainte, xText, yText);
+    }
+
+    private void dessinerLiaisonContenance(Graphics2D g2d, Point pInterne, Point pHote) 
+    {
+        int rayonCercle = 10;
+        
+        // 1. Calcul de l'angle pour placer le cercle sur le bord de l'hôte
+        double angle = Math.atan2(pInterne.y - pHote.y, pInterne.x - pHote.x);
+        
+        // 2. Dessin du trait entre la classe interne et le bord du cercle
+        int xLigneStart = (int) (pHote.x + (rayonCercle * 2) * Math.cos(angle));
+        int yLigneStart = (int) (pHote.y + (rayonCercle * 2) * Math.sin(angle));
+        g2d.drawLine(pInterne.x, pInterne.y, xLigneStart, yLigneStart);
+        
+        // 3. Dessin du cercle (l'ancre)
+        g2d.setColor(Color.WHITE);
+        g2d.fillOval(pHote.x - rayonCercle, pHote.y - rayonCercle, rayonCercle * 2, rayonCercle * 2);
+        g2d.setColor(Color.BLACK);
+        g2d.drawOval(pHote.x - rayonCercle, pHote.y - rayonCercle, rayonCercle * 2, rayonCercle * 2);
+        
+        // 4. Dessin du "+" à l'intérieur
+        g2d.drawLine(pHote.x - rayonCercle + 3, pHote.y, pHote.x + rayonCercle - 3, pHote.y);
+        g2d.drawLine(pHote.x, pHote.y - rayonCercle + 3, pHote.x, pHote.y + rayonCercle - 3);
     }
 
     /**
