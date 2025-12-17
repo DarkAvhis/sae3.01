@@ -23,7 +23,9 @@ public class LiaisonVue {
         /** Héritage : ligne pleine avec triangle vide */
         HERITAGE,
         /** Implémentation d'interface : ligne pointillée avec triangle vide */
-        IMPLEMENTATION
+        IMPLEMENTATION,
+
+        NESTED
     }
 
     private String nomClasseOrig; // Pour trouver le BlocClasse de départ

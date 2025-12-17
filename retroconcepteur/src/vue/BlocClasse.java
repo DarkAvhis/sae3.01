@@ -48,16 +48,15 @@ public class BlocClasse {
 
     private List<String> attributsAffichage;
     private List<String> methodesAffichage ;
-    private List<BlocClasse> blocsInternes = new ArrayList<>();
 
     private static final int PADDING = 10;
     private static final int HAUTEUR_ENTETE = 30;
     private static final int HAUTEUR_LIGNE = 20;
 
-    private static final Color COULEUR_FOND = new Color(230, 240, 250);
+    private static final Color COULEUR_FOND = new Color(255, 255, 255);
     private static final Color COULEUR_FOND_EXTERNE = new Color(235, 235, 235);
     private static final Color COULEUR_BORDURE = new Color(0, 0, 0);
-    private static final Color COULEUR_ENTETE = new Color(100, 150, 200);
+    private static final Color COULEUR_ENTETE = new Color(0, 0, 0);
     private static final Color COULEUR_ENTETE_EXTERNE = new Color(140, 140, 140);
 
     public BlocClasse(
@@ -162,16 +161,6 @@ public class BlocClasse {
         currentY = dessinerSeparateur(g, currentY);
         currentY = dessinerMethodes(g, currentY);
 
-        // DESSIN RÉCURSIF DES CLASSES INTERNES (Option B)
-        for (BlocClasse inner : blocsInternes) {
-            // Positionnement relatif au parent
-            inner.setX(this.x + PADDING * 2); 
-            inner.setY(currentY);
-            inner.setLargeur(this.largeur - PADDING * 4); // Plus étroit que le parent
-            
-            inner.dessiner(g); // Récursivité
-            currentY += inner.getHauteur() + PADDING; 
-        }
     }
     // Affiche le fond et la bordure du bloc
     private void dessinerFondEtBordure(Graphics2D g) 
@@ -303,26 +292,6 @@ private int dessinerNom(Graphics2D g)
         return px >= x && px <= x + largeur
                 && py >= y && py <= y + hauteur;
     }
-
-        /**
-     * Ajoute un bloc de classe interne à ce bloc et déclenche le recalcul des dimensions.
-     */
-    public void ajouterBlocInterne(BlocClasse bloc) 
-    {
-        if (bloc != null) {
-            this.blocsInternes.add(bloc);
-            recalculerDimensions(); // Indispensable pour que le parent s'agrandisse
-        }
-    }
-
-    /**
-     * Retourne la liste des blocs de classes internes contenus dans ce bloc.
-     */
-    public List<BlocClasse> getBlocsInternes() 
-    {
-        return this.blocsInternes;
-    }
-
 
     public String getNom() {
         return nom;

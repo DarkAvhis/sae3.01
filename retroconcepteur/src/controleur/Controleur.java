@@ -183,73 +183,76 @@ public class Controleur {
 
         int x = 50, y = 50;
         for (ClasseObjet c : classes) {
-            // Filtre externe
-            boolean estExterne = (c.getSpecifique() != null && c.getSpecifique().equals("externe"));
-            if (!afficherClassesExternes && estExterne) continue;
-
-            // Utilisation de la création récursive
-            BlocClasse bloc = creerBlocComplet(c, x, y);
-
-            blocsVue.add(bloc);
+            // Créer les blocs pour la classe et TOUTES ses classes internes à plat
+            creerBlocsEtLiaisonsRecursif(c, x, y);
             
-            // Espacement pour la grille
-            x += 250;
-            if (x > 1000) { x = 50; y += 400; } // Augmenté Y car les blocs avec internes sont plus hauts
+            x += 300; // Plus d'espace car les classes sont côte à côte
+            if (x > 1200) { x = 50; y += 300; }
         }
         majAffichage();
     }
 
-    private BlocClasse trouverBlocParNom(List<BlocClasse> liste, String nom) 
+    private void creerBlocsEtLiaisonsRecursif(ClasseObjet c, int x, int y) 
     {
-        for (BlocClasse b : liste) {
+        // 1. Création du bloc pour la classe actuelle
+        boolean estExterne = (c.getSpecifique() != null && c.getSpecifique().equals("externe"));
+        if (!afficherClassesExternes && estExterne) return;
+
+        BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
+        if (c.getNom().contains("Interface")) bloc.setInterface(true);
+        if (estExterne) bloc.setExterne(true);
+
+        blocsVue.add(bloc);
+
+        // 2. Pour chaque classe interne, créer son propre bloc et la liaison NESTED
+        int offsetX = 40; // Décalage pour les enfants
+        int offsetY = 180;
+
+        for (ClasseObjet inner : c.getClassesInternes()) {
+            // Appel récursif pour l'enfant (positionné relativement au parent)
+            creerBlocsEtLiaisonsRecursif(inner, x + offsetX, y + offsetY);
+            
+            // Création de la liaison visuelle de contenance
+            // Note: La liaison doit être ajoutée à une liste traitée par PanneauDiagramme
+            // Vous devrez peut-être adapter votre stockage de liaisons dans Controleur
+        }
+    }
+
+    private BlocClasse trouverBlocParNom(String nom) 
+    {
+        for (BlocClasse b : blocsVue) {
             if (b.getNom().equals(nom)) return b;
-            // Recherche dans les enfants
-            BlocClasse enfant = trouverBlocParNom(b.getBlocsInternes(), nom);
-            if (enfant != null) return enfant;
         }
         return null;
     }
 
-    /**
-     * Ajoute les méthodes aux blocs existants.
-     */
-    public void ajouterMethodes() {
+    public void ajouterMethodes() 
+    {
         List<ClasseObjet> classes = this.metierComplet.getClasses();
-
         for (ClasseObjet c : classes) {
             List<String> methVue = convertirMethodes(c.getMethodes(), c);
-
-            for (BlocClasse bloc : blocsVue) {
-                if (bloc.getNom().equals(c.getNom()))
-                    bloc.setMethodes(methVue);
-            }
+            BlocClasse bloc = trouverBlocParNom(c.getNom());
+            if (bloc != null) bloc.setMethodes(methVue);
         }
-
         majAffichage();
     }
 
-    /**
-     * Ajoute les attributs aux blocs existants.
-     */
-    public void ajouterAttributs() {
+    public void ajouterAttributs() 
+    {
         List<ClasseObjet> classes = this.metierComplet.getClasses();
-
         for (ClasseObjet c : classes) {
             List<String> attrVue = convertirAttributs(c.getattributs(), c);
-
-            for (BlocClasse bloc : blocsVue) {
-                if (bloc.getNom().equals(c.getNom()))
-                    bloc.setAttributs(attrVue);
-            }
+            BlocClasse bloc = trouverBlocParNom(c.getNom());
+            if (bloc != null) bloc.setAttributs(attrVue);
         }
-
         majAffichage();
     }
 
     /**
      * Met à jour l'affichage des blocs et des liaisons.
      */
-    private void majAffichage() {
+    private void majAffichage() 
+    {
         List<AssociationObjet> associations = this.metierComplet.getAssociations();
         List<HeritageObjet> heritages = this.metierComplet.getHeritages();
         List<InterfaceObjet> implementations = this.metierComplet.getImplementations();
@@ -258,6 +261,13 @@ public class Controleur {
         liaisonsVue.addAll(convertirLiaisons(associations, TypeLiaison.ASSOCIATION_UNIDI));
         liaisonsVue.addAll(convertirLiaisons(heritages, TypeLiaison.HERITAGE));
         liaisonsVue.addAll(convertirLiaisons(implementations, TypeLiaison.IMPLEMENTATION));
+
+        // AJOUT : Récupérer les liaisons de classes internes créées lors du parsing
+        for (ClasseObjet c : this.metierComplet.getClasses()) {
+            for (ClasseObjet inner : c.getClassesInternes()) {
+                liaisonsVue.add(new LiaisonVue(inner.getNom(), c.getNom(), TypeLiaison.NESTED, null, null));
+            }
+        }
 
         if (vuePrincipale != null) {
             vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocsVue);
@@ -689,13 +699,7 @@ public class Controleur {
         if (c.getSpecifique() != null && c.getSpecifique().equals("externe"))
             bloc.setExterne(true);
 
-        // 3. NOUVEAU : Appel récursif pour les classes internes
-        for (ClasseObjet inner : c.getClassesInternes()) {
-            // Le X/Y de l'enfant sera géré par la méthode dessiner() du parent, 
-            // on passe 0,0 ici par défaut.
-            BlocClasse blocEnfant = creerBlocComplet(inner, 0, 0); 
-            bloc.ajouterBlocInterne(blocEnfant);
-        }
+        
 
         return bloc;
     }
@@ -712,7 +716,8 @@ public class Controleur {
         }
     }
 
-    private void afficherDiagrammeAvecDonnees() {
+    private void afficherDiagrammeAvecDonnees() 
+    {
         // a faire cet aprem j'ai faim la
     }
 
