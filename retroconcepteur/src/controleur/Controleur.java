@@ -458,18 +458,32 @@ public class Controleur
      * 
      * @note Cette méthode est actuellement en développement
      */
-    public void supprimerClasseSelectionnee()
+    public String supprimerClasseSelectionnee() 
     {
-        if (this.vuePrincipale == null)
-            return;
+        if (vuePrincipale == null) return null;
 
-        BlocClasse bloc = this.vuePrincipale.getPanneauDiagramme().getBlocsClasseSelectionnee();
-        
-        if (bloc != null)
-        {
-            System.out.println("Suppression de la classe : " + bloc.getNom());
+        BlocClasse bloc = vuePrincipale.getPanneauDiagramme().getBlocsClasseSelectionnee();
+        if (bloc == null) return null;
+
+        String nomClasse = bloc.getNom();
+
+        // Supprimer côté métier
+        metierComplet.supprimerClasse(nomClasse);
+
+        // Supprimer le bloc dans la vue
+        for (int i = 0; i < blocsVue.size(); i++) {
+            if (blocsVue.get(i).getNom().equals(nomClasse)) {
+                blocsVue.remove(i);
+                break;
+            }
         }
+
+        vuePrincipale.getPanneauDiagramme().repaint();
+
+        return nomClasse; // renvoie le nom de la classe supprimée
     }
+
+
 
     /**
      * Convertit les liaisons du modèle vers les liaisons de la vue.

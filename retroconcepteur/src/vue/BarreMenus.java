@@ -268,7 +268,7 @@ public class BarreMenus extends JMenuBar implements ActionListener
         );
     }
 
-    public void actionSupprimer()
+    public void actionSupprimer() 
     {
         int rep = JOptionPane.showConfirmDialog(
             SwingUtilities.getWindowAncestor(this),
@@ -277,11 +277,19 @@ public class BarreMenus extends JMenuBar implements ActionListener
             JOptionPane.YES_NO_OPTION
         );
 
-        if (rep == JOptionPane.YES_OPTION)
-        {
-            controleur.supprimerClasseSelectionnee();
+        if (rep == JOptionPane.YES_OPTION) {
+            String nomSupprime = controleur.supprimerClasseSelectionnee();
+            if (nomSupprime != null) {
+                JOptionPane.showMessageDialog(
+                    SwingUtilities.getWindowAncestor(this),
+                    "La classe \"" + nomSupprime + "\" a été supprimée.",
+                    "Suppression",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            }
         }
     }
+
 
     public void actionAligner()
     {
