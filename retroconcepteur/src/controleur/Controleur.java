@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -189,7 +190,7 @@ public class Controleur {
             }
 
             BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
-            if (c.getNom().contains("Interface"))
+            if (c.getSpecifique() != null && c.getSpecifique().equals("interface"))
                 bloc.setInterface(true);
             if (estExterne)
                 bloc.setExterne(true);
@@ -249,10 +250,15 @@ public class Controleur {
         List<HeritageObjet> heritages = this.metierComplet.getHeritages();
         List<InterfaceObjet> implementations = this.metierComplet.getImplementations();
 
+        System.out.println("DEBUG majAffichage: " + implementations.size() + " implémentation(s) trouvée(s)");
+
         List<LiaisonVue> liaisonsVue = new ArrayList<>();
         liaisonsVue.addAll(convertirLiaisons(associations, TypeLiaison.ASSOCIATION_UNIDI));
         liaisonsVue.addAll(convertirLiaisons(heritages, TypeLiaison.HERITAGE));
         liaisonsVue.addAll(convertirLiaisons(implementations, TypeLiaison.IMPLEMENTATION));
+
+        System.out.println("DEBUG: Total liaisons créées: " + liaisonsVue.size());
+        System.out.println("DEBUG: Nombre de blocs: " + blocsVue.size());
 
         if (vuePrincipale != null) {
             vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocsVue);
@@ -463,12 +469,13 @@ public class Controleur {
      * 
      * @note Cette méthode est actuellement en développement
      */
-    public String supprimerClasseSelectionnee() 
-    {
-        if (vuePrincipale == null) return null;
+    public String supprimerClasseSelectionnee() {
+        if (vuePrincipale == null)
+            return null;
 
         BlocClasse bloc = vuePrincipale.getPanneauDiagramme().getBlocsClasseSelectionnee();
-        if (bloc == null) return null;
+        if (bloc == null)
+            return null;
 
         String nomClasse = bloc.getNom();
 
@@ -487,8 +494,6 @@ public class Controleur {
 
         return nomClasse; // renvoie le nom de la classe supprimée
     }
-
-
 
     /**
      * Convertit les liaisons du modèle vers les liaisons de la vue.
@@ -515,6 +520,7 @@ public class Controleur {
 
                 // Parcourir la liste des interfaces implémentées
                 List<ClasseObjet> interfaces = interfaceLiaison.getLstInterfaces();
+
                 for (ClasseObjet interfaceClass : interfaces) {
                     if (interfaceClass != null) {
                         liaisonsVue.add(new LiaisonVue(nomClasseConcrete, interfaceClass.getNom(), type, null, null));

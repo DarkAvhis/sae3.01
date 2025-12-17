@@ -1,4 +1,5 @@
 package testFinal;
+
 public class Point
 {
     // ------------------------------------------------

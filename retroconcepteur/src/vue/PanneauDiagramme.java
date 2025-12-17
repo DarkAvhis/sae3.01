@@ -397,8 +397,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                         dessinerFlecheHeritage(g2d, p1, p2, true);
                         break;
 
-                    case ASSOCIATION_BIDI:
                     case ASSOCIATION_UNIDI:
+                    case ASSOCIATION_BIDI:
                         g2d.setStroke(new BasicStroke(1));
                         g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
 
