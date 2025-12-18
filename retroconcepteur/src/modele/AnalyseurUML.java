@@ -173,6 +173,45 @@ public class AnalyseurUML {
                     ClasseObjet nouvelleClasse = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nomEntite,
                             specifique);
 
+                        // Si c'est un record, extraire les composants entre parenthèses comme attributs
+                        if (foundKeyword.equals("record")) {
+                            int idxOpen = ligneBrute.indexOf('(', foundIdx + foundKeyword.length());
+                            int idxClose = (idxOpen != -1) ? ligneBrute.indexOf(')', idxOpen + 1) : -1;
+                            if (idxOpen != -1 && idxClose != -1 && idxClose > idxOpen + 0) {
+                                String comps = ligneBrute.substring(idxOpen + 1, idxClose).trim();
+                                if (!comps.isEmpty()) {
+                                    // découper en paramètres top-level (ignorant les chevrons)
+                                    for (String part : ParsingUtil.decoupage(comps)) {
+                                        String comp = part.trim();
+                                        if (comp.isEmpty()) continue;
+                                        int sep = ParsingUtil.dernierIndexEspace(comp);
+                                        if (sep > 0) {
+                                            String type = comp.substring(0, sep).trim();
+                                            String name = comp.substring(sep + 1).trim();
+                                            if (!type.isEmpty() && !name.isEmpty()) {
+                                                // record components are effectively final instance fields
+                                                nouvelleClasse.getattributs().add(
+                                                        new modele.entites.AttributObjet(name, "instance", type, "private", false, true));
+                                            }
+                                        }
+                                    }
+                                    // Créer un constructeur synthétique avec ces paramètres (pour affichage)
+                                    try {
+                                        java.util.HashMap<String, String> ctorParams = new java.util.HashMap<>();
+                                        for (modele.entites.AttributObjet a : nouvelleClasse.getattributs()) {
+                                            // n'ajouter que ceux issus du record (on suppose private final)
+                                            ctorParams.put(a.getNom(), a.getType());
+                                        }
+                                        if (!ctorParams.isEmpty()) {
+                                            nouvelleClasse.getMethodes().add(
+                                                    new modele.entites.MethodeObjet(nomEntite, ctorParams, null, "public", false));
+                                        }
+                                    } catch (Exception ex) {
+                                        // Ne pas bloquer l'analyse si problème mineur
+                                    }
+                                }
+                            }
+                        }
                     // DÉTECTION DES INTERFACES IMPLÉMENTÉES
                     if (ligneBrute.contains(" implements ")) 
                     {
@@ -231,27 +270,39 @@ public class AnalyseurUML {
                 if (ligneBrute.contains("{") && !ligneBrute.contains(" class "))
                     niveauAccolades++;
 
-                // ISOLATION : On n'extrait que si on est au niveau de la classe (niveau ==
-                // taille pile)
-                // Cela évite de prendre les variables locales dans les méthodes (niveau >
-                // taille pile)
-                if (!pileClasses.isEmpty() && niveauAccolades == pileClasses.size()) {
-                    ClasseObjet classeCourante = pileClasses.peek();
-                    boolean estStatique = ligneBrute.contains("static");
-                    boolean estFinal = ligneBrute.contains("final");
+                    // ISOLATION : On n'extrait que si on est au niveau de la classe (niveau == taille pile)
+                    // Cela évite de prendre les variables locales dans les méthodes (niveau > taille pile)
+                    if (!pileClasses.isEmpty() && niveauAccolades == pileClasses.size()) {
+                        ClasseObjet classeCourante = pileClasses.peek();
+                        boolean estStatique = ligneBrute.contains("static");
+                        boolean estFinal = ligneBrute.contains("final");
 
-                    // Extraction Attributs
-                    if (ligneBrute.endsWith(";") && !ligneBrute.contains("(")) {
-                        ParsingUtil.extraireAttribut(ligneBrute, estStatique, estFinal, classeCourante.getattributs());
+                        // Extraction Attributs (inclut constantes d'interface)
+                        if (ligneBrute.endsWith(";") && !ligneBrute.contains("(")) {
+                            ParsingUtil.extraireAttribut(ligneBrute, estStatique, estFinal, classeCourante.getattributs());
+                        }
+                        // Extraction Méthodes :
+                        // - normales (avec visibilité)
+                        // - ou si la classe est une interface (les méthodes y sont souvent sans
+                        // visibilité explicite)
+                        // - ou si la classe est un record (les méthodes peuvent s'y trouver)
+                        else if (ligneBrute.contains("(") && !ligneBrute.contains("=") &&
+                                (ligneBrute.contains("public") || ligneBrute.contains("private") || ligneBrute.contains("protected")
+                                || (classeCourante.getSpecifique() != null && classeCourante.getSpecifique().equals("interface"))
+                                || (classeCourante.getSpecifique() != null && classeCourante.getSpecifique().equals("record")))) {
+
+                            // Si c'est une interface et qu'il n'y a pas de visibilité, préfixer par
+                            // 'public' pour que ParsingUtil.extraireMethode fonctionne correctement
+                            boolean hasVisibility = ligneBrute.contains("public") || ligneBrute.contains("private") || ligneBrute.contains("protected");
+                            String lignePourMethode = ligneBrute;
+                            if (!hasVisibility && classeCourante.getSpecifique() != null && classeCourante.getSpecifique().equals("interface")) {
+                                lignePourMethode = "public " + ligneBrute;
+                            }
+
+                            ParsingUtil.extraireMethode(lignePourMethode, estStatique, classeCourante.getNom(),
+                                    classeCourante.getMethodes());
+                        }
                     }
-                    // Extraction Méthodes (nécessite une visibilité pour éviter les blocs
-                    // statiques)
-                    else if (ligneBrute.contains("(") && (ligneBrute.contains("public")
-                            || ligneBrute.contains("private") || ligneBrute.contains("protected")) && !ligneBrute.contains("=")) {
-                        ParsingUtil.extraireMethode(ligneBrute, estStatique, classeCourante.getNom(),
-                                classeCourante.getMethodes());
-                    }
-                }
 
                 // SORTIE DE CONTEXTE : On dépile quand on ferme une classe
                 if (ligneBrute.contains("}")) {

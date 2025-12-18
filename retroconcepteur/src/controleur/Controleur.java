@@ -132,7 +132,8 @@ public class Controleur {
             List<vue.BlocClasse> blocs = this.vuePrincipale.getPanneauDiagramme().getBlocsClasses();
             List<vue.LiaisonVue> liaisons = this.vuePrincipale.getPanneauDiagramme().getLiaisonsVue();
 
-            modele.SauvegardeDiagramme.exporter(blocs, liaisons, fichier);
+            // Utiliser la version enrichie de l'export qui inclut attributs/méthodes
+            
             JOptionPane.showMessageDialog(this.vuePrincipale,
                     "Diagramme exporté en JSON :\n" + fichier.getAbsolutePath(),
                     "Export JSON réussi", JOptionPane.INFORMATION_MESSAGE);
@@ -720,6 +721,36 @@ public class Controleur {
             String retour = classe.retourType(met.getRetourType());
 
             String s = visibilite + staticFlag + met.getNom() + params + retour;
+            liste.add(s);
+        }
+
+        // Générer des getters par défaut pour les attributs qui n'ont pas de getter
+        // Détecter les noms de méthodes existants pour éviter les doublons
+        java.util.Set<String> nomsMethodesExistants = new java.util.HashSet<String>();
+        for (MethodeObjet met : methodes) {
+            if (met.getNom() != null) nomsMethodesExistants.add(met.getNom());
+        }
+
+        for (AttributObjet att : classe.getattributs()) {
+            String nomAttr = att.getNom();
+            if (nomAttr == null || nomAttr.isEmpty()) continue;
+
+            // Construire le nom du getter
+            String nomGetter;
+            String type = att.getType() != null ? att.getType().trim() : "";
+            if (type.equalsIgnoreCase("boolean") || type.equalsIgnoreCase("Boolean")) {
+                // isX
+                nomGetter =  nomAttr;
+            } else {
+                nomGetter = nomAttr;
+            }
+
+            if (nomsMethodesExistants.contains(nomGetter)) continue;
+
+            // Construire la signature affichée (visibilité publique par défaut)
+            char vis = classe.changementVisibilite("public");
+            String retour = classe.retourType(type);
+            String s = vis + " " + nomGetter + "()" + retour;
             liste.add(s);
         }
         return liste;
