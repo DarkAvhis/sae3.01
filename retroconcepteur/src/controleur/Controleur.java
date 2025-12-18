@@ -109,16 +109,7 @@ public class Controleur {
     private void reafficherAvecFiltreExternes() 
     {
         List<ClasseObjet> classes = this.metierComplet.getClasses();
-        blocsVue.clear();
-
-        int x = 50, y = 50;
-        for (ClasseObjet c : classes) {
-            // Créer les blocs pour la classe et TOUTES ses classes internes à plat
-            creerBlocsEtLiaisonsRecursif(c, x, y);
-            
-            x += 300; // Plus d'espace car les classes sont côte à côte
-            if (x > 1200) { x = 50; y += 300; }
-        }
+        blocsVue = vue.DiagramPresenter.buildBlocs(classes, this.afficherClassesExternes, this.afficherAttributs, this.afficherMethodes, 50, 50);
         majAffichage();
     }
 
@@ -127,82 +118,20 @@ public class Controleur {
      * Cette méthode assure que chaque bloc (classe racine ou interne) est initialisé 
      * avec ses membres et son stéréotype UML.
      */
-    private void creerBlocsEtLiaisonsRecursif(ClasseObjet c, int x, int y) 
-    {
-        // 1. Gestion du filtre des classes externes
-        boolean estExterne = (c.getSpecifique() != null && c.getSpecifique().equals("externe"));
-        if (!afficherClassesExternes && estExterne) {
-            return;
-        }
+    // bloc construction delegated to DiagramPresenter
 
-        // 2. Récupération immédiate des données formatées depuis le modèle
-        // On utilise les préférences d'affichage (filtres attributs/méthodes) définies dans le contrôleur
-        List<String> attrVue = afficherAttributs ? convertirAttributs(c.getattributs(), c) : new ArrayList<>();
-        List<String> methVue = afficherMethodes ? convertirMethodes(c.getMethodes(), c) : new ArrayList<>();
-
-        // 3. Instanciation du bloc graphique
-        BlocClasse bloc = new BlocClasse(c.getNom(), x, y, attrVue, methVue);
-        
-        // 4. Rétablissement de l'affichage du type spécifique (stéréotype)
-        // On récupère la valeur du modèle pour l'injecter dans la vue
-        if (c.getSpecifique() != null && !c.getSpecifique().isEmpty()) {
-            bloc.setTypeSpecifique(c.getSpecifique());
-            
-            // Cas particulier pour forcer le flag interface si le stéréotype est "interface"
-            if (c.getSpecifique().equals("interface")) {
-                bloc.setInterface(true);
-            }
-        } else if (c.getNom().contains("Interface")) {
-            // Sécurité si le parsing n'a pas détecté le mot-clé mais que le nom est explicite
-            bloc.setInterface(true);
-            bloc.setTypeSpecifique("interface");
-        }
-        
-        // 5. Marquage du bloc si externe (pour le rendu gris)
-        if (estExterne) {
-            bloc.setExterne(true);
-        }
-        
-        // Ajout à la liste des blocs gérés par la vue
-        blocsVue.add(bloc);
-
-        // 6. Gestion récursive des classes internes
-        // On applique un décalage (offset) pour visualiser l'imbrication sur le diagramme
-        int offsetX = 40;
-        int offsetY = 180;
-        for (ClasseObjet inner : c.getClassesInternes()) {
-            creerBlocsEtLiaisonsRecursif(inner, x + offsetX, y + offsetY);
-        }
-    }
-
-    private BlocClasse trouverBlocParNom(String nom) 
-    {
-        for (BlocClasse b : blocsVue) {
-            if (b.getNom().equals(nom)) return b;
-        }
-        return null;
-    }
+    // helper removed: use DiagramPresenter to rebuild blocs when needed
 
     public void ajouterMethodes() 
     {
-        List<ClasseObjet> classes = this.metierComplet.getClasses();
-        for (ClasseObjet c : classes) {
-            List<String> methVue = convertirMethodes(c.getMethodes(), c);
-            BlocClasse bloc = trouverBlocParNom(c.getNom());
-            if (bloc != null) bloc.setMethodes(methVue);
-        }
-        majAffichage();
+        // Rebuild blocs with methods visible
+        reafficherAvecFiltreExternes();
     }
 
     public void ajouterAttributs() 
     {
-        List<ClasseObjet> classes = this.metierComplet.getClasses();
-        for (ClasseObjet c : classes) {
-            List<String> attrVue = convertirAttributs(c.getattributs(), c);
-            BlocClasse bloc = trouverBlocParNom(c.getNom());
-            if (bloc != null) bloc.setAttributs(attrVue);
-        }
-        majAffichage();
+        // Rebuild blocs with attributes visible
+        reafficherAvecFiltreExternes();
     }
 
     /**
@@ -214,17 +143,7 @@ public class Controleur {
         List<HeritageObjet> heritages = this.metierComplet.getHeritages();
         List<InterfaceObjet> implementations = this.metierComplet.getImplementations();
 
-        List<LiaisonVue> liaisonsVue = new ArrayList<>();
-        liaisonsVue.addAll(convertirLiaisons(associations, TypeLiaison.ASSOCIATION_UNIDI));
-        liaisonsVue.addAll(convertirLiaisons(heritages, TypeLiaison.HERITAGE));
-        liaisonsVue.addAll(convertirLiaisons(implementations, TypeLiaison.IMPLEMENTATION));
-
-        // AJOUT : Récupérer les liaisons de classes internes créées lors du parsing
-        for (ClasseObjet c : this.metierComplet.getClasses()) {
-            for (ClasseObjet inner : c.getClassesInternes()) {
-                liaisonsVue.add(new LiaisonVue(inner.getNom(), c.getNom(), TypeLiaison.NESTED, null, null));
-            }
-        }
+        List<LiaisonVue> liaisonsVue = vue.DiagramPresenter.buildLiaisons(associations, heritages, implementations, this.metierComplet.getClasses());
 
         if (vuePrincipale != null) {
             vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocsVue);
@@ -348,8 +267,9 @@ public class Controleur {
      * @param type     Type de liaison (ASSOCIATION, HERITAGE, IMPLEMENTATION)
      * @return Liste des liaisons prêtes pour l'affichage graphique
      */
-    private List<LiaisonVue> convertirLiaisons(List<? extends LiaisonObjet> liaisons, TypeLiaison type) {
-    return PresentationMapper.convertirLiaisons(liaisons, type, metierComplet.getClasses());
+    private List<LiaisonVue> convertirLiaisons(List<? extends LiaisonObjet> liaisons, TypeLiaison type)
+    {
+        return PresentationMapper.convertirLiaisons(liaisons, type, metierComplet.getClasses());
     }
     
 
@@ -426,26 +346,8 @@ public class Controleur {
 
     private void rafraichirMembres() 
     {
-        for (BlocClasse bloc : blocsVue) 
-        {
-            // Recherche manuelle dans la liste existante
-            ClasseObjet classeAssociee = null;
-            for (ClasseObjet c : metierComplet.getClasses()) 
-            {
-                if (c.getNom().equals(bloc.getNom())) 
-                {
-                    classeAssociee = c;
-                    break;
-                }
-            }
-
-            if (classeAssociee != null) 
-            {
-                bloc.setAttributs(afficherAttributs ? convertirAttributs(classeAssociee.getattributs(), classeAssociee) : new ArrayList<>());
-                bloc.setMethodes(afficherMethodes ? convertirMethodes(classeAssociee.getMethodes(), classeAssociee) : new ArrayList<>());
-            }
-        }
-        vuePrincipale.getPanneauDiagramme().repaint();
+        // Rebuild blocs to reflect member visibility changes
+        reafficherAvecFiltreExternes();
     }
 
     /**

@@ -19,6 +19,7 @@
 ./src/vue/ExportIHM.java
 ./src/vue/ExportHelper.java
 ./src/vue/PresentationMapper.java
+./src/vue/DiagramPresenter.java
 ./src/vue/FenetrePrincipale.java
 ./src/vue/LiaisonVue.java
 ./src/vue/EditeurLiaisonDialog.java
