@@ -201,7 +201,16 @@ public class Controleur {
         BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
         if (c.getNom().contains("Interface")) bloc.setInterface(true);
         if (estExterne) bloc.setExterne(true);
-
+        
+        if (c.getNom().contains("Interface") || (c.getSpecifique() != null && c.getSpecifique().equals("interface")))
+        {
+            bloc.setInterface(true);
+            bloc.setTypeSpecifique("interface");
+        } else if (c.getSpecifique() != null && (c.getSpecifique().equals("record") || c.getSpecifique().equals("abstract class"))) 
+        {
+            bloc.setTypeSpecifique(c.getSpecifique());
+        }
+        
         blocsVue.add(bloc);
 
         // 2. Pour chaque classe interne, créer son propre bloc et la liaison NESTED

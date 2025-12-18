@@ -196,7 +196,7 @@ private int dessinerNom(Graphics2D g)
 
     int nomY;
     if (avecTypeSpecifique) {
-        nomY = yEntete + 18;
+       nomY = y + HAUTEUR_ENTETE - (HAUTEUR_ENTETE - fmNom.getAscent()) / 2;
     } else {
         nomY = y + HAUTEUR_ENTETE - (HAUTEUR_ENTETE - fmNom.getAscent()) / 2;
     }
