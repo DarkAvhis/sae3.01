@@ -580,23 +580,35 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
     {
         int rayonCercle = 10;
         
-        // 1. Calcul de l'angle pour placer le cercle sur le bord de l'hôte
+        // 1. Calcul de l'angle entre les deux blocs
         double angle = Math.atan2(pInterne.y - pHote.y, pInterne.x - pHote.x);
         
-        // 2. Dessin du trait entre la classe interne et le bord du cercle
+        // 2. Calcul du centre du cercle avec décalage
+        // En ajoutant 'rayonCercle' à la position, le bord du rond touchera juste le bord de la classe
+        int xCentre = (int) (pHote.x + rayonCercle * Math.cos(angle));
+        int yCentre = (int) (pHote.y + rayonCercle * Math.sin(angle));
+        
+        // 3. Le trait commence désormais au bord extérieur du cercle (décalage de 2 * rayon)
         int xLigneStart = (int) (pHote.x + (rayonCercle * 2) * Math.cos(angle));
         int yLigneStart = (int) (pHote.y + (rayonCercle * 2) * Math.sin(angle));
+        
+        // 4. Dessiner le trait
+        g2d.setColor(Color.BLACK);
+        g2d.setStroke(new BasicStroke(1));
         g2d.drawLine(pInterne.x, pInterne.y, xLigneStart, yLigneStart);
         
-        // 3. Dessin du cercle (l'ancre)
+        // 5. Dessiner le cercle blanc (fond)
         g2d.setColor(Color.WHITE);
-        g2d.fillOval(pHote.x - rayonCercle, pHote.y - rayonCercle, rayonCercle * 2, rayonCercle * 2);
-        g2d.setColor(Color.BLACK);
-        g2d.drawOval(pHote.x - rayonCercle, pHote.y - rayonCercle, rayonCercle * 2, rayonCercle * 2);
+        g2d.fillOval(xCentre - rayonCercle, yCentre - rayonCercle, rayonCercle * 2, rayonCercle * 2);
         
-        // 4. Dessin du "+" à l'intérieur
-        g2d.drawLine(pHote.x - rayonCercle + 3, pHote.y, pHote.x + rayonCercle - 3, pHote.y);
-        g2d.drawLine(pHote.x, pHote.y - rayonCercle + 3, pHote.x, pHote.y + rayonCercle - 3);
+        // 6. Dessiner le contour et le "+"
+        g2d.setColor(Color.BLACK);
+        g2d.drawOval(xCentre - rayonCercle, yCentre - rayonCercle, rayonCercle * 2, rayonCercle * 2);
+        
+        // Ligne horizontale du +
+        g2d.drawLine(xCentre - rayonCercle + 3, yCentre, xCentre + rayonCercle - 3, yCentre);
+        // Ligne verticale du +
+        g2d.drawLine(xCentre, yCentre - rayonCercle + 3, xCentre, yCentre + rayonCercle - 3);
     }
 
     /**
