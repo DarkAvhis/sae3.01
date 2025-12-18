@@ -127,30 +127,34 @@ public class AnalyseurUML {
                             specifique);
 
                     // DÉTECTION DES INTERFACES IMPLÉMENTÉES
-                    if (ligneBrute.contains(" implements ")) {
+                    if (ligneBrute.contains(" implements ")) 
+                    {
                         String partieImplements = ligneBrute.substring(ligneBrute.indexOf(" implements ") + 12);
-                        if (partieImplements.contains("{")) {
-                            partieImplements = partieImplements.substring(0, partieImplements.indexOf("{")).trim();
-                        }
-                        if (partieImplements.contains(" extends ")) {
-                            partieImplements = partieImplements.substring(0, partieImplements.indexOf(" extends "))
-                                    .trim();
-                        }
+                        
+                        // Nettoyage de la fin de ligne (accolade ou extends éventuel)
+                        if (partieImplements.contains("{")) partieImplements = partieImplements.split("\\{")[0];
 
-                        String[] interfaces = partieImplements.split(",");
+                        // Utilisation du Scanner avec délimiteur
+                        Scanner delimiterScanner = new Scanner(partieImplements);
+                        // Délimiteur : virgule entourée d'espaces OU espaces simples
+                        // On utilise une regex qui ignore les virgules à l'intérieur des chevrons < >
+                        delimiterScanner.useDelimiter(",(?![^<>]*>)|\\s+");
+
                         ArrayList<String> listeInterfaces = new ArrayList<>();
-                        for (String interfaceName : interfaces) {
-                            String nomInterface = interfaceName.trim();
-                            if (nomInterface.contains("<")) {
-                                nomInterface = nomInterface.substring(0, nomInterface.indexOf("<")).trim();
-                            }
+                        while (delimiterScanner.hasNext()) {
+                            String nomInterface = delimiterScanner.next().trim();
                             if (!nomInterface.isEmpty()) {
+                                // Nettoyage des génériques si nécessaire
+                                if (nomInterface.contains("<")) {
+                                    nomInterface = nomInterface.substring(0, nomInterface.indexOf("<")).trim();
+                                }
                                 listeInterfaces.add(nomInterface);
                             }
                         }
                         if (!listeInterfaces.isEmpty()) {
                             this.lstInterfaces.put(nomEntite, listeInterfaces);
                         }
+                        delimiterScanner.close();
                     }
 
                     // LOGIQUE DE PILE : Si la pile n'est pas vide, c'est une classe interne
