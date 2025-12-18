@@ -43,6 +43,8 @@ public class Controleur {
     private List<BlocClasse> blocsVue = new ArrayList<>();
     private String cheminProjetActuel;
     private boolean afficherClassesExternes = true;
+    private boolean afficherAttributs = true;
+    private boolean afficherMethodes = true;
 
     // --- Constantes pour le Layout Hiérarchique ---
     private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
@@ -194,36 +196,25 @@ public class Controleur {
 
     private void creerBlocsEtLiaisonsRecursif(ClasseObjet c, int x, int y) 
     {
-        // 1. Création du bloc pour la classe actuelle
         boolean estExterne = (c.getSpecifique() != null && c.getSpecifique().equals("externe"));
         if (!afficherClassesExternes && estExterne) return;
 
-        BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
-        if (c.getNom().contains("Interface")) bloc.setInterface(true);
-        if (estExterne) bloc.setExterne(true);
+        // Récupérer les données formatées immédiatement
+        List<String> attrVue = convertirAttributs(c.getattributs(), c);
+        List<String> methVue = convertirMethodes(c.getMethodes(), c);
+
+        // Créer le bloc avec les vraies données au lieu de new ArrayList<>()
+        BlocClasse bloc = new BlocClasse(c.getNom(), x, y, attrVue, methVue);
         
-        if (c.getNom().contains("Interface") || (c.getSpecifique() != null && c.getSpecifique().equals("interface")))
-        {
-            bloc.setInterface(true);
-            bloc.setTypeSpecifique("interface");
-        } else if (c.getSpecifique() != null && (c.getSpecifique().equals("record") || c.getSpecifique().equals("abstract class"))) 
-        {
-            bloc.setTypeSpecifique(c.getSpecifique());
-        }
+        // ... reste de votre logique (setInterface, typeSpecifique, etc.) ...
         
         blocsVue.add(bloc);
 
-        // 2. Pour chaque classe interne, créer son propre bloc et la liaison NESTED
-        int offsetX = 40; // Décalage pour les enfants
+        // La récursion existante s'occupera alors de créer les blocs enfants avec leurs données
+        int offsetX = 40;
         int offsetY = 180;
-
         for (ClasseObjet inner : c.getClassesInternes()) {
-            // Appel récursif pour l'enfant (positionné relativement au parent)
             creerBlocsEtLiaisonsRecursif(inner, x + offsetX, y + offsetY);
-            
-            // Création de la liaison visuelle de contenance
-            // Note: La liaison doit être ajoutée à une liste traitée par PanneauDiagramme
-            // Vous devrez peut-être adapter votre stockage de liaisons dans Controleur
         }
     }
 
@@ -744,6 +735,42 @@ public class Controleur {
 
     public String getCheminProjetActuel() {
         return this.cheminProjetActuel;
+    }
+
+    public void toggleAttributs() 
+    {
+    this.afficherAttributs = !this.afficherAttributs;
+    rafraichirMembres();
+    }   
+
+    public void toggleMethodes() 
+    {
+        this.afficherMethodes = !this.afficherMethodes;
+        rafraichirMembres();
+    }
+
+    private void rafraichirMembres() 
+    {
+        for (BlocClasse bloc : blocsVue) 
+        {
+            // Recherche manuelle dans la liste existante
+            ClasseObjet classeAssociee = null;
+            for (ClasseObjet c : metierComplet.getClasses()) 
+            {
+                if (c.getNom().equals(bloc.getNom())) 
+                {
+                    classeAssociee = c;
+                    break;
+                }
+            }
+
+            if (classeAssociee != null) 
+            {
+                bloc.setAttributs(afficherAttributs ? convertirAttributs(classeAssociee.getattributs(), classeAssociee) : new ArrayList<>());
+                bloc.setMethodes(afficherMethodes ? convertirMethodes(classeAssociee.getMethodes(), classeAssociee) : new ArrayList<>());
+            }
+        }
+        vuePrincipale.getPanneauDiagramme().repaint();
     }
 
     /**

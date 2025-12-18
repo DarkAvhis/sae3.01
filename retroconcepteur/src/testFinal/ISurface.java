@@ -2,5 +2,5 @@ package testFinal;
 
 public interface ISurface 
 {
-    int zero();
+    public int zero();
 }

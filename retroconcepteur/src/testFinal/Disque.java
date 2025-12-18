@@ -30,6 +30,10 @@ public class Disque  implements ISurface
 
     private class TestInterne
     {
-
+        int caca ;
+        public int pipi()
+        {
+            return caca;
+        }
     }
 }

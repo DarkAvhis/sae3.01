@@ -25,8 +25,13 @@ public class AnalyseurUML {
     private static final int MULT_INDEFINIE = 999999999;
 
     // Listes pour stocker les relations en attente de résolution
-    private HashMap<String, String> lstIntentionHeritage = new HashMap<String, String>();
-    private HashMap<String, ArrayList<String>> lstInterfaces = new HashMap<String, ArrayList<String>>();
+    private HashMap<String, String>             lstIntentionHeritage;
+    private HashMap<String, ArrayList<String>>  lstInterfaces;
+
+    public AnalyseurUML() {
+        this.lstIntentionHeritage = new HashMap<String, String>();
+        this.lstInterfaces = new HashMap<String, ArrayList<String>>();
+    }
 
     public void resetRelations() {
         this.lstIntentionHeritage.clear();
@@ -42,6 +47,7 @@ public class AnalyseurUML {
     }
 
     public ClasseObjet analyserFichierUnique(String chemin) {
+        
         File file = new File(chemin);
         String nomFichier = file.getName().replace(".java", "");
 
@@ -121,30 +127,34 @@ public class AnalyseurUML {
                             specifique);
 
                     // DÉTECTION DES INTERFACES IMPLÉMENTÉES
-                    if (ligneBrute.contains(" implements ")) {
+                    if (ligneBrute.contains(" implements ")) 
+                    {
                         String partieImplements = ligneBrute.substring(ligneBrute.indexOf(" implements ") + 12);
-                        if (partieImplements.contains("{")) {
-                            partieImplements = partieImplements.substring(0, partieImplements.indexOf("{")).trim();
-                        }
-                        if (partieImplements.contains(" extends ")) {
-                            partieImplements = partieImplements.substring(0, partieImplements.indexOf(" extends "))
-                                    .trim();
-                        }
+                        
+                        // Nettoyage de la fin de ligne (accolade ou extends éventuel)
+                        if (partieImplements.contains("{")) partieImplements = partieImplements.split("\\{")[0];
 
-                        String[] interfaces = partieImplements.split(",");
+                        // Utilisation du Scanner avec délimiteur
+                        Scanner delimiterScanner = new Scanner(partieImplements);
+                        // Délimiteur : virgule entourée d'espaces OU espaces simples
+                        // On utilise une regex qui ignore les virgules à l'intérieur des chevrons < >
+                        delimiterScanner.useDelimiter(",(?![^<>]*>)|\\s+");
+
                         ArrayList<String> listeInterfaces = new ArrayList<>();
-                        for (String interfaceName : interfaces) {
-                            String nomInterface = interfaceName.trim();
-                            if (nomInterface.contains("<")) {
-                                nomInterface = nomInterface.substring(0, nomInterface.indexOf("<")).trim();
-                            }
+                        while (delimiterScanner.hasNext()) {
+                            String nomInterface = delimiterScanner.next().trim();
                             if (!nomInterface.isEmpty()) {
+                                // Nettoyage des génériques si nécessaire
+                                if (nomInterface.contains("<")) {
+                                    nomInterface = nomInterface.substring(0, nomInterface.indexOf("<")).trim();
+                                }
                                 listeInterfaces.add(nomInterface);
                             }
                         }
                         if (!listeInterfaces.isEmpty()) {
                             this.lstInterfaces.put(nomEntite, listeInterfaces);
                         }
+                        delimiterScanner.close();
                     }
 
                     // LOGIQUE DE PILE : Si la pile n'est pas vide, c'est une classe interne
@@ -190,7 +200,7 @@ public class AnalyseurUML {
                     // Extraction Méthodes (nécessite une visibilité pour éviter les blocs
                     // statiques)
                     else if (ligneBrute.contains("(") && (ligneBrute.contains("public")
-                            || ligneBrute.contains("private") || ligneBrute.contains("protected"))) {
+                            || ligneBrute.contains("private") || ligneBrute.contains("protected")) && !ligneBrute.contains("=")) {
                         ParsingUtil.extraireMethode(ligneBrute, estStatique, classeCourante.getNom(),
                                 classeCourante.getMethodes());
                     }
