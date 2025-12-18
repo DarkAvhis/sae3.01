@@ -517,81 +517,92 @@ public class Controleur {
      * @return Liste des liaisons prêtes pour l'affichage graphique
      */
     private List<LiaisonVue> convertirLiaisons(List<? extends LiaisonObjet> liaisons, TypeLiaison type) {
-        List<LiaisonVue> liaisonsVue = new ArrayList<>();
-        for (LiaisonObjet liaison : liaisons) {
-            // Traitement spécial pour les InterfaceObjet qui stockent les interfaces dans
-            // une liste
-            if (liaison instanceof InterfaceObjet) {
-                InterfaceObjet interfaceLiaison = (InterfaceObjet) liaison;
-                if (interfaceLiaison.getClasseFille() == null) {
-                    continue;
-                }
-                String nomClasseConcrete = interfaceLiaison.getClasseFille().getNom();
+    List<LiaisonVue> liaisonsVue = new ArrayList<>();
+    List<ClasseObjet> classes = metierComplet.getClasses();
 
-                // Parcourir la liste des interfaces implémentées
-                List<ClasseObjet> interfaces = interfaceLiaison.getLstInterfaces();
-
-                for (ClasseObjet interfaceClass : interfaces) {
-                    if (interfaceClass != null) {
-                        liaisonsVue.add(new LiaisonVue(nomClasseConcrete, interfaceClass.getNom(), type, null, null));
-                    }
+    // 1️⃣ Liaisons classiques
+    for (LiaisonObjet liaison : liaisons) {
+        if (liaison instanceof InterfaceObjet) {
+            InterfaceObjet interfaceLiaison = (InterfaceObjet) liaison;
+            if (interfaceLiaison.getClasseFille() == null) continue;
+            String nomClasseConcrete = interfaceLiaison.getClasseFille().getNom();
+            for (ClasseObjet interfaceClass : interfaceLiaison.getLstInterfaces()) {
+                if (interfaceClass != null) {
+                    liaisonsVue.add(new LiaisonVue(nomClasseConcrete, interfaceClass.getNom(), type, null, null));
                 }
+            }
+        } else {
+            if (liaison.getClasseFille() == null || liaison.getClasseMere() == null) continue;
+
+            String nomOrig = liaison.getClasseFille().getNom();
+            String nomDest = liaison.getClasseMere().getNom();
+            String multOrig = null;
+            String multDest = null;
+
+            if (liaison instanceof AssociationObjet) {
+                AssociationObjet asso = (AssociationObjet) liaison;
+                multOrig = asso.getMultOrig() != null ? asso.getMultOrig().toString() : "1..1";
+                multDest = asso.getMultDest() != null ? asso.getMultDest().toString() : "1..1";
+
+                List<String> props = new ArrayList<>();
+                if (asso.isFrozen()) props.add("frozen");
+                if (asso.isAddOnly()) props.add("addOnly");
+                if (asso.isRequete()) props.add("requête");
+                String propsStr = props.isEmpty() ? "" : "{" + String.join(", ", props) + "}";
+
+                liaisonsVue.add(new LiaisonVue(
+                        nomOrig, nomDest, type, multOrig, multDest,
+                        asso.getRoleOrig(), asso.getRoleDest(),
+                        asso.getRoleOrigOffsetAlong(), asso.getRoleOrigOffsetPerp(),
+                        asso.getRoleDestOffsetAlong(), asso.getRoleDestOffsetPerp(),
+                        propsStr, ""
+                ));
             } else {
-                // Vérifier que les deux classes existent pour les autres liaisons
-                if (liaison.getClasseFille() == null || liaison.getClasseMere() == null) {
-                    System.err.println("Attention: liaison avec classe null ignorée");
-                    continue;
-                }
-
-                String nomOrig = liaison.getClasseFille().getNom();
-                String nomDest = liaison.getClasseMere().getNom();
-
-                String multOrig = null;
-                String multDest = null;
-
-                if (liaison instanceof AssociationObjet) {
-                    AssociationObjet asso = (AssociationObjet) liaison;
-
-                    multOrig = asso.getMultOrig() != null ? asso.getMultOrig().toString() : "1..1";
-                    multDest = asso.getMultDest() != null ? asso.getMultDest().toString() : "1..1";
-
-                    // Propriétés prédéfinies
-                    List<String> props = new ArrayList<>();
-                    if (asso.isFrozen())
-                        props.add("frozen");
-                    if (asso.isAddOnly())
-                        props.add("addOnly");
-                    if (asso.isRequete())
-                        props.add("requête");
-                    String propsStr = props.isEmpty() ? "" : "{" + String.join(", ", props) + "}";
-
-                    // Créer une LiaisonVue enrichie si rôles définis
-                    String roleOrig = asso.getRoleOrig();
-                    String roleDest = asso.getRoleDest();
-                    boolean hasRoles = (roleOrig != null && !roleOrig.isEmpty())
-                            || (roleDest != null && !roleDest.isEmpty());
-                    if (hasRoles || !propsStr.isEmpty()) {
-                        liaisonsVue.add(new LiaisonVue(
-                                nomOrig,
-                                nomDest,
-                                type,
-                                multOrig,
-                                multDest,
-                                roleOrig,
-                                roleDest,
-                                asso.getRoleOrigOffsetAlong(), asso.getRoleOrigOffsetPerp(),
-                                asso.getRoleDestOffsetAlong(), asso.getRoleDestOffsetPerp(),
-                                propsStr,
-                                ""));
-                        continue;
-                    }
-                }
-
                 liaisonsVue.add(new LiaisonVue(nomOrig, nomDest, type, multOrig, multDest));
             }
         }
+    }
+    // 2️⃣ Liaisons issues des attributs (uniquement si aucune liaison n'existe déjà)
+        for (ClasseObjet c : classes) 
+        {
+            for (AttributObjet att : c.getattributs()) {
+                String typeAtt = att.getType();
+                String typeSimple = typeAtt;
+                if (typeAtt.endsWith("[]")) typeSimple = typeAtt.replace("[]", "");
+                else if (typeAtt.contains("<") && typeAtt.contains(">"))
+                    typeSimple = typeAtt.substring(typeAtt.indexOf("<") + 1, typeAtt.indexOf(">"));
+
+                for (ClasseObjet cible : classes) {
+                    if (cible.getNom().equals(typeSimple) && !cible.getNom().equals(c.getNom())) {
+                        boolean existe = false;
+                        for (LiaisonVue lv : liaisonsVue) {
+                            if ((lv.getNomClasseOrig().equals(c.getNom()) && lv.getNomClasseDest().equals(cible.getNom())) ||
+                                (lv.getNomClasseOrig().equals(cible.getNom()) && lv.getNomClasseDest().equals(c.getNom()))) {
+                                existe = true;
+                                break;
+                            }
+                        }
+                        if (existe) continue;
+
+                        liaisonsVue.add(new LiaisonVue(
+                                c.getNom(),
+                                cible.getNom(),
+                                LiaisonVue.TypeLiaison.ASSOCIATION_UNIDI,
+                                null,
+                                null,
+                                att.getNom(),
+                                null,
+                                0,0,0,0,
+                                "", ""
+                        ));
+                    }
+                }
+            }
+        }
+
         return liaisonsVue;
     }
+    
 
     /**
      * Convertit les attributs d'une classe en format d'affichage UML.

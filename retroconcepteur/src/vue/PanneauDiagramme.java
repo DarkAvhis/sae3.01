@@ -331,7 +331,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
             return;
         }
 
-        g2d.setFont(new Font("Arial", Font.PLAIN, 10)); // Police pour les multiplicités
+        g2d.setFont(new Font("Arial", Font.PLAIN, 12)); // Police pour les multiplicités
 
         for (LiaisonVue liaison : liaisonsVue) {
             Optional<BlocClasse> blocOrig = blocsClasses.stream()
@@ -373,14 +373,16 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
                         }
 
                         // Rôles (labels) aux extrémités (optionnels)
-                        if (liaison.getRoleOrig() != null && !liaison.getRoleOrig().isEmpty()) {
-                            dessinerRole(g2d, p1, p2, liaison.getRoleOrig(), true,
-                                    liaison.getRoleOrigOffsetAlong(), liaison.getRoleOrigOffsetPerp());
+                      if (liaison.getRoleOrig() != null && !liaison.getRoleOrig().isEmpty()) {
+                            // Rôle côté source (tu peux l’afficher à 1/7 depuis la source)
+                            dessinerRole(g2d, p1, p2, liaison.getRoleOrig(), liaison.getRoleOrigOffsetPerp());
                         }
+
                         if (liaison.getRoleDest() != null && !liaison.getRoleDest().isEmpty()) {
-                            dessinerRole(g2d, p1, p2, liaison.getRoleDest(), false,
-                                    liaison.getRoleDestOffsetAlong(), liaison.getRoleDestOffsetPerp());
+                            // Rôle côté destination (toujours côté classe destinataire)
+                            dessinerRole(g2d, p1, p2, liaison.getRoleDest(), liaison.getRoleDestOffsetPerp());
                         }
+
 
                         if (liaison.getType() == TypeLiaison.ASSOCIATION_UNIDI) {
                             dessinerFlecheSimple(g2d, p1, p2);
@@ -438,7 +440,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
 
         // Décalage perpendiculaire (au-dessus de la ligne)
         double perpAngle = angle + Math.PI / 2;
-        int offsetPerp = 12;
+        int offsetPerp = -18;
 
         int xText = (int) (xLine + offsetPerp * Math.cos(perpAngle));
         int yText = (int) (yLine + offsetPerp * Math.sin(perpAngle));
@@ -466,28 +468,41 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
      * @param offsetAlong décalage le long de la ligne
      * @param offsetPerp  décalage perpendiculaire à la ligne
      */
-    private void dessinerRole(Graphics2D g2d, Point pStart, Point pEnd, String role, boolean isSource,
-            int offsetAlong, int offsetPerp) {
-        if (role == null || role.isEmpty())
-            return;
+    private void dessinerRole(Graphics2D g2d, Point pStart, Point pEnd, String role, int offsetPerp) {
+        if (role == null || role.isEmpty()) return;
 
-        Point pAnchor = isSource ? pStart : pEnd;
-
+        // On place toujours le texte côté destination (pEnd)
         double angle = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
         double perpAngle = angle + Math.PI / 2;
 
-        int xLine = (int) (pAnchor.x + offsetAlong * Math.cos(angle));
-        int yLine = (int) (pAnchor.y + offsetAlong * Math.sin(angle));
+        // Position le long de la ligne proche de la destination
+        int offsetAlong = (int) (pStart.distance(pEnd) * 0.9); // 90% vers pEnd
 
+        int xLine = (int) (pStart.x + offsetAlong * Math.cos(angle));
+        int yLine = (int) (pStart.y + offsetAlong * Math.sin(angle));
+
+        // Décalage perpendiculaire (vers le haut ou bas selon le design)
+        offsetPerp = 20; 
         int xText = (int) (xLine + offsetPerp * Math.cos(perpAngle));
         int yText = (int) (yLine + offsetPerp * Math.sin(perpAngle));
 
+        // Centrer le texte horizontalement
         FontMetrics fm = g2d.getFontMetrics();
         int textWidth = fm.stringWidth(role);
         xText -= (int) (textWidth * 0.5);
 
+        // Fond blanc pour lisibilité
+        int textHeight = fm.getAscent();
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(xText - 2, yText - textHeight, textWidth + 4, textHeight + 2);
+
+        // Dessin du texte
+        g2d.setColor(Color.BLACK);
         g2d.drawString(role, xText, yText);
     }
+
+
+
 
     private void dessinerProprietes(Graphics2D g2d, Point p1, Point p2, String props) {
         double angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);

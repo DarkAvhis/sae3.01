@@ -63,11 +63,11 @@ public class BarreMenus extends JMenuBar implements ActionListener {
     public JMenu creerMenuFichier() {
         JMenu menu = new JMenu("Fichier");
 
-        this.ouvrirClasse = new JMenuItem("Ouvrir projet");
-        this.sauvegarderClasse = new JMenuItem("Sauvegarder au format txt");
-        this.itemExporter = new JMenuItem("Exporter le diagramme (PNG)");
+        this.ouvrirClasse          = new JMenuItem("Ouvrir projet");
+        this.sauvegarderClasse     = new JMenuItem("Sauvegarder au format txt");
+        this.itemExporter          = new JMenuItem("Exporter le diagramme (PNG)");
         JMenuItem itemExporterJSON = new JMenuItem("Exporter le diagramme (JSON)");
-        this.quitterClasse = new JMenuItem("Quitter");
+        this.quitterClasse         = new JMenuItem("Quitter");
 
         ouvrirClasse.addActionListener(this);
         sauvegarderClasse.addActionListener(this);
@@ -89,9 +89,9 @@ public class BarreMenus extends JMenuBar implements ActionListener {
     public JMenu creerMenuAffichage() {
         JMenu menu = new JMenu("Affichage");
 
-        this.alignerClasse = new JMenuItem("Aligner les symboles");
-        this.optimiserClasse = new JMenuItem("Optimiser les positions");
-        this.supprimerClasse = new JMenuItem("Supprimer");
+        this.alignerClasse    = new JMenuItem("Aligner les symboles");
+        this.optimiserClasse  = new JMenuItem("Optimiser les positions");
+        this.supprimerClasse  = new JMenuItem("Supprimer");
         this.afficherExternes = new JCheckBoxMenuItem("Afficher les classes externes", true);
 
         alignerClasse.addActionListener(this);
@@ -109,60 +109,36 @@ public class BarreMenus extends JMenuBar implements ActionListener {
         return menu;
     }
 
-    public JMenu creerMenuAide() {
+    public JMenu creerMenuAide() 
+    {
         JMenu menu = new JMenu("Aide");
 
         this.aProposClasse = new JMenuItem("À propos");
         aProposClasse.addActionListener(this);
-
         menu.add(aProposClasse);
 
         return menu;
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) 
+    {
         Object src = e.getSource();
 
-        if (src == ouvrirClasse) {
-            actionOuvrirProjet();
-        }
-        if (src == sauvegarderClasse) {
-            actionSauvegarder();
-        }
-        if (src == supprimerClasse) {
-            actionSupprimer();
-        }
-        if (src == alignerClasse) {
-            actionAligner();
-        }
-        if (src == optimiserClasse) {
-            actionOptimiser();
-        }
-        if (src == aProposClasse) {
-            actionAPropos();
-        }
-        if (src == itemExporter) {
-            actionExporter();
-        }
-        if (src instanceof JMenuItem && ((JMenuItem) src).getText().contains("JSON")) {
-            actionExporterJSON();
-        }
-        if (src == afficherExternes) {
-            actionToggleExternes();
-        }
-        if (src == quitterClasse) {
-            System.exit(0);
-        }
+        if (src == ouvrirClasse       ) {    actionOuvrirProjet()     ;    }
+        if (src == sauvegarderClasse  ) {    actionSauvegarder()      ;    }
+        if (src == supprimerClasse    ) {    actionSupprimer()        ;    }
+        if (src == alignerClasse      ) {    actionAligner()          ;    }
+        if (src == optimiserClasse    ) {    actionOptimiser()        ;    }
+        if (src == aProposClasse      ) {    actionAPropos()          ;    }
+        if (src == itemExporter       ) {    actionExporter()         ;    }
+        if (src == afficherExternes   ) {    actionToggleExternes()   ;    }
+        if (src == quitterClasse      ) {    System.exit(0)   ;    }
+        if (src instanceof JMenuItem && ((JMenuItem) src).getText().contains("JSON")) {        actionExporterJSON();    }
     }
 
-    public void actionExporter() {
-        controleur.exporterDiagramme();
-    }
-
-    public void actionExporterJSON() {
-        controleur.exporterDiagrammeJSON();
-    }
+    public void actionExporter    () {    controleur.exporterDiagramme()     ;  }
+    public void actionExporterJSON() {    controleur.exporterDiagrammeJSON( );  }
 
     public void actionOuvrirProjet() {
         JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.dir")));

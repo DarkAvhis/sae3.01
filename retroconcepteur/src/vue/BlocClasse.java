@@ -8,6 +8,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.Canvas;
 
 /**
  * Représentation graphique d'une classe UML.
@@ -77,11 +78,11 @@ public class BlocClasse {
         this.estExterne = false; // Initialisation du nouveau champ
 
         // Calcul précis de la largeur du nom et du sous-titre avec la police réelle
-        java.awt.Font fontNom = new Font("Arial", Font.BOLD, 12);
-        java.awt.Font fontSousTitre = new Font("Arial", Font.ITALIC, 11);
-        java.awt.Canvas c = new java.awt.Canvas();
-        java.awt.FontMetrics fmNom = c.getFontMetrics(fontNom);
-        java.awt.FontMetrics fmSousTitre = c.getFontMetrics(fontSousTitre);
+        Font fontNom            = new Font("Arial", Font.BOLD, 12);
+        Font fontSousTitre      = new Font("Arial", Font.ITALIC, 11);
+        Canvas c                = new Canvas();
+        FontMetrics fmNom       = c.getFontMetrics(fontNom);
+        FontMetrics fmSousTitre = c.getFontMetrics(fontSousTitre);
 
         int largeurNom = fmNom.stringWidth(nom);
         int largeurSousTitre = 0;
@@ -111,13 +112,12 @@ public class BlocClasse {
                 + PADDING * 4;
     }
 
-    public BlocClasse(String nom, int x, int y) {
-        this(nom, x, y, new ArrayList<>(), new ArrayList<>());
+    public BlocClasse(String nom, int x, int y) 
+    {    
+        this(nom, x, y, new ArrayList<>(), new ArrayList<>()) ;  
     }
 
-    public boolean isModeComplet() {
-        return modeComplet;
-    }
+    public boolean isModeComplet() {    return modeComplet;  }
 
     public void setModeComplet(boolean complet) {
         this.modeComplet = complet;
@@ -299,46 +299,17 @@ private int dessinerNom(Graphics2D g)
                 && py >= y && py <= y + hauteur;
     }
 
-    public String getNom() {
-        return nom;
-    }
+    public String getNom()  {    return nom     ;  }
+    public int    getX()    {    return x       ;  }
+    public int    getY()    {    return y       ;  }
+    public int getLargeur() {    return largeur ;  }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getLargeur() {
-        return largeur;
-    }
-
-    public void setLargeur(int largeur) 
-    {
-        this.largeur = largeur;
-    }
-
-    public int getHauteur()
-    {
-        return hauteur;
-    }
-
-    public boolean estInterface() {
-        return estInterface;
-    }
-
-    public boolean estSelectionne() {
-        return estSelectionne;
-    }
-
-    public boolean estExterne() {
-        return estExterne;
-    }
-
-    public void setX(int x) {
-        this.x = x;
+    public void setLargeur(int largeur) {    this.largeur = largeur;  }
+    public int  getHauteur(){    return hauteur;  }
+    public boolean estInterface() {    return estInterface;  }
+    public boolean estSelectionne() {    return estSelectionne;  }
+    public boolean estExterne() {    return estExterne;  }
+    public void setX(int x) {    this.x = x;
     }
 
     public void setY(int y) {
