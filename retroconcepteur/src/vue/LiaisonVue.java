@@ -32,13 +32,10 @@ public class LiaisonVue {
     private String nomClasseDest; // Pour trouver le BlocClasse d'arrivée
     private TypeLiaison type;
 
-    // NOUVEAUX CHAMPS pour les multiplicités
-    private String multipliciteOrig;
-    private String multipliciteDest;
-
-    // Rôles (libellés) sur chaque extrémité pour les associations
-    private String roleOrig;
-    private String roleDest;
+    private String multipliciteOrig = "";
+    private String multipliciteDest = "";
+    private String roleOrig = "";
+    private String roleDest = "";
 
     // Offsets pour l'affichage des rôles (suivent les déplacements des blocs)
     private int roleOrigOffsetAlong = 20;
