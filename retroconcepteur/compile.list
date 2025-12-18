@@ -11,11 +11,14 @@
 ./src/modele/entites/MultipliciteObjet.java
 ./src/modele/entites/InterfaceObjet.java
 ./src/modele/outil/ParsingUtil.java
+./src/modele/outil/DispositionOptimiseur.java
 
 ./src/vue/BarreMenus.java
 ./src/vue/BlocClasse.java
 ./src/vue/ConsoleVue.java
 ./src/vue/ExportIHM.java
+./src/vue/ExportHelper.java
+./src/vue/PresentationMapper.java
 ./src/vue/FenetrePrincipale.java
 ./src/vue/LiaisonVue.java
 ./src/vue/EditeurLiaisonDialog.java

@@ -1,0 +1,90 @@
+package vue;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+/**
+ * Petite classe utilitaire IHM pour gérer l'export depuis la fenêtre principale.
+ */
+public class ExportHelper {
+
+    public static void exportDiagram(FenetrePrincipale vuePrincipale) {
+        if (vuePrincipale == null)
+            return;
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Exporter le diagramme");
+        chooser.setSelectedFile(new File("diagramme.png"));
+        chooser.setFileFilter(
+                new javax.swing.filechooser.FileNameExtensionFilter("Image PNG", "png"));
+
+        int choix = chooser.showSaveDialog(vuePrincipale);
+        if (choix != JFileChooser.APPROVE_OPTION)
+            return;
+
+        File fichier = chooser.getSelectedFile();
+
+        if (!fichier.getName().toLowerCase().endsWith(".png")) {
+            fichier = new File(fichier.getAbsolutePath() + ".png");
+        }
+
+        try {
+            ExportIHM.exportComponent(
+                    vuePrincipale.getPanneauDiagramme(),
+                    fichier
+            );
+            JOptionPane.showMessageDialog(
+                    vuePrincipale,
+                    "Le diagramme a été exporté avec succès.\n\nFichier :\n"
+                            + fichier.getAbsolutePath(),
+                    "Export réussi",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(
+                    vuePrincipale,
+                    "Erreur lors de l'export du diagramme :\n" + e.getMessage(),
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    public static void exportDiagramJSON(FenetrePrincipale vuePrincipale) {
+        if (vuePrincipale == null)
+            return;
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Exporter le diagramme (JSON)");
+        chooser.setSelectedFile(new File("diagramme.json"));
+        chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Fichier JSON", "json"));
+
+        int choix = chooser.showSaveDialog(vuePrincipale);
+        if (choix != JFileChooser.APPROVE_OPTION)
+            return;
+
+        File fichier = chooser.getSelectedFile();
+
+        if (!fichier.getName().toLowerCase().endsWith(".json")) {
+            fichier = new File(fichier.getAbsolutePath() + ".json");
+        }
+
+        try {
+            List<BlocClasse> blocs = vuePrincipale.getPanneauDiagramme().getBlocsClasses();
+            List<LiaisonVue> liaisons = vuePrincipale.getPanneauDiagramme().getLiaisonsVue();
+
+            // TODO: appeler un sérialiseur JSON centralisé si besoin
+
+            JOptionPane.showMessageDialog(vuePrincipale,
+                    "Diagramme exporté en JSON :\n" + fichier.getAbsolutePath(),
+                    "Export JSON réussi", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(vuePrincipale,
+                    "Erreur lors de l'export JSON :\n" + ex.getMessage(),
+                    "Erreur", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+}
