@@ -157,6 +157,7 @@ public class BlocClasse {
         int currentY = dessinerNom(g);
         
         // Appel des méthodes de dessin internes
+
         currentY = dessinerAttributs(g, currentY);
         currentY = dessinerSeparateur(g, currentY);
         currentY = dessinerMethodes(g, currentY);
@@ -170,40 +171,39 @@ public class BlocClasse {
         g.fillRect(x, y, largeur, hauteur);
         
         // Dessin de la bordure (en bleu si sélectionnée)
-        g.setColor(estSelectionne ? Color.BLUE : COULEUR_BORDURE);
-        g.setStroke(new BasicStroke(estSelectionne ? 2 : 1));
+        g.setColor(Color.BLACK);
+        g.setStroke(new BasicStroke(1));
         g.drawRect(x, y, largeur, hauteur);
+
         
-        // Dessin de l'en-tête (rectangle coloré en haut)
-        g.setColor(estExterne ? COULEUR_ENTETE_EXTERNE : COULEUR_ENTETE);
-        g.fillRect(x, y, largeur, HAUTEUR_ENTETE);
+
     }
 
     // Affiche le nom de la classe et retourne la position Y pour la suite du dessin
 private int dessinerNom(Graphics2D g) 
 {
-    // On élargit l'en-tête vers le haut uniquement si typeSpecifique est défini
     boolean avecTypeSpecifique = typeSpecifique != null && !typeSpecifique.isEmpty();
 
-    // Calcul de la position Y du rectangle bleu
     int yEntete = y - (avecTypeSpecifique ? 5 : 0);
     int hauteurEnteteReelle = HAUTEUR_ENTETE + (avecTypeSpecifique ? 5 : 0);
 
-    g.setColor(Color.WHITE);
+    g.setColor(Color.BLACK);
 
     // ---- NOM ----
     g.setFont(new Font("Arial", Font.BOLD, 12));
     FontMetrics fmNom = g.getFontMetrics();
     int nomX = x + (largeur - fmNom.stringWidth(nom)) / 2;
-    int nomY;
 
+    int nomY;
     if (avecTypeSpecifique) {
-        nomY = yEntete + 18; // position du nom plus bas si type affiché
+        nomY = yEntete + 18;
     } else {
         nomY = y + HAUTEUR_ENTETE - (HAUTEUR_ENTETE - fmNom.getAscent()) / 2;
     }
 
     g.drawString(nom, nomX, nomY);
+
+    int dernierTexteY = nomY; // servira pour le séparateur
 
     // ---- TYPE ----
     if (avecTypeSpecifique) {
@@ -212,11 +212,17 @@ private int dessinerNom(Graphics2D g)
         FontMetrics fmSous = g.getFontMetrics();
         int sousX = x + (largeur - fmSous.stringWidth(sousTitre)) / 2;
         int sousY = nomY + fmSous.getHeight();
+        g.setColor(Color.BLACK);
         g.drawString(sousTitre, sousX, sousY);
+        dernierTexteY = sousY;
     }
 
+    // ---- SÉPARATEUR ----
+    int separateurY = dernierTexteY + 4; // petit espace sous le texte
+    g.drawLine(x, separateurY, x + largeur, separateurY);
+
     // Retour Y pour les attributs
-    return yEntete + hauteurEnteteReelle + PADDING;
+    return separateurY + PADDING;
 }
 
 
