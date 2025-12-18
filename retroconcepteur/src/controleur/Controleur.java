@@ -194,23 +194,52 @@ public class Controleur {
         majAffichage();
     }
 
+    /**
+     * Crée récursivement les blocs graphiques et gère l'affichage des types spécifiques.
+     * Cette méthode assure que chaque bloc (classe racine ou interne) est initialisé 
+     * avec ses membres et son stéréotype UML.
+     */
     private void creerBlocsEtLiaisonsRecursif(ClasseObjet c, int x, int y) 
     {
+        // 1. Gestion du filtre des classes externes
         boolean estExterne = (c.getSpecifique() != null && c.getSpecifique().equals("externe"));
-        if (!afficherClassesExternes && estExterne) return;
+        if (!afficherClassesExternes && estExterne) {
+            return;
+        }
 
-        // Récupérer les données formatées immédiatement
-        List<String> attrVue = convertirAttributs(c.getattributs(), c);
-        List<String> methVue = convertirMethodes(c.getMethodes(), c);
+        // 2. Récupération immédiate des données formatées depuis le modèle
+        // On utilise les préférences d'affichage (filtres attributs/méthodes) définies dans le contrôleur
+        List<String> attrVue = afficherAttributs ? convertirAttributs(c.getattributs(), c) : new ArrayList<>();
+        List<String> methVue = afficherMethodes ? convertirMethodes(c.getMethodes(), c) : new ArrayList<>();
 
-        // Créer le bloc avec les vraies données au lieu de new ArrayList<>()
+        // 3. Instanciation du bloc graphique
         BlocClasse bloc = new BlocClasse(c.getNom(), x, y, attrVue, methVue);
         
-        // ... reste de votre logique (setInterface, typeSpecifique, etc.) ...
+        // 4. Rétablissement de l'affichage du type spécifique (stéréotype)
+        // On récupère la valeur du modèle pour l'injecter dans la vue
+        if (c.getSpecifique() != null && !c.getSpecifique().isEmpty()) {
+            bloc.setTypeSpecifique(c.getSpecifique());
+            
+            // Cas particulier pour forcer le flag interface si le stéréotype est "interface"
+            if (c.getSpecifique().equals("interface")) {
+                bloc.setInterface(true);
+            }
+        } else if (c.getNom().contains("Interface")) {
+            // Sécurité si le parsing n'a pas détecté le mot-clé mais que le nom est explicite
+            bloc.setInterface(true);
+            bloc.setTypeSpecifique("interface");
+        }
         
+        // 5. Marquage du bloc si externe (pour le rendu gris)
+        if (estExterne) {
+            bloc.setExterne(true);
+        }
+        
+        // Ajout à la liste des blocs gérés par la vue
         blocsVue.add(bloc);
 
-        // La récursion existante s'occupera alors de créer les blocs enfants avec leurs données
+        // 6. Gestion récursive des classes internes
+        // On applique un décalage (offset) pour visualiser l'imbrication sur le diagramme
         int offsetX = 40;
         int offsetY = 180;
         for (ClasseObjet inner : c.getClassesInternes()) {

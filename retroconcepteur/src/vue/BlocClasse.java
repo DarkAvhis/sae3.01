@@ -176,49 +176,37 @@ public class BlocClasse {
 
     }
 
-    // Affiche le nom de la classe et retourne la position Y pour la suite du dessin
-private int dessinerNom(Graphics2D g) 
-{
-    boolean avecTypeSpecifique = typeSpecifique != null && !typeSpecifique.isEmpty();
+    private int dessinerNom(Graphics2D g) 
+    {
+        // On considère qu'il y a un type si le string est rempli OU si le flag estInterface est vrai
+        String labelType = null;
+        if (typeSpecifique != null && !typeSpecifique.isEmpty()) 
+        {
+            labelType = "<<" + typeSpecifique + ">>";
+        } else if (estInterface) {
+            labelType = "<<interface>>";
+        }
 
-
-    g.setColor(Color.BLACK);
-
-    // ---- NOM ----
-    g.setFont(new Font("Arial", Font.BOLD, 12));
-    FontMetrics fmNom = g.getFontMetrics();
-    int nomX = x + (largeur - fmNom.stringWidth(nom)) / 2;
-
-    int nomY;
-    if (avecTypeSpecifique) {
-       nomY = y + HAUTEUR_ENTETE - (HAUTEUR_ENTETE - fmNom.getAscent()) / 2;
-    } else {
-        nomY = y + HAUTEUR_ENTETE - (HAUTEUR_ENTETE - fmNom.getAscent()) / 2;
-    }
-
-    g.drawString(nom, nomX, nomY);
-
-    int dernierTexteY = nomY; // servira pour le séparateur
-
-    // ---- TYPE ----
-    if (avecTypeSpecifique) {
-        String sousTitre = "<<" + typeSpecifique + ">>";
-        g.setFont(new Font("Arial", Font.ITALIC, 11));
-        FontMetrics fmSous = g.getFontMetrics();
-        int sousX = x + (largeur - fmSous.stringWidth(sousTitre)) / 2;
-        int sousY = nomY + fmSous.getHeight();
         g.setColor(Color.BLACK);
-        g.drawString(sousTitre, sousX, sousY);
-        dernierTexteY = sousY;
+        g.setFont(new Font("Arial", Font.BOLD, 12));
+        FontMetrics fmNom = g.getFontMetrics();
+        int nomY = y + HAUTEUR_ENTETE - (HAUTEUR_ENTETE - fmNom.getAscent()) / 2;
+        g.drawString(nom, x + (largeur - fmNom.stringWidth(nom)) / 2, nomY);
+
+        int dernierTexteY = nomY;
+
+        if (labelType != null) {
+            g.setFont(new Font("Arial", Font.ITALIC, 11));
+            FontMetrics fmSous = g.getFontMetrics();
+            int sousY = nomY + fmSous.getHeight();
+            g.drawString(labelType, x + (largeur - fmSous.stringWidth(labelType)) / 2, sousY);
+            dernierTexteY = sousY;
+        }
+
+        int separateurY = dernierTexteY + 4;
+        g.drawLine(x, separateurY, x + largeur, separateurY);
+        return separateurY + PADDING;
     }
-
-    // ---- SÉPARATEUR ----
-    int separateurY = dernierTexteY + 4; // petit espace sous le texte
-    g.drawLine(x, separateurY, x + largeur, separateurY);
-
-    // Retour Y pour les attributs
-    return separateurY + PADDING;
-}
 
 
     private int dessinerAttributs(Graphics2D g, int currentY) {
