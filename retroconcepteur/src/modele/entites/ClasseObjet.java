@@ -18,7 +18,7 @@ public class ClasseObjet {
 	private ArrayList<AttributObjet> attributs;
 	private ArrayList<MethodeObjet> methodes;
 	private String specifique;
-	private ArrayList<ClasseObjet> classesInternes = new ArrayList<>();
+	private ArrayList<ClasseObjet> classesInternes ;
 
 
 	private static final String ANSI_SOUSTITRE = "\u001B[4m";
@@ -34,6 +34,7 @@ public class ClasseObjet {
 		this.methodes = methodes;
 		this.nom = nom;
 		this.specifique = specifique;
+		this.classesInternes = new ArrayList<ClasseObjet>();
 	}
 
 	/*-------------------------------------- */

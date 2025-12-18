@@ -55,7 +55,7 @@ public class InterfaceObjet extends LiaisonObjet
         
         if (this.lstInterfaces.isEmpty())
         {
-            return nomFille + " n'implémente aucune interface enregistrée.";
+            return nomFille + " n'en implémente aucune."; //(interface)
         }
 
         String sRet = "";

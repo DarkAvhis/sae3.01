@@ -25,8 +25,13 @@ public class AnalyseurUML {
     private static final int MULT_INDEFINIE = 999999999;
 
     // Listes pour stocker les relations en attente de résolution
-    private HashMap<String, String> lstIntentionHeritage = new HashMap<String, String>();
-    private HashMap<String, ArrayList<String>> lstInterfaces = new HashMap<String, ArrayList<String>>();
+    private HashMap<String, String>             lstIntentionHeritage;
+    private HashMap<String, ArrayList<String>>  lstInterfaces;
+
+    public AnalyseurUML() {
+        this.lstIntentionHeritage = new HashMap<String, String>();
+        this.lstInterfaces = new HashMap<String, ArrayList<String>>();
+    }
 
     public void resetRelations() {
         this.lstIntentionHeritage.clear();
@@ -42,6 +47,7 @@ public class AnalyseurUML {
     }
 
     public ClasseObjet analyserFichierUnique(String chemin) {
+        
         File file = new File(chemin);
         String nomFichier = file.getName().replace(".java", "");
 
@@ -190,7 +196,7 @@ public class AnalyseurUML {
                     // Extraction Méthodes (nécessite une visibilité pour éviter les blocs
                     // statiques)
                     else if (ligneBrute.contains("(") && (ligneBrute.contains("public")
-                            || ligneBrute.contains("private") || ligneBrute.contains("protected"))) {
+                            || ligneBrute.contains("private") || ligneBrute.contains("protected")) && !ligneBrute.contains("=")) {
                         ParsingUtil.extraireMethode(ligneBrute, estStatique, classeCourante.getNom(),
                                 classeCourante.getMethodes());
                     }
