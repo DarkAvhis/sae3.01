@@ -86,7 +86,7 @@ public class PanneauProjets extends JPanel implements ActionListener
 
         boutonAttributs = new JButton("Attributs");
         boutonMethodes = new JButton("Méthodes");
-        boutonActualiser = new JButton("Le truc inutile de celim");
+        boutonActualiser = new JButton("Réinitialiser Frame");
 
         panelBouton.add(boutonAttributs, BorderLayout.NORTH);
         panelBouton.add(boutonMethodes, BorderLayout.CENTER);
