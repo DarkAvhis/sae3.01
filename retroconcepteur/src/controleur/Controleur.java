@@ -43,6 +43,8 @@ public class Controleur {
     private List<BlocClasse> blocsVue = new ArrayList<>();
     private String cheminProjetActuel;
     private boolean afficherClassesExternes = true;
+    private boolean afficherAttributs = true;
+    private boolean afficherMethodes = true;
 
     // --- Constantes pour le Layout Hiérarchique ---
     private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
@@ -722,6 +724,42 @@ public class Controleur {
 
     public String getCheminProjetActuel() {
         return this.cheminProjetActuel;
+    }
+
+    public void toggleAttributs() 
+    {
+    this.afficherAttributs = !this.afficherAttributs;
+    rafraichirMembres();
+    }   
+
+    public void toggleMethodes() 
+    {
+        this.afficherMethodes = !this.afficherMethodes;
+        rafraichirMembres();
+    }
+
+    private void rafraichirMembres() 
+    {
+        for (BlocClasse bloc : blocsVue) 
+        {
+            // Recherche manuelle dans la liste existante
+            ClasseObjet classeAssociee = null;
+            for (ClasseObjet c : metierComplet.getClasses()) 
+            {
+                if (c.getNom().equals(bloc.getNom())) 
+                {
+                    classeAssociee = c;
+                    break;
+                }
+            }
+
+            if (classeAssociee != null) 
+            {
+                bloc.setAttributs(afficherAttributs ? convertirAttributs(classeAssociee.getattributs(), classeAssociee) : new ArrayList<>());
+                bloc.setMethodes(afficherMethodes ? convertirMethodes(classeAssociee.getMethodes(), classeAssociee) : new ArrayList<>());
+            }
+        }
+        vuePrincipale.getPanneauDiagramme().repaint();
     }
 
     /**

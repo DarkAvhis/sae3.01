@@ -116,13 +116,30 @@ public class PanneauProjets extends JPanel implements ActionListener
             if( this.panneauDiagramme != null ) this.panneauDiagramme.clearDiagram();
         }
 
-        if (e.getSource() == boutonAttributs) {
-            controleur.ajouterAttributs();
+        if (e.getSource() == boutonAttributs) 
+        {
+        controleur.toggleAttributs();
+        majCouleurBouton(boutonAttributs);
+        }
+        if (e.getSource() == boutonMethodes) 
+        {
+            controleur.toggleMethodes();
+            majCouleurBouton(boutonMethodes);
         }
 
-        if( e.getSource() == boutonMethodes )
+        
+    }
+
+    private void majCouleurBouton(JButton btn) 
+    {
+        // Change la couleur pour indiquer si le filtre est actif ou non
+        if (btn.getBackground().equals(new Color(100, 150, 200))) 
         {
-            controleur.ajouterMethodes() ; 
+            btn.setBackground(Color.GRAY);
+        } 
+        else 
+        {
+            btn.setBackground(new Color(100, 150, 200));
         }
     }
 
