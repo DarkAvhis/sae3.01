@@ -12,12 +12,11 @@ import java.util.Set;
  * en utilisant un algorithme hiérarchique (Sugiyama-style) qui minimise
  * les croisements de liaisons.
  */
-public class OptimisateurDisposition
-{
+public class OptimisateurDisposition {
     private static final int ESPACEMENT_HORIZONTAL = 300;
-    private static final int ESPACEMENT_VERTICAL   = 250;
-    private static final int POSITION_X_DEBUT      = 50;
-    private static final int POSITION_Y_DEBUT      = 50;
+    private static final int ESPACEMENT_VERTICAL = 250;
+    private static final int POSITION_X_DEBUT = 50;
+    private static final int POSITION_Y_DEBUT = 50;
 
     /**
      * Applique un algorithme hiérarchique (Sugiyama) pour optimiser la disposition.
@@ -26,23 +25,17 @@ public class OptimisateurDisposition
      * @param liaisonsVue  Liste des liaisons entre blocs
      */
     public static void appliquerLayoutHierarchique(
-        List<BlocClasse> blocsClasses,
-        List<LiaisonVue> liaisonsVue
-    )
-    {
-        if (blocsClasses == null || blocsClasses.isEmpty())
-        {
+            List<BlocClasse> blocsClasses,
+            List<LiaisonVue> liaisonsVue) {
+        if (blocsClasses == null || blocsClasses.isEmpty()) {
             return;
         }
 
-        HashMap<String, Set<String>> dependances =
-            construireGrapheDependances(blocsClasses, liaisonsVue);
+        HashMap<String, Set<String>> dependances = construireGrapheDependances(blocsClasses, liaisonsVue);
 
-        HashMap<String, Integer> couchesBlocs =
-            calculerCouches(blocsClasses, dependances);
+        HashMap<String, Integer> couchesBlocs = calculerCouches(blocsClasses, dependances);
 
-        HashMap<Integer, List<BlocClasse>> blocParCouche =
-            groupeParCouche(blocsClasses, couchesBlocs);
+        HashMap<Integer, List<BlocClasse>> blocParCouche = groupeParCouche(blocsClasses, couchesBlocs);
 
         positionnerBlocs(blocsClasses, blocParCouche, couchesBlocs);
     }
@@ -51,34 +44,25 @@ public class OptimisateurDisposition
      * Construit le graphe des dépendances entre classes.
      */
     private static HashMap<String, Set<String>> construireGrapheDependances(
-        List<BlocClasse> blocsClasses,
-        List<LiaisonVue> liaisonsVue
-    )
-    {
+            List<BlocClasse> blocsClasses,
+            List<LiaisonVue> liaisonsVue) {
         HashMap<String, Set<String>> graph = new HashMap<>();
 
-        for (BlocClasse bloc : blocsClasses)
-        {
+        for (BlocClasse bloc : blocsClasses) {
             graph.put(bloc.getNom(), new HashSet<>());
         }
 
-        for (LiaisonVue liaison : liaisonsVue)
-        {
+        for (LiaisonVue liaison : liaisonsVue) {
             String source = liaison.getNomClasseOrig();
-            String dest   = liaison.getNomClasseDest();
+            String dest = liaison.getNomClasseDest();
 
             if (liaison.getType() == LiaisonVue.TypeLiaison.HERITAGE
-             || liaison.getType() == LiaisonVue.TypeLiaison.IMPLEMENTATION)
-            {
-                if (graph.containsKey(dest))
-                {
+                    || liaison.getType() == LiaisonVue.TypeLiaison.IMPLEMENTATION) {
+                if (graph.containsKey(dest)) {
                     graph.get(dest).add(source);
                 }
-            }
-            else
-            {
-                if (graph.containsKey(source))
-                {
+            } else {
+                if (graph.containsKey(source)) {
                     graph.get(source).add(dest);
                 }
             }
@@ -91,27 +75,21 @@ public class OptimisateurDisposition
      * Calcule la couche de chaque bloc par profondeur hiérarchique.
      */
     private static HashMap<String, Integer> calculerCouches(
-        List<BlocClasse> blocsClasses,
-        HashMap<String, Set<String>> dependances
-    )
-    {
+            List<BlocClasse> blocsClasses,
+            HashMap<String, Set<String>> dependances) {
         HashMap<String, Integer> couches = new HashMap<>();
 
-        for (BlocClasse bloc : blocsClasses)
-        {
+        for (BlocClasse bloc : blocsClasses) {
             couches.put(bloc.getNom(), -1);
         }
 
-        for (BlocClasse bloc : blocsClasses)
-        {
-            if (couches.get(bloc.getNom()) == -1)
-            {
+        for (BlocClasse bloc : blocsClasses) {
+            if (couches.get(bloc.getNom()) == -1) {
                 calculerProfondeur(
-                    bloc.getNom(),
-                    couches,
-                    dependances,
-                    new HashSet<>()
-                );
+                        bloc.getNom(),
+                        couches,
+                        dependances,
+                        new HashSet<>());
             }
         }
 
@@ -122,21 +100,17 @@ public class OptimisateurDisposition
      * DFS récursif pour calculer la profondeur.
      */
     private static int calculerProfondeur(
-        String nomBloc,
-        HashMap<String, Integer> couches,
-        HashMap<String, Set<String>> dependances,
-        Set<String> enCours
-    )
-    {
+            String nomBloc,
+            HashMap<String, Integer> couches,
+            HashMap<String, Set<String>> dependances,
+            Set<String> enCours) {
         Integer existante = couches.get(nomBloc);
 
-        if (existante != null && existante != -1)
-        {
+        if (existante != null && existante != -1) {
             return existante;
         }
 
-        if (enCours.contains(nomBloc))
-        {
+        if (enCours.contains(nomBloc)) {
             couches.put(nomBloc, 0);
             return 0;
         }
@@ -145,8 +119,7 @@ public class OptimisateurDisposition
 
         Set<String> deps = dependances.get(nomBloc);
 
-        if (deps == null || deps.isEmpty())
-        {
+        if (deps == null || deps.isEmpty()) {
             couches.put(nomBloc, 0);
             enCours.remove(nomBloc);
             return 0;
@@ -154,12 +127,9 @@ public class OptimisateurDisposition
 
         int max = 0;
 
-        for (String dep : deps)
-        {
-            if (dependances.containsKey(dep))
-            {
-                int prof =
-                    calculerProfondeur(dep, couches, dependances, enCours);
+        for (String dep : deps) {
+            if (dependances.containsKey(dep)) {
+                int prof = calculerProfondeur(dep, couches, dependances, enCours);
 
                 max = Math.max(max, prof + 1);
             }
@@ -175,19 +145,16 @@ public class OptimisateurDisposition
      * Groupe les blocs par couche.
      */
     private static HashMap<Integer, List<BlocClasse>> groupeParCouche(
-        List<BlocClasse> blocsClasses,
-        HashMap<String, Integer> couchesBlocs
-    )
-    {
+            List<BlocClasse> blocsClasses,
+            HashMap<String, Integer> couchesBlocs) {
         HashMap<Integer, List<BlocClasse>> resultat = new HashMap<>();
 
-        for (BlocClasse bloc : blocsClasses)
-        {
+        for (BlocClasse bloc : blocsClasses) {
             int couche = couchesBlocs.get(bloc.getNom());
 
             resultat
-                .computeIfAbsent(couche, k -> new ArrayList<>())
-                .add(bloc);
+                    .computeIfAbsent(couche, k -> new ArrayList<>())
+                    .add(bloc);
         }
 
         return resultat;
@@ -197,20 +164,16 @@ public class OptimisateurDisposition
      * Positionne les blocs selon leurs couches.
      */
     private static void positionnerBlocs(
-        List<BlocClasse> blocsClasses,
-        HashMap<Integer, List<BlocClasse>> blocParCouche,
-        HashMap<String, Integer> couchesBlocs
-    )
-    {
+            List<BlocClasse> blocsClasses,
+            HashMap<Integer, List<BlocClasse>> blocParCouche,
+            HashMap<String, Integer> couchesBlocs) {
         int maxCouche = blocParCouche.size();
         int largeurPanneau = 1200;
 
-        for (int couche = 0; couche < maxCouche; couche++)
-        {
+        for (int couche = 0; couche < maxCouche; couche++) {
             List<BlocClasse> blocsEnCouche = blocParCouche.get(couche);
 
-            if (blocsEnCouche == null || blocsEnCouche.isEmpty())
-            {
+            if (blocsEnCouche == null || blocsEnCouche.isEmpty()) {
                 continue;
             }
 
@@ -219,14 +182,12 @@ public class OptimisateurDisposition
             trierBlocsParConnexion(blocsEnCouche, blocsClasses, couchesBlocs);
 
             int nbBlocs = blocsEnCouche.size();
-            int espace  = Math.max(250, (largeurPanneau - 100) / nbBlocs);
-            int total   = nbBlocs * espace;
+            int espace = Math.max(250, (largeurPanneau - 100) / nbBlocs);
+            int total = nbBlocs * espace;
 
-            int posXDebut =
-                Math.max(POSITION_X_DEBUT, (largeurPanneau - total) / 2);
+            int posXDebut = Math.max(POSITION_X_DEBUT, (largeurPanneau - total) / 2);
 
-            for (int i = 0; i < nbBlocs; i++)
-            {
+            for (int i = 0; i < nbBlocs; i++) {
                 BlocClasse bloc = blocsEnCouche.get(i);
 
                 bloc.setX(posXDebut + i * espace);
@@ -239,21 +200,16 @@ public class OptimisateurDisposition
      * Trie les blocs d'une couche pour limiter les croisements.
      */
     private static void trierBlocsParConnexion(
-        List<BlocClasse> blocsEnCouche,
-        List<BlocClasse> tousLesBlocs,
-        HashMap<String, Integer> couchesBlocs
-    )
-    {
+            List<BlocClasse> blocsEnCouche,
+            List<BlocClasse> tousLesBlocs,
+            HashMap<String, Integer> couchesBlocs) {
         HashMap<String, Integer> scores = new HashMap<>();
 
-        for (BlocClasse bloc : blocsEnCouche)
-        {
+        for (BlocClasse bloc : blocsEnCouche) {
             int score = 0;
 
-            for (BlocClasse autre : blocsEnCouche)
-            {
-                if (!bloc.getNom().equals(autre.getNom()))
-                {
+            for (BlocClasse autre : blocsEnCouche) {
+                if (!bloc.getNom().equals(autre.getNom())) {
                     score += bloc.getNom().compareTo(autre.getNom());
                 }
             }
@@ -262,82 +218,7 @@ public class OptimisateurDisposition
         }
 
         Collections.sort(
-            blocsEnCouche,
-            (b1, b2) ->
-                scores.get(b1.getNom()).compareTo(scores.get(b2.getNom()))
-        );
-    }
-
-    /**
-     * Layout alternatif en grille.
-     */
-    public static void appliquerLayoutGrille(List<BlocClasse> blocsClasses)
-    {
-        if (blocsClasses == null || blocsClasses.isEmpty())
-        {
-            return;
-        }
-
-        int cols = (int) Math.ceil(Math.sqrt(blocsClasses.size()));
-
-        for (int i = 0; i < blocsClasses.size(); i++)
-        {
-            int col = i % cols;
-            int row = i / cols;
-
-            blocsClasses.get(i).setX(POSITION_X_DEBUT + col * ESPACEMENT_HORIZONTAL);
-            blocsClasses.get(i).setY(POSITION_Y_DEBUT + row * ESPACEMENT_VERTICAL);
-        }
-    }
-
-    /**
-     * Layout circulaire.
-     */
-    public static void appliquerLayoutCirculaire(
-        List<BlocClasse> blocsClasses,
-        int indexPrincipal
-    )
-    {
-        if (blocsClasses == null || blocsClasses.isEmpty())
-        {
-            return;
-        }
-
-        int centreX = 500;
-        int centreY = 400;
-        int rayon   = 250;
-
-        if (indexPrincipal >= 0 && indexPrincipal < blocsClasses.size())
-        {
-            BlocClasse centre = blocsClasses.get(indexPrincipal);
-
-            centre.setX(centreX - centre.getLargeur() / 2);
-            centre.setY(centreY - centre.getHauteur() / 2);
-        }
-
-        int nb = blocsClasses.size() - 1;
-
-        for (int i = 0; i < blocsClasses.size(); i++)
-        {
-            if (i == indexPrincipal)
-            {
-                continue;
-            }
-
-            double angle =
-                (2 * Math.PI * (i < indexPrincipal ? i : i - 1)) / nb;
-
-            BlocClasse bloc = blocsClasses.get(i);
-
-            bloc.setX(
-                (int) (centreX + rayon * Math.cos(angle))
-                - bloc.getLargeur() / 2
-            );
-
-            bloc.setY(
-                (int) (centreY + rayon * Math.sin(angle))
-                - bloc.getHauteur() / 2
-            );
-        }
+                blocsEnCouche,
+                (b1, b2) -> scores.get(b1.getNom()).compareTo(scores.get(b2.getNom())));
     }
 }

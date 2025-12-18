@@ -5,24 +5,25 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.Frame;
-
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 
 import controleur.Controleur;
 import vue.LiaisonVue.TypeLiaison;
@@ -40,8 +41,7 @@ import vue.LiaisonVue.TypeLiaison;
  * 
  * @date 12 décembre 2025
  */
-public class PanneauDiagramme extends JPanel implements MouseWheelListener 
-{
+public class PanneauDiagramme extends JPanel implements MouseWheelListener {
     private List<BlocClasse> blocsClasses;
     private List<LiaisonVue> liaisonsVue;
     private double zoom;
@@ -52,8 +52,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * pour l'interaction utilisateur (déplacement des blocs).
      * * @param controleur Le contrôleur principal de l'application
      */
-    public PanneauDiagramme(Controleur controleur) 
-    {
+    public PanneauDiagramme(Controleur controleur) {
         this.blocsClasses = new ArrayList<>();
         this.liaisonsVue = new ArrayList<>();
         this.zoom = 1.0;
@@ -70,38 +69,31 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
     }
 
     @Override
-    public void mouseWheelMoved(MouseWheelEvent e) 
-    {
-        if (e.isControlDown()) 
-        {
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        if (e.isControlDown()) {
             double delta = 0.1;
-            if (e.getWheelRotation() < 0) 
-            {
+            if (e.getWheelRotation() < 0) {
                 setZoom(zoom + delta); // Zoom avant
-            } 
-            else 
-            {
+            } else {
                 setZoom(zoom - delta); // Zoom arrière
             }
-        } 
+        }
 
         if (e.isShiftDown()) // Shift + molette => décalage horizontal
         {
 
-            if (getParent() instanceof JViewport viewport) 
-            {
+            if (getParent() instanceof JViewport viewport) {
                 Point pos = viewport.getViewPosition();
                 pos.x += e.getWheelRotation() * 100; // 20 pixels par "tick"
                 pos.x = Math.max(0, pos.x);
                 pos.x = Math.min(pos.x, getWidth() - viewport.getWidth());
                 viewport.setViewPosition(pos);
             }
-        } 
-         // Molette normale => défilement vertical
-        
+        }
+        // Molette normale => défilement vertical
+
         {
-            if (getParent() instanceof JViewport viewport) 
-            {
+            if (getParent() instanceof JViewport viewport) {
                 Point pos = viewport.getViewPosition();
                 pos.y += e.getWheelRotation() * 100; // 20 pixels par "tick"
                 pos.y = Math.max(0, pos.y);
@@ -117,20 +109,17 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * lorque l'on appuie sur le bouton actualiser cela actualise
      * aussi panneauDiagramme
      */
-    public void clearDiagram() 
-    {
+    public void clearDiagram() {
         this.blocsClasses.clear(); // permet de nettoyer les blocs de classe
         this.liaisonsVue.clear(); // permet de nettoyer les liaisons des classes
         this.repaint();
     }
 
-    public double getZoom() 
-    {
+    public double getZoom() {
         return this.zoom;
     }
 
-    public void setZoom(double zoom) 
-    {
+    public void setZoom(double zoom) {
         // Limiter le zoom entre 0.2x et 5x
         this.zoom = Math.max(0.2, Math.min(zoom, 5.0));
         calculerTailleDynamique(); // Ajuste la taille du panneau selon le zoom
@@ -141,25 +130,20 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * Gestionnaire d'événements souris pour l'interaction avec les blocs.
      * * Permet de sélectionner et déplacer les blocs de classes dans le diagramme.
      */
-    private class GereSourisInteraction extends MouseAdapter 
-    {
+    private class GereSourisInteraction extends MouseAdapter {
         private BlocClasse blocSelectionne = null;
         private int offsetX = 0;
         private int offsetY = 0;
 
         @Override
-        public void mousePressed(MouseEvent e) 
-        {
+        public void mousePressed(MouseEvent e) {
             blocSelectionne = null;
             int mouseX = (int) (e.getX() / zoom);
             int mouseY = (int) (e.getY() / zoom);
-            for (int i = blocsClasses.size() - 1; i >= 0; i--) 
-            {
+            for (int i = blocsClasses.size() - 1; i >= 0; i--) {
                 BlocClasse bloc = blocsClasses.get(i);
-                if (bloc.contient(mouseX, mouseY)) 
-                {
-                    if (e.getButton() == MouseEvent.BUTTON3) 
-                    {
+                if (bloc.contient(mouseX, mouseY)) {
+                    if (e.getButton() == MouseEvent.BUTTON3) {
                         bloc.setModeComplet(true);
                         bloc.setSelectionne(true);
 
@@ -171,8 +155,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                     offsetX = mouseX - bloc.getX();
                     offsetY = mouseY - bloc.getY();
 
-                    for (BlocClasse b : blocsClasses) 
-                    {
+                    for (BlocClasse b : blocsClasses) {
                         b.setSelectionne(false);
                     }
 
@@ -182,13 +165,12 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                 }
             }
             // Si clic droit mais pas sur un bloc -> tenter d'éditer une liaison
-            if (blocSelectionne == null && e.getButton() == MouseEvent.BUTTON3) 
-            {
+            if (blocSelectionne == null && e.getButton() == MouseEvent.BUTTON3) {
                 LiaisonVue liaison = trouverLiaisonProche(mouseX, mouseY);
-                if (liaison != null) 
-                {
-                    Frame frame = SwingUtilities.getWindowAncestor(PanneauDiagramme.this) instanceof Frame 
-                                    ? (Frame) SwingUtilities.getWindowAncestor(PanneauDiagramme.this): null;
+                if (liaison != null) {
+                    Frame frame = SwingUtilities.getWindowAncestor(PanneauDiagramme.this) instanceof Frame
+                            ? (Frame) SwingUtilities.getWindowAncestor(PanneauDiagramme.this)
+                            : null;
 
                     EditeurLiaisonDialog dlg = new EditeurLiaisonDialog(frame, liaison);
                     dlg.setVisible(true);
@@ -198,17 +180,16 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
             }
         }
 
-        // Methodes pour gérer le calcul de la distance point-segment en cas de déplacement des classes
-        private LiaisonVue trouverLiaisonProche(int x, int y) 
-        {
+        // Methodes pour gérer le calcul de la distance point-segment en cas de
+        // déplacement des classes
+        private LiaisonVue trouverLiaisonProche(int x, int y) {
             if (liaisonsVue == null || blocsClasses == null)
                 return null;
 
             LiaisonVue candidate = null;
             double bestDist = 12.0; // seuil en pixels
 
-            for (LiaisonVue liaison : liaisonsVue) 
-            {
+            for (LiaisonVue liaison : liaisonsVue) {
                 Optional<BlocClasse> blocOrig = blocsClasses.stream()
                         .filter(b -> b.getNom().equals(liaison.getNomClasseOrig())).findFirst();
 
@@ -222,8 +203,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                 Point p2 = calculerPointConnexion(blocDest.get(), blocOrig.get());
                 double d = distancePointSegment(x, y, p1.x, p1.y, p2.x, p2.y);
 
-                if (d < bestDist) 
-                {
+                if (d < bestDist) {
                     bestDist = d;
                     candidate = liaison;
                 }
@@ -231,12 +211,10 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
             return candidate;
         }
 
-        private double distancePointSegment(double px, double py, double x1, double y1, double x2, double y2) 
-        {
+        private double distancePointSegment(double px, double py, double x1, double y1, double x2, double y2) {
             double dx = x2 - x1;
             double dy = y2 - y1;
-            if (dx == 0 && dy == 0) 
-            {
+            if (dx == 0 && dy == 0) {
                 dx = px - x1;
                 dy = py - y1;
                 return Math.sqrt(dx * dx + dy * dy);
@@ -255,10 +233,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         }
 
         @Override
-        public void mouseDragged(MouseEvent e) 
-        {
-            if (blocSelectionne != null) 
-            {
+        public void mouseDragged(MouseEvent e) {
+            if (blocSelectionne != null) {
                 int mouseX = (int) (e.getX() / zoom);
                 int mouseY = (int) (e.getY() / zoom);
 
@@ -266,7 +242,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                 int newY = mouseY - offsetY;
 
                 // Limiter pour que le bloc reste dans le panel
-                newX = Math.max(0, Math.min(newX, getWidth()  - blocSelectionne.getLargeur()));
+                newX = Math.max(0, Math.min(newX, getWidth() - blocSelectionne.getLargeur()));
                 newY = Math.max(0, Math.min(newY, getHeight() - blocSelectionne.getHauteur()));
 
                 blocSelectionne.setX(newX);
@@ -278,15 +254,11 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         }
 
         @Override
-        public void mouseReleased(MouseEvent e) 
-        {
+        public void mouseReleased(MouseEvent e) {
             // Si clic droit relâché, repasser en mode condensé
-            if (e.getButton() == MouseEvent.BUTTON3) 
-                {
-                for (BlocClasse bloc : blocsClasses) 
-                    {
-                    if (bloc.isModeComplet()) 
-                        {
+            if (e.getButton() == MouseEvent.BUTTON3) {
+                for (BlocClasse bloc : blocsClasses) {
+                    if (bloc.isModeComplet()) {
                         bloc.setModeComplet(false);
                         repaint();
                     }
@@ -298,8 +270,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         }
     }
 
-    private void ajouterListenersInteraction() 
-    {
+    private void ajouterListenersInteraction() {
         GereSourisInteraction adapter = new GereSourisInteraction();
         this.addMouseListener(adapter);
         this.addMouseMotionListener(adapter);
@@ -310,15 +281,13 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * * Ajuste automatiquement la taille du panneau en fonction des positions
      * et dimensions des blocs pour permettre un défilement adéquat.
      */
-    private void calculerTailleDynamique() 
-    {
+    private void calculerTailleDynamique() {
 
         int maxX = 0;
         int maxY = 0;
         final int PADDING = 100;
 
-        for (BlocClasse bloc : blocsClasses) 
-        {
+        for (BlocClasse bloc : blocsClasses) {
             maxX = Math.max(maxX, bloc.getX() + bloc.getLargeur());
             maxY = Math.max(maxY, bloc.getY() + bloc.getHauteur());
         }
@@ -327,8 +296,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         int requiredHeight = (int) Math.max(maxY * zoom + PADDING, 800);
 
         Dimension currentSize = getPreferredSize();
-        if (requiredWidth > currentSize.width || requiredHeight > currentSize.height) 
-            {
+        if (requiredWidth > currentSize.width || requiredHeight > currentSize.height) {
             setPreferredSize(new Dimension(requiredWidth, requiredHeight));
             revalidate();
         }
@@ -337,8 +305,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
     // --- LOGIQUE DE DESSIN ---
 
     @Override
-    protected void paintComponent(Graphics g) 
-    {
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -348,8 +315,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
 
         dessinerLiaisons(g2d);
 
-        for (BlocClasse bloc : blocsClasses) 
-        {
+        for (BlocClasse bloc : blocsClasses) {
             bloc.dessiner(g2d);
         }
     }
@@ -360,17 +326,14 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * (héritage, implémentation, association).
      * * @param g2d Contexte graphique 2D
      */
-    private void dessinerLiaisons(Graphics2D g2d) 
-    {
-        if (liaisonsVue == null || blocsClasses == null) 
-        {
+    private void dessinerLiaisons(Graphics2D g2d) {
+        if (liaisonsVue == null || blocsClasses == null) {
             return;
         }
 
         g2d.setFont(new Font("Arial", Font.PLAIN, 10)); // Police pour les multiplicités
 
-        for (LiaisonVue liaison : liaisonsVue) 
-        {
+        for (LiaisonVue liaison : liaisonsVue) {
             Optional<BlocClasse> blocOrig = blocsClasses.stream()
                     .filter(b -> b.getNom().equals(liaison.getNomClasseOrig()))
                     .findFirst();
@@ -379,16 +342,14 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                     .filter(b -> b.getNom().equals(liaison.getNomClasseDest()))
                     .findFirst();
 
-            if (blocOrig.isPresent() && blocDest.isPresent()) 
-            {
+            if (blocOrig.isPresent() && blocDest.isPresent()) {
                 Point p1 = calculerPointConnexion(blocOrig.get(), blocDest.get());
                 Point p2 = calculerPointConnexion(blocDest.get(), blocOrig.get());
 
                 g2d.setColor(Color.BLACK);
                 Stroke oldStroke = g2d.getStroke();
 
-                switch (liaison.getType()) 
-                {
+                switch (liaison.getType()) {
                     case HERITAGE:
                         dessinerFlecheHeritage(g2d, p1, p2, false);
                         break;
@@ -403,36 +364,30 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                         g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
 
                         // Multiplicités (seulement pour les associations)
-                        if (liaison.getMultipliciteOrig() != null && !liaison.getMultipliciteOrig().isEmpty()) 
-                        {
+                        if (liaison.getMultipliciteOrig() != null && !liaison.getMultipliciteOrig().isEmpty()) {
                             dessinerMultiplicite(g2d, p1, p2, liaison.getMultipliciteOrig(), true);
                         }
 
-                        if (liaison.getMultipliciteDest() != null && !liaison.getMultipliciteDest().isEmpty()) 
-                        {
+                        if (liaison.getMultipliciteDest() != null && !liaison.getMultipliciteDest().isEmpty()) {
                             dessinerMultiplicite(g2d, p1, p2, liaison.getMultipliciteDest(), false);
                         }
 
                         // Rôles (labels) aux extrémités (optionnels)
-                        if (liaison.getRoleOrig() != null && !liaison.getRoleOrig().isEmpty()) 
-                        {
+                        if (liaison.getRoleOrig() != null && !liaison.getRoleOrig().isEmpty()) {
                             dessinerRole(g2d, p1, p2, liaison.getRoleOrig(), true,
                                     liaison.getRoleOrigOffsetAlong(), liaison.getRoleOrigOffsetPerp());
                         }
-                        if (liaison.getRoleDest() != null && !liaison.getRoleDest().isEmpty()) 
-                        {
+                        if (liaison.getRoleDest() != null && !liaison.getRoleDest().isEmpty()) {
                             dessinerRole(g2d, p1, p2, liaison.getRoleDest(), false,
                                     liaison.getRoleDestOffsetAlong(), liaison.getRoleDestOffsetPerp());
                         }
 
-                        if (liaison.getType() == TypeLiaison.ASSOCIATION_UNIDI) 
-                        {
+                        if (liaison.getType() == TypeLiaison.ASSOCIATION_UNIDI) {
                             dessinerFlecheSimple(g2d, p1, p2);
                         }
 
                         // Propriétés au milieu de la liaison
-                        if (liaison.getProprietes() != null && !liaison.getProprietes().isEmpty()) 
-                        {
+                        if (liaison.getProprietes() != null && !liaison.getProprietes().isEmpty()) {
                             dessinerProprietes(g2d, p1, p2, liaison.getProprietes());
                         }
                         break;
@@ -442,8 +397,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
                 }
 
                 // Contrainte éventuelle (affichée au centre, côté opposé aux propriétés)
-                if (liaison.getContrainte() != null && !liaison.getContrainte().isEmpty()) 
-                    {
+                if (liaison.getContrainte() != null && !liaison.getContrainte().isEmpty()) {
                     dessinerContrainte(g2d, p1, p2, liaison.getContrainte());
                 }
 
@@ -467,13 +421,11 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
             Point pStart,
             Point pEnd,
             String multiplicite,
-            boolean coteOrigine
-    ) {
+            boolean coteOrigine) {
         // Direction de la ligne
         double angle = Math.atan2(
                 pEnd.y - pStart.y,
-                pEnd.x - pStart.x
-        );
+                pEnd.x - pStart.x);
 
         // Position le long de la flèche
         int offsetAlong = coteOrigine ? 25 : -25;
@@ -503,8 +455,6 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         g2d.drawString(multiplicite, xText - w / 2, yText);
     }
 
-
-
     /**
      * Affiche un rôle (libellé) au voisinage d'une extrémité de la liaison.
      * 
@@ -517,8 +467,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * @param offsetPerp  décalage perpendiculaire à la ligne
      */
     private void dessinerRole(Graphics2D g2d, Point pStart, Point pEnd, String role, boolean isSource,
-            int offsetAlong, int offsetPerp) 
-    {
+            int offsetAlong, int offsetPerp) {
         if (role == null || role.isEmpty())
             return;
 
@@ -540,8 +489,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         g2d.drawString(role, xText, yText);
     }
 
-    private void dessinerProprietes(Graphics2D g2d, Point p1, Point p2, String props) 
-    {
+    private void dessinerProprietes(Graphics2D g2d, Point p1, Point p2, String props) {
         double angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
         double perpAngle = angle + Math.PI / 2;
         int midX = (p1.x + p2.x) / 2;
@@ -558,8 +506,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         g2d.drawString(props, xText, yText);
     }
 
-    private void dessinerContrainte(Graphics2D g2d, Point p1, Point p2, String contrainte) 
-    {
+    private void dessinerContrainte(Graphics2D g2d, Point p1, Point p2, String contrainte) {
         double angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
         double perpAngle = angle + Math.PI / 2;
         int midX = (p1.x + p2.x) / 2;
@@ -576,35 +523,36 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         g2d.drawString(contrainte, xText, yText);
     }
 
-    private void dessinerLiaisonContenance(Graphics2D g2d, Point pInterne, Point pHote) 
-    {
+    private void dessinerLiaisonContenance(Graphics2D g2d, Point pInterne, Point pHote) {
         int rayonCercle = 10;
-        
+
         // 1. Calcul de l'angle entre les deux blocs
         double angle = Math.atan2(pInterne.y - pHote.y, pInterne.x - pHote.x);
-        
+
         // 2. Calcul du centre du cercle avec décalage
-        // En ajoutant 'rayonCercle' à la position, le bord du rond touchera juste le bord de la classe
+        // En ajoutant 'rayonCercle' à la position, le bord du rond touchera juste le
+        // bord de la classe
         int xCentre = (int) (pHote.x + rayonCercle * Math.cos(angle));
         int yCentre = (int) (pHote.y + rayonCercle * Math.sin(angle));
-        
-        // 3. Le trait commence désormais au bord extérieur du cercle (décalage de 2 * rayon)
+
+        // 3. Le trait commence désormais au bord extérieur du cercle (décalage de 2 *
+        // rayon)
         int xLigneStart = (int) (pHote.x + (rayonCercle * 2) * Math.cos(angle));
         int yLigneStart = (int) (pHote.y + (rayonCercle * 2) * Math.sin(angle));
-        
+
         // 4. Dessiner le trait
         g2d.setColor(Color.BLACK);
         g2d.setStroke(new BasicStroke(1));
         g2d.drawLine(pInterne.x, pInterne.y, xLigneStart, yLigneStart);
-        
+
         // 5. Dessiner le cercle blanc (fond)
         g2d.setColor(Color.WHITE);
         g2d.fillOval(xCentre - rayonCercle, yCentre - rayonCercle, rayonCercle * 2, rayonCercle * 2);
-        
+
         // 6. Dessiner le contour et le "+"
         g2d.setColor(Color.BLACK);
         g2d.drawOval(xCentre - rayonCercle, yCentre - rayonCercle, rayonCercle * 2, rayonCercle * 2);
-        
+
         // Ligne horizontale du +
         g2d.drawLine(xCentre - rayonCercle + 3, yCentre, xCentre + rayonCercle - 3, yCentre);
         // Ligne verticale du +
@@ -621,8 +569,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * @param p2               Point d'arrivée (classe parent/interface)
      * @param isImplementation true pour implémentation, false pour héritage
      */
-    private void dessinerFlecheHeritage(Graphics2D g2d, Point p1, Point p2, boolean isImplementation) 
-    {
+    private void dessinerFlecheHeritage(Graphics2D g2d, Point p1, Point p2, boolean isImplementation) {
         int tailleTriangle = 15;
 
         double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);
@@ -645,14 +592,10 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         Polygon triangle = new Polygon(xPoints, yPoints, 3);
 
         // 2. Dessin de la ligne (pleine ou pointillée)
-        if (isImplementation) 
-        {
+        if (isImplementation) {
             g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f,
-                    new float[] 
-                    { 4.0f, 4.0f }, 0.0f));
-        } 
-        else 
-        {
+                    new float[] { 4.0f, 4.0f }, 0.0f));
+        } else {
             g2d.setStroke(new BasicStroke(1));
         }
 
@@ -673,8 +616,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * @param p1 Point de départ
      * @param p2 Point d'arrivée
      */
-    private void dessinerFlecheSimple(Graphics2D g2d, Point p1, Point p2) 
-    {
+    private void dessinerFlecheSimple(Graphics2D g2d, Point p1, Point p2) {
         int tailleFleche = 10;
 
         double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);
@@ -698,8 +640,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * @param blocCible Bloc ciblé
      * @return Point de connexion sur le bord du bloc origine
      */
-    private Point calculerPointConnexion(BlocClasse blocOrigine, BlocClasse blocCible) 
-    {
+    private Point calculerPointConnexion(BlocClasse blocOrigine, BlocClasse blocCible) {
         // ... (Logique inchangée pour calculer le point de connexion)
         int x1 = blocOrigine.getX();
         int y1 = blocOrigine.getY();
@@ -713,26 +654,18 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
 
         double angle = Math.atan2(cY2 - cY1, cX2 - cX1);
         double angleDeg = Math.toDegrees(angle);
-        if (angleDeg < 0) 
-        {
+        if (angleDeg < 0) {
             angleDeg += 360;
         }
 
         // Détermination du côté touché
-        if ((angleDeg >= 315 && angleDeg <= 360) || (angleDeg >= 0 && angleDeg < 45)) 
-        {
+        if ((angleDeg >= 315 && angleDeg <= 360) || (angleDeg >= 0 && angleDeg < 45)) {
             return new Point(x1 + w1, cY1);
-        } 
-        else if (angleDeg >= 45 && angleDeg < 135) 
-        {
+        } else if (angleDeg >= 45 && angleDeg < 135) {
             return new Point(cX1, y1 + h1);
-        } 
-        else if (angleDeg >= 135 && angleDeg < 225) 
-        {
+        } else if (angleDeg >= 135 && angleDeg < 225) {
             return new Point(x1, cY1);
-        } 
-        else if (angleDeg >= 225 && angleDeg < 315) 
-        {
+        } else if (angleDeg >= 225 && angleDeg < 315) {
             return new Point(cX1, y1);
         }
 
@@ -745,34 +678,27 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * Affiche une liste de blocs dans le diagramme.
      * * @param blocs Liste des blocs à afficher
      */
-    public void afficherDiagramme(List<BlocClasse> blocs) 
-    {
+    public void afficherDiagramme(List<BlocClasse> blocs) {
         this.blocsClasses = blocs;
         // Le repaint est maintenant géré par setLiaisonsVue
     }
 
-    public List<LiaisonVue> getLiaisonsVue() 
-    {
+    public List<LiaisonVue> getLiaisonsVue() {
         return liaisonsVue;
     }
 
-    public void setLiaisonsVue(List<LiaisonVue> liaisonsVue) 
-    {
+    public void setLiaisonsVue(List<LiaisonVue> liaisonsVue) {
         this.liaisonsVue = liaisonsVue;
         this.repaint();
     }
 
-    public List<BlocClasse> getBlocsClasses() 
-    {
+    public List<BlocClasse> getBlocsClasses() {
         return blocsClasses;
     }
 
-    public BlocClasse getBlocsClasseSelectionnee() 
-    {
-        for (BlocClasse bloc : blocsClasses) 
-        {
-            if (bloc.estSelectionne()) 
-            {
+    public BlocClasse getBlocsClasseSelectionnee() {
+        for (BlocClasse bloc : blocsClasses) {
+            if (bloc.estSelectionne()) {
                 return bloc;
             }
         }
@@ -783,8 +709,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * Définit la liste des blocs à afficher et recalcule la taille du panneau.
      * * @param blocsVue Liste des blocs de classes à afficher
      */
-    public void setBlocsClasses(List<BlocClasse> blocsVue) 
-    {
+    public void setBlocsClasses(List<BlocClasse> blocsVue) {
         this.blocsClasses = blocsVue;
         // Met à jour la taille du panneau pour le JScrollPane
         calculerTailleDynamique();
@@ -796,10 +721,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
      * liaisons.
      * Met à jour la taille du panneau et red essine le diagramme.
      */
-    public void optimiserDisposition() 
-    {
-        if (blocsClasses.isEmpty()) 
-        {
+    public void optimiserDisposition() {
+        if (blocsClasses.isEmpty()) {
             return;
         }
 
@@ -807,38 +730,6 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener
         OptimisateurDisposition.appliquerLayoutHierarchique(blocsClasses, liaisonsVue);
 
         // Mettre à jour la taille du panneau et redessiner
-        calculerTailleDynamique();
-        repaint();
-    }
-
-    /**
-     * Dispose les blocs en grille régulière.
-     * * Organisation en lignes et colonnes avec espacement uniforme.
-     */
-    public void disposerEnGrille() 
-    {
-        if (blocsClasses.isEmpty()) 
-        {
-            return;
-        }
-
-        OptimisateurDisposition.appliquerLayoutGrille(blocsClasses);
-        calculerTailleDynamique();
-        repaint();
-    }
-
-    /**
-     * Dispose les blocs en cercle autour du premier bloc.
-     * * Utile pour visualiser les relations centrées sur une classe principale.
-     */
-    public void disposerEnCirculaire() 
-    {
-        if (blocsClasses.isEmpty()) 
-        {
-            return;
-        }
-
-        OptimisateurDisposition.appliquerLayoutCirculaire(blocsClasses, 0);
         calculerTailleDynamique();
         repaint();
     }

@@ -12,13 +12,13 @@ import modele.entites.ClasseObjet;
 import modele.entites.HeritageObjet;
 import modele.entites.InterfaceObjet;
 import modele.entites.LiaisonObjet;
+import modele.entites.MethodeObjet;
 import vue.ConsoleVue;
 
 /**
  * Contrôleur principal pour l'IHM (Interface Homme-Machine).
  */
-public class AnalyseIHMControleur
-{
+public class AnalyseIHMControleur {
     /*-------------------------------------- */
     /* Attributs */
     /*-------------------------------------- */
@@ -34,8 +34,7 @@ public class AnalyseIHMControleur
     /*-------------------------------------- */
 
     // Constructeur par défaut
-    public AnalyseIHMControleur()
-    {
+    public AnalyseIHMControleur() {
         this.classes = new ArrayList<ClasseObjet>();
         this.associations = new ArrayList<AssociationObjet>();
         this.heritages = new ArrayList<HeritageObjet>();
@@ -46,18 +45,15 @@ public class AnalyseIHMControleur
     }
 
     // Constructeur intégral qui fait l'analyse et affiche
-    public AnalyseIHMControleur(String cheminDossier)
-    {
+    public AnalyseIHMControleur(String cheminDossier) {
         this(); // initialise les listes
 
         ConsoleVue vue = new ConsoleVue();
 
         boolean ok = this.analyserDossier(cheminDossier);
-        if (!ok)
-        {
+        if (!ok) {
             vue.afficherMessage(
-                "Erreur : l'analyse a échoué pour le chemin '" + cheminDossier + "'."
-            );
+                    "Erreur : l'analyse a échoué pour le chemin '" + cheminDossier + "'.");
             return;
         }
 
@@ -70,23 +66,19 @@ public class AnalyseIHMControleur
     /*-------------------------------------- */
     /* Accesseurs */
     /*-------------------------------------- */
-    public List<ClasseObjet> getClasses()
-    {
+    public List<ClasseObjet> getClasses() {
         return this.classes;
     }
 
-    public List<AssociationObjet> getAssociations()
-    {
+    public List<AssociationObjet> getAssociations() {
         return this.associations;
     }
 
-    public List<HeritageObjet> getHeritages()
-    {
+    public List<HeritageObjet> getHeritages() {
         return this.heritages;
     }
 
-    public List<InterfaceObjet> getImplementations()
-    {
+    public List<InterfaceObjet> getImplementations() {
         return this.implementations;
     }
 
@@ -97,11 +89,9 @@ public class AnalyseIHMControleur
     /**
      * Analyse complète du dossier.
      */
-    public boolean analyserDossier(String cheminDossier)
-    {
+    public boolean analyserDossier(String cheminDossier) {
         File cible = new File(cheminDossier);
-        if (!cible.isDirectory())
-        {
+        if (!cible.isDirectory()) {
             return false;
         }
 
@@ -114,25 +104,24 @@ public class AnalyseIHMControleur
 
         List<File> fichiersJava = analyseur.ClassesDuDossier(cheminDossier);
 
-        for (File f : fichiersJava)
-        {
+        for (File f : fichiersJava) {
             ClasseObjet c = analyseur.analyserFichierUnique(f.getAbsolutePath());
-            if (c != null)
-            {
+            if (c != null) {
                 this.classes.add(c);
                 this.mapClasses.put(c.getNom(), c);
             }
         }
 
+        // Ajouter les constructeurs par défaut si manquants
+        ajouterConstructeursParDefaut();
+
         ajouterClassesExternes();
 
         this.associations.addAll(
-            analyseur.detecterAssociations(this.classes, this.mapClasses)
-        );
+                analyseur.detecterAssociations(this.classes, this.mapClasses));
         this.heritages.addAll(analyseur.resoudreHeritage(this.mapClasses));
         this.implementations.addAll(
-            analyseur.resoudreImplementation(this.mapClasses)
-        );
+                analyseur.resoudreImplementation(this.mapClasses));
 
         List<LiaisonObjet> toutes = new ArrayList<LiaisonObjet>();
         toutes.addAll(this.associations);
@@ -144,185 +133,112 @@ public class AnalyseIHMControleur
         return true;
     }
 
-    private void ajouterClassesExternes()
-    {
+    private void ajouterClassesExternes() {
         HashSet<String> manquantes = new HashSet<String>();
 
-        for (String parent : this.analyseur.getIntentionsHeritage().values())
-        {
-            if (parent == null || "Object".equals(parent))
-            {
+        for (String parent : this.analyseur.getIntentionsHeritage().values()) {
+            if (parent == null || "Object".equals(parent)) {
                 continue;
             }
-            if (!this.mapClasses.containsKey(parent))
-            {
+            if (!this.mapClasses.containsKey(parent)) {
                 manquantes.add(parent);
             }
         }
 
-        for (ArrayList<String> lst : this.analyseur.getInterfaces().values())
-        {
-            for (String iface : lst)
-            {
-                if (iface == null || iface.isEmpty())
-                {
+        for (ArrayList<String> lst : this.analyseur.getInterfaces().values()) {
+            for (String iface : lst) {
+                if (iface == null || iface.isEmpty()) {
                     continue;
                 }
-                if (!this.mapClasses.containsKey(iface))
-                {
+                if (!this.mapClasses.containsKey(iface)) {
                     manquantes.add(iface);
                 }
             }
         }
 
-        for (ClasseObjet c : this.classes)
-        {
-            if (c.getattributs() == null)
-            {
-                continue;
-            }
-
-            for (modele.entites.AttributObjet att : c.getattributs())
-            {
-                String typeBrut = att.getType();
-                if (typeBrut == null || typeBrut.isEmpty())
-                {
-                    continue;
-                }
-
-                String principal = extraireTypePrincipal(typeBrut);
-                if (principal == null || principal.isEmpty())
-                {
-                    continue;
-                }
-
-                if (principal.equals(c.getNom()))
-                {
-                    continue;
-                }
-
-                if (!this.mapClasses.containsKey(principal)
-                    && Character.isUpperCase(principal.charAt(0)))
-                {
-                    manquantes.add(principal);
-                }
-            }
-        }
-
-        if (manquantes.isEmpty())
-        {
+        if (manquantes.isEmpty()) {
             return;
         }
 
-        for (String nom : manquantes)
-        {
-            ClasseObjet placeholder =
-                new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nom, "externe");
+        for (String nom : manquantes) {
+            ClasseObjet placeholder = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nom, "externe");
             this.classes.add(placeholder);
             this.mapClasses.put(nom, placeholder);
         }
     }
 
-    private String extraireTypePrincipal(String type)
-    {
-        String t = type.trim();
-
-        int i1 = t.indexOf('<');
-        int i2 = (i1 >= 0) ? t.indexOf('>', i1 + 1) : -1;
-
-        if (i1 >= 0 && i2 > i1)
-        {
-            String inner = t.substring(i1 + 1, i2).trim();
-            inner = inner.replace("? extends", "")
-                         .replace("? super", "")
-                         .trim();
-
-            int comma = inner.indexOf(',');
-            if (comma > 0)
-            {
-                inner = inner.substring(0, comma).trim();
-            }
-
-            return nettoyerNom(inner);
-        }
-
-        if (t.endsWith("[]"))
-        {
-            return nettoyerNom(t.substring(0, t.length() - 2).trim());
-        }
-
-        return nettoyerNom(t);
-    }
-
-    private String nettoyerNom(String nom)
-    {
-        String s = nom;
-
-        int space = s.indexOf(' ');
-        if (space > 0)
-        {
-            s = s.substring(0, space);
-        }
-
-        int lt = s.indexOf('<');
-        if (lt > 0)
-        {
-            s = s.substring(0, lt);
-        }
-
-        if (s.contains("."))
-        {
-            s = s.substring(s.lastIndexOf('.') + 1);
-        }
-
-        return s.trim();
-    }
-
-    public void supprimerClasse(String nomClasse)
-    {
-        if (nomClasse == null || nomClasse.isEmpty())
-        {
+    public void supprimerClasse(String nomClasse) {
+        if (nomClasse == null || nomClasse.isEmpty()) {
             return;
         }
 
         ClasseObjet aSupprimer = null;
 
-        for (ClasseObjet c : this.classes)
-        {
-            if (nomClasse.equals(c.getNom()))
-            {
+        for (ClasseObjet c : this.classes) {
+            if (nomClasse.equals(c.getNom())) {
                 aSupprimer = c;
                 break;
             }
         }
 
-        if (aSupprimer != null)
-        {
+        if (aSupprimer != null) {
             this.classes.remove(aSupprimer);
         }
 
         this.mapClasses.remove(nomClasse);
 
         this.associations.removeIf(
-            a -> a.getClasseFille().getNom().equals(nomClasse)
-              || a.getClasseMere().getNom().equals(nomClasse)
-        );
+                a -> a.getClasseFille().getNom().equals(nomClasse)
+                        || a.getClasseMere().getNom().equals(nomClasse));
 
         this.heritages.removeIf(
-            h -> h.getClasseFille().getNom().equals(nomClasse)
-              || h.getClasseMere().getNom().equals(nomClasse)
-        );
+                h -> h.getClasseFille().getNom().equals(nomClasse)
+                        || h.getClasseMere().getNom().equals(nomClasse));
+    }
+
+    /**
+     * Ajoute un constructeur par défaut à chaque classe qui n'en a pas.
+     * Le constructeur par défaut a la signature : public NomClasse()
+     */
+    private void ajouterConstructeursParDefaut() {
+        for (ClasseObjet classe : this.classes) {
+            // Les interfaces n'ont pas de constructeurs
+            if (classe.getSpecifique() != null && classe.getSpecifique().equals("interface")) {
+                continue;
+            }
+
+            // Vérifier si la classe a déjà un constructeur
+            boolean aUnConstructeur = false;
+            if (classe.getMethodes() != null) {
+                for (MethodeObjet methode : classe.getMethodes()) {
+                    // Un constructeur a retourType = null et son nom = nom de la classe
+                    if (methode.getRetourType() == null && methode.getNom().equals(classe.getNom())) {
+                        aUnConstructeur = true;
+                        break;
+                    }
+                }
+            }
+
+            // Si pas de constructeur, en ajouter un par défaut
+            if (!aUnConstructeur) {
+                MethodeObjet constructeurParDefaut = new MethodeObjet(
+                        classe.getNom(), // nom = nom de la classe
+                        new HashMap<String, String>(), // pas de paramètres
+                        "public", // visibilité
+                        false // pas statique
+                );
+                classe.getMethodes().add(0, constructeurParDefaut); // Ajouter au début
+            }
+        }
     }
 
     /*-------------------------------------- */
     /* Main */
     /*-------------------------------------- */
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         ConsoleVue vue = new ConsoleVue();
 
-        if (args.length == 0)
-        {
+        if (args.length == 0) {
             vue.afficherUsage();
             return;
         }

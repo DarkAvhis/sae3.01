@@ -300,7 +300,8 @@ public class Controleur {
      *         diagramme
      */
     private HashMap<String, Point> calculerPositionsOptimales(List<ClasseObjet> classes, List<LiaisonVue> liaisons,
-            List<BlocClasse> blocsAvecTailles) {
+            List<BlocClasse> blocsAvecTailles) 
+    {
         HashMap<String, BlocClasse> blocMap = new HashMap<>();
 
         // Map de référence pour la taille et l'objet
