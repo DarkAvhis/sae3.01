@@ -769,7 +769,8 @@ public class Controleur {
      * 
      * @param args Arguments de la ligne de commande (non utilisés)
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         new Controleur();
     }
 }
