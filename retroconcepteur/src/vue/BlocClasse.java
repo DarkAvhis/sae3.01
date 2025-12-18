@@ -43,7 +43,6 @@ public class BlocClasse {
     private int largeur;
     private int hauteur;
     private boolean estInterface;
-    private boolean estSuperClasse;
     private boolean estSelectionne;
     private boolean estExterne; // NOUVEAU: Champ pour marquer une classe comme externe
 
@@ -57,8 +56,7 @@ public class BlocClasse {
     private static final Color COULEUR_FOND = new Color(255, 255, 255);
     private static final Color COULEUR_FOND_EXTERNE = new Color(235, 235, 235);
     private static final Color COULEUR_BORDURE = new Color(0, 0, 0);
-    private static final Color COULEUR_ENTETE = new Color(0, 0, 0);
-    private static final Color COULEUR_ENTETE_EXTERNE = new Color(140, 140, 140);
+
 
     public BlocClasse(
             String nom,
@@ -73,7 +71,6 @@ public class BlocClasse {
         this.methodesAffichage = methodes;
 
         this.estInterface = false;
-        this.estSuperClasse = false;
         this.estSelectionne = false;
         this.estExterne = false; // Initialisation du nouveau champ
 
@@ -184,8 +181,6 @@ private int dessinerNom(Graphics2D g)
 {
     boolean avecTypeSpecifique = typeSpecifique != null && !typeSpecifique.isEmpty();
 
-    int yEntete = y - (avecTypeSpecifique ? 5 : 0);
-    int hauteurEnteteReelle = HAUTEUR_ENTETE + (avecTypeSpecifique ? 5 : 0);
 
     g.setColor(Color.BLACK);
 
@@ -271,18 +266,23 @@ private int dessinerNom(Graphics2D g)
         int maxMethodes = modeComplet ? Integer.MAX_VALUE : 3;
         int iMet = 0;
         
-        for (String met : methodesAffichage) {
+        for (String met : methodesAffichage) 
+            {
             if (iMet >= maxMethodes) break;
             currentY += HAUTEUR_LIGNE;
             
             boolean estStatique = met.contains("{static}");
             String libelle = met.replace("{static}", "").trim();
             
-            g.drawString(libelle, x + PADDING, currentY);
+            // CORRECTION : On ne limite QUE si on n'est PAS en mode complet
+            String libelleFinal = modeComplet ? libelle : limiterParametres(libelle);
             
-            if (estStatique) {
+            g.drawString(libelleFinal, x + PADDING, currentY);
+            
+            if (estStatique) 
+            {
                 FontMetrics fm = g.getFontMetrics();
-                g.drawLine(x + PADDING, currentY + 2, x + PADDING + fm.stringWidth(libelle), currentY + 2);
+                g.drawLine(x + PADDING, currentY + 2, x + PADDING + fm.stringWidth(libelleFinal), currentY + 2);
             }
             iMet++;
         }
@@ -351,14 +351,14 @@ private int dessinerNom(Graphics2D g)
             maxLongueur = Math.max(maxLongueur, longueur);
         }
 
-        for (String met : methodesAffichage) {
-            if (met == null) {
-                continue;
-            }
-
-            int longueur = met.replace("{static}", "").trim().length();
-
-            maxLongueur = Math.max(maxLongueur, longueur);
+        for (String met : methodesAffichage) 
+        {
+            if (met == null) continue;
+            String s = met.replace("{static}", "").trim();
+            
+            // On calcule la largeur basée sur ce qui sera RÉELLEMENT affiché
+            String aMesurer = modeComplet ? s : limiterParametres(s);
+            maxLongueur = Math.max(maxLongueur, aMesurer.length());
         }
 
         this.largeur = Math.max(
