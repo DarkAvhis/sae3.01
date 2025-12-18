@@ -24,7 +24,8 @@ import java.awt.Canvas;
  *         Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class BlocClasse {
+public class BlocClasse 
+{
         // Ajout d'un champ pour le type spécifique (interface, record, abstract class)
         private String typeSpecifique = null;
 
@@ -107,6 +108,8 @@ public class BlocClasse {
         this.hauteur = HAUTEUR_ENTETE
                 + (attributs.size() + methodes.size()) * HAUTEUR_LIGNE
                 + PADDING * 4;
+
+        recalculerDimensions();
     }
 
     public BlocClasse(String nom, int x, int y) 
