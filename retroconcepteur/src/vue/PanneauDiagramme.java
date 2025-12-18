@@ -1,5 +1,6 @@
 package vue;
 
+import controleur.Controleur;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -19,13 +20,10 @@ import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
-
-import controleur.Controleur;
 import vue.LiaisonVue.TypeLiaison;
 
 /**
@@ -45,6 +43,10 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
     private List<BlocClasse> blocsClasses;
     private List<LiaisonVue> liaisonsVue;
     private double zoom;
+    // Flags d'affichage (gérés par la vue)
+    private boolean afficherClassesExternes = true;
+    private boolean afficherAttributs = true;
+    private boolean afficherMethodes = true;
 
     /**
      * Constructeur du panneau de diagramme.
@@ -698,6 +700,16 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
         // Le repaint est maintenant géré par setLiaisonsVue
     }
 
+    // Flags accessors
+    public boolean isAfficherClassesExternes() { return this.afficherClassesExternes; }
+    public void setAfficherClassesExternes(boolean v) { this.afficherClassesExternes = v; }
+
+    public boolean isAfficherAttributs() { return this.afficherAttributs; }
+    public void setAfficherAttributs(boolean v) { this.afficherAttributs = v; }
+
+    public boolean isAfficherMethodes() { return this.afficherMethodes; }
+    public void setAfficherMethodes(boolean v) { this.afficherMethodes = v; }
+
     public List<LiaisonVue> getLiaisonsVue() {
         return liaisonsVue;
     }
@@ -718,6 +730,15 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
             }
         }
         return null;
+    }
+
+    /**
+     * Retourne le nom de la classe sélectionnée (sans exposer l'objet BlocClasse).
+     * Retourne null si aucune classe sélectionnée.
+     */
+    public String getNomClasseSelectionnee() {
+        BlocClasse b = getBlocsClasseSelectionnee();
+        return b == null ? null : b.getNom();
     }
 
     /**

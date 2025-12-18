@@ -224,7 +224,24 @@ public class BarreMenus extends JMenuBar implements ActionListener {
                 JOptionPane.YES_NO_OPTION);
 
         if (rep == JOptionPane.YES_OPTION) {
-            String nomSupprime = controleur.supprimerClasseSelectionnee();
+            // Récupère le nom de la classe sélectionnée depuis le panneauDiagramme
+            PanneauDiagramme pd = this.panneauProjets.getPanneauDiagramme();
+            String nomSel = null;
+            if (pd != null) {
+                nomSel = pd.getNomClasseSelectionnee();
+            }
+
+            if (nomSel == null) {
+                JOptionPane.showMessageDialog(
+                    SwingUtilities.getWindowAncestor(this),
+                    "Aucune classe sélectionnée.",
+                    "Suppression",
+                    JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
+            String nomSupprime = controleur.supprimerClasseSelectionnee(nomSel);
             if (nomSupprime != null) {
                 JOptionPane.showMessageDialog(
                     SwingUtilities.getWindowAncestor(this),

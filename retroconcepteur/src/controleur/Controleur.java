@@ -1,7 +1,6 @@
 package controleur;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import modele.Sauvegarde;
@@ -36,11 +35,7 @@ import vue.PresentationMapper;
 public class Controleur {
     private AnalyseIHMControleur metierComplet;
     private FenetrePrincipale vuePrincipale;
-    private List<BlocClasse> blocsVue = new ArrayList<>();
     private String cheminProjetActuel;
-    private boolean afficherClassesExternes = true;
-    private boolean afficherAttributs = true;
-    private boolean afficherMethodes = true;
 
     // --- Constantes pour le Layout Hiérarchique ---
     private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
@@ -98,7 +93,9 @@ public class Controleur {
      * Active/désactive l'affichage des classes externes et réaffiche.
      */
     public void setAfficherClassesExternes(boolean afficher) {
-        this.afficherClassesExternes = afficher;
+        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) {
+            vuePrincipale.getPanneauDiagramme().setAfficherClassesExternes(afficher);
+        }
         reafficherAvecFiltreExternes();
     }
 
@@ -109,7 +106,19 @@ public class Controleur {
     private void reafficherAvecFiltreExternes() 
     {
         List<ClasseObjet> classes = this.metierComplet.getClasses();
-        blocsVue = vue.DiagramPresenter.buildBlocs(classes, this.afficherClassesExternes, this.afficherAttributs, this.afficherMethodes, 50, 50);
+        boolean afficherExternes = true;
+        boolean afficherAttr = true;
+        boolean afficherMeth = true;
+        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) {
+            afficherExternes = vuePrincipale.getPanneauDiagramme().isAfficherClassesExternes();
+            afficherAttr = vuePrincipale.getPanneauDiagramme().isAfficherAttributs();
+            afficherMeth = vuePrincipale.getPanneauDiagramme().isAfficherMethodes();
+        }
+        List<BlocClasse> blocs = vue.DiagramPresenter.buildBlocs(classes, afficherExternes, afficherAttr, afficherMeth, 50, 50);
+        // set on the view directly
+        if (vuePrincipale != null) {
+            vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocs);
+        }
         majAffichage();
     }
 
@@ -144,11 +153,8 @@ public class Controleur {
         List<InterfaceObjet> implementations = this.metierComplet.getImplementations();
 
         List<LiaisonVue> liaisonsVue = vue.DiagramPresenter.buildLiaisons(associations, heritages, implementations, this.metierComplet.getClasses());
-
         if (vuePrincipale != null) {
-            vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocsVue);
             vuePrincipale.getPanneauDiagramme().setLiaisonsVue(liaisonsVue);
-            vuePrincipale.getPanneauDiagramme().repaint();
         }
     }
 
@@ -215,10 +221,14 @@ public class Controleur {
      * @note Cette méthode est actuellement en développement
      */
     public void sauvegarde() {
-        if (this.vuePrincipale == null)
-            return;
-        List<BlocClasse> blocs = this.vuePrincipale.getPanneauDiagramme().getBlocsClasses();
-        System.out.println("Sauvegarde des positions de " + blocs.size() + " blocs.");
+        // Délégué au module de sauvegarde métier. On n'interroge pas l'état
+        // graphique depuis le contrôleur pour respecter MVC.
+        if (this.cheminProjetActuel == null || this.cheminProjetActuel.isEmpty()) {
+            // Pas de projet courant : sauvegarde dans fichier local par défaut
+            Sauvegarde.sauvegarder(".", "diagramme.txt");
+        } else {
+            Sauvegarde.sauvegarder(this.cheminProjetActuel, this.cheminProjetActuel + "/DiagrammeUML.txt");
+        }
     }
 
     public void sauvegarde(String dossier, String fichier) {
@@ -230,30 +240,23 @@ public class Controleur {
      * 
      * @note Cette méthode est actuellement en développement
      */
-    public String supprimerClasseSelectionnee() {
-        if (vuePrincipale == null)
-            return null;
-
-        BlocClasse bloc = vuePrincipale.getPanneauDiagramme().getBlocsClasseSelectionnee();
-        if (bloc == null)
-            return null;
-
-        String nomClasse = bloc.getNom();
+    /**
+     * Supprime la classe identifiée par son nom. Le nom doit provenir de la Vue
+     * (ex : PanneauDiagramme.getNomClasseSelectionnee()).
+     *
+     * @param nomClasse nom de la classe métier à supprimer
+     * @return nom supprimé ou null
+     */
+    public String supprimerClasseSelectionnee(String nomClasse) {
+        if (nomClasse == null || nomClasse.isEmpty()) return null;
 
         // Supprimer côté métier
         metierComplet.supprimerClasse(nomClasse);
 
-        // Supprimer le bloc dans la vue
-        for (int i = 0; i < blocsVue.size(); i++) {
-            if (blocsVue.get(i).getNom().equals(nomClasse)) {
-                blocsVue.remove(i);
-                break;
-            }
-        }
+        // Rebuild the view to reflect model changes
+        reafficherAvecFiltreExternes();
 
-        vuePrincipale.getPanneauDiagramme().repaint();
-
-        return nomClasse; // renvoie le nom de la classe supprimée
+        return nomClasse;
     }
 
     /**
@@ -334,13 +337,19 @@ public class Controleur {
 
     public void toggleAttributs() 
     {
-    this.afficherAttributs = !this.afficherAttributs;
-    rafraichirMembres();
+        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) {
+            boolean cur = vuePrincipale.getPanneauDiagramme().isAfficherAttributs();
+            vuePrincipale.getPanneauDiagramme().setAfficherAttributs(!cur);
+        }
+        rafraichirMembres();
     }   
 
     public void toggleMethodes() 
     {
-        this.afficherMethodes = !this.afficherMethodes;
+        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) {
+            boolean cur = vuePrincipale.getPanneauDiagramme().isAfficherMethodes();
+            vuePrincipale.getPanneauDiagramme().setAfficherMethodes(!cur);
+        }
         rafraichirMembres();
     }
 

@@ -188,6 +188,13 @@ public class PanneauProjets extends JPanel implements ActionListener
     }
 
     /**
+     * Retourne le panneau diagramme associé à ce panneau de projets.
+     */
+    public PanneauDiagramme getPanneauDiagramme() {
+        return this.panneauDiagramme;
+    }
+
+    /**
      * Charge la liste des projets depuis le dossier spécifié.
      * 
      * Parcourt le dossier et crée un bouton pour chaque sous-dossier trouvé.
