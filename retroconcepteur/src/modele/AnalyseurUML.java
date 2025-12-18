@@ -2,6 +2,9 @@ package modele;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,6 +54,8 @@ public class AnalyseurUML {
         File file = new File(chemin);
         String nomFichier = file.getName().replace(".java", "");
 
+
+
         // NOUVEAU : Utilisation d'une pile pour gérer la hiérarchie des classes
         java.util.Stack<ClasseObjet> pileClasses = new java.util.Stack<>();
         ClasseObjet classeRacine = null;
@@ -95,34 +100,76 @@ public class AnalyseurUML {
                     ligneBrute = ligneBrute.substring(0, ligneBrute.indexOf("//")).trim();
                 if (ligneBrute.startsWith("package") || ligneBrute.startsWith("import"))
                     continue;
-
                 // --- DÉTECTION D'UNE DÉCLARATION DE CLASSE (RACINE OU INTERNE) ---
-                if (ligneBrute.contains(" class ") || ligneBrute.contains("interface ") ||
-                        ligneBrute.contains(" record ") || ligneBrute.contains(" enum ") ||
-                        ligneBrute.startsWith("class ") || ligneBrute.startsWith("public class ") ||
-                        ligneBrute.startsWith("interface ") || ligneBrute.startsWith("public interface ")) {
-                    String specifique = "";
-                    if (ligneBrute.contains("interface"))
-                        specifique = "interface";
-                    else if (ligneBrute.contains("enum"))
-                        specifique = "enum";
-                    else if (ligneBrute.contains("record"))
-                        specifique = "record";
-                    else if (ligneBrute.contains("abstract class"))
+                // Version simple : on cherche les mots-clés et on vérifie qu'ils ne sont
+                // pas à l'intérieur d'une chaîne entre guillemets.
+                String[] mots = {"class", "interface", "record", "enum"};
+                String foundKeyword = null;
+                int foundIdx = -1;
+                int nameStart = -1;
+
+                for (String kw : mots) {
+                    int idx = ligneBrute.indexOf(kw);
+                    while (idx != -1) {
+                        // si le mot est dans une chaîne, on ignore
+                        if (estDansGuillemets(ligneBrute, idx)) {
+                            idx = ligneBrute.indexOf(kw, idx + 1);
+                            continue;
+                        }
+
+                        // vérifier que le caractère précédent n'est pas un identifiant (pour éviter les sous-chaînes)
+                        boolean okBefore = (idx == 0) || !Character.isJavaIdentifierPart(ligneBrute.charAt(idx - 1));
+                        if (!okBefore) {
+                            idx = ligneBrute.indexOf(kw, idx + 1);
+                            continue;
+                        }
+
+                        // trouver le début du nom après le mot-clé
+                        int after = idx + kw.length();
+
+                        // Si le mot-clé est immédiatement suivi d'un caractère d'identifiant
+                        // (ex: "classeRacine" contient "class" suivi de 'e'), alors il s'agit
+                        // d'un identifiant plus long et non d'une déclaration : on ignore.
+                        if (after < ligneBrute.length() && Character.isJavaIdentifierPart(ligneBrute.charAt(after))) {
+                            idx = ligneBrute.indexOf(kw, idx + 1);
+                            continue;
+                        }
+
+                        // Sinon on saute les espaces et on vérifie qu'un nom commence bien
+                        while (after < ligneBrute.length() && Character.isWhitespace(ligneBrute.charAt(after)))
+                            after++;
+                        if (after < ligneBrute.length() && Character.isJavaIdentifierStart(ligneBrute.charAt(after))) {
+                            foundKeyword = kw;
+                            foundIdx = idx;
+                            nameStart = after;
+                            break;
+                        }
+                        idx = ligneBrute.indexOf(kw, idx + 1);
+                    }
+                    if (foundKeyword != null) break;
+                }
+
+                if (foundKeyword != null) {
+                    // Ne pas afficher simplement le mot-clé "class" sous le bloc :
+                    // garder vide pour les classes normales, mais conserver "abstract"
+                    // si la déclaration est abstraite. Pour les autres mots-clés
+                    // (interface/record/enum) on conserve le terme.
+                    String specifique = foundKeyword.equals("class") ? "" : foundKeyword;
+                    if (ligneBrute.contains("abstract") && foundKeyword.equals("class")) {
+                        // Utiliser la même valeur que le reste du code attend ("abstract class")
                         specifique = "abstract class";
+                    }
 
-                    // Extraction du nom de l'entité
-                    String reste = ligneBrute;
-                    if (!specifique.equals(""))
-                        reste = ligneBrute.substring(ligneBrute.indexOf(specifique) + specifique.length()).trim();
-                    else if (ligneBrute.contains("class "))
-                        reste = ligneBrute.substring(ligneBrute.indexOf("class ") + 6).trim();
+                    // Extraire le nom sans split ni regex
+                    StringBuilder nameBuilder = new StringBuilder();
+                    int p = nameStart;
+                    while (p < ligneBrute.length() && Character.isJavaIdentifierPart(ligneBrute.charAt(p))) {
+                        nameBuilder.append(ligneBrute.charAt(p));
+                        p++;
+                    }
+                    String nomEntite = nameBuilder.toString();
+                    if (nomEntite.isEmpty()) nomEntite = nomFichier;
 
-                    String nomEntite = ParsingUtil.lireNom(reste);
-                    if (nomEntite.isEmpty())
-                        nomEntite = nomFichier;
-
-                    // Création du nouvel objet classe
                     ClasseObjet nouvelleClasse = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nomEntite,
                             specifique);
 
@@ -220,6 +267,20 @@ public class AnalyseurUML {
         }
 
         return classeRacine;
+    }
+
+    /**
+     * Vérifie si la position idx dans la ligne se trouve à l'intérieur d'une
+     * chaîne de caractères délimitée par des guillemets doubles.
+     * Méthode simple : compte le nombre de '"' avant idx. Si impair -> dedans.
+     */
+    private boolean estDansGuillemets(String ligne, int idx) {
+        if (ligne == null || idx <= 0) return false;
+        int count = 0;
+        for (int i = 0; i < Math.min(idx, ligne.length()); i++) {
+            if (ligne.charAt(i) == '"') count++;
+        }
+        return (count % 2) == 1;
     }
 
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes,
