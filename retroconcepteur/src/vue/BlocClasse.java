@@ -112,6 +112,35 @@ public class BlocClasse
         recalculerDimensions();
     }
 
+    public String getNom    () {  return nom     ;  }
+    public int    getX      () {  return x       ;  }
+    public int    getY      () {  return y       ;  }
+    public int    getLargeur() {  return largeur ;  }
+    public int    getHauteur() {  return hauteur ;  }
+
+    public void setLargeur    (int     largeur     ) {  this.largeur        = largeur      ; }
+    public void setX          (int     x           ) {  this.x              = x            ; }
+    public void setY          (int     y           ) {  this.y              = y            ; }
+    public void setInterface  (boolean estInterface) {  this.estInterface   = estInterface ; }
+    public void setSelectionne(boolean selectionne ) {  this.estSelectionne = selectionne  ; }
+    public void setExterne    (boolean externe     ) {  this.estExterne     = externe      ; }
+
+    public void setAttributs(List<String> attributs) 
+    {
+        this.attributsAffichage = attributs;
+        recalculerDimensions();
+    }
+
+    public void setMethodes(List<String> methodes) 
+    {
+        this.methodesAffichage = methodes;
+        recalculerDimensions();
+    }
+
+    public boolean estInterface  () {  return estInterface  ;  }
+    public boolean estSelectionne() {  return estSelectionne;  }
+    public boolean estExterne    () {  return estExterne    ;  }
+
     public BlocClasse(String nom, int x, int y) 
     {    
         this(nom, x, y, new ArrayList<>(), new ArrayList<>()) ;  
@@ -288,45 +317,6 @@ public class BlocClasse
     public boolean contient(int px, int py) {
         return px >= x && px <= x + largeur
                 && py >= y && py <= y + hauteur;
-    }
-
-    public String getNom()  {    return nom     ;  }
-    public int    getX()    {    return x       ;  }
-    public int    getY()    {    return y       ;  }
-    public int getLargeur() {    return largeur ;  }
-
-    public void setLargeur(int largeur) {    this.largeur = largeur;  }
-    public int  getHauteur(){    return hauteur;  }
-    public boolean estInterface() {    return estInterface;  }
-    public boolean estSelectionne() {    return estSelectionne;  }
-    public boolean estExterne() {    return estExterne;  }
-    public void setX(int x) {    this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public void setInterface(boolean estInterface) {
-        this.estInterface = estInterface;
-    }
-
-    public void setSelectionne(boolean selectionne) {
-        this.estSelectionne = selectionne;
-    }
-
-    public void setExterne(boolean externe) {
-        this.estExterne = externe;
-    }
-
-    public void setAttributs(List<String> attributs) {
-        this.attributsAffichage = attributs;
-        recalculerDimensions();
-    }
-
-    public void setMethodes(List<String> methodes) {
-        this.methodesAffichage = methodes;
-        recalculerDimensions();
     }
 
     private void recalculerDimensions() {
