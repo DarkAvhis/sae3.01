@@ -25,8 +25,14 @@ public class InterfaceObjet extends LiaisonObjet
         this.lstInterfaces = new ArrayList<>();
     }
 
+    /*-------------------------------------- */
+	/* Les Accesseurs                        */
+	/*-------------------------------------- */
     public List<ClasseObjet> getLstInterfaces(){ return this.lstInterfaces; }
     
+    /*-------------------------------------- */
+	/* Methode autre                         */
+	/*-------------------------------------- */
     /**
      * Ajoute une interface à la liste des implémentations.
      * @param interfaceObjet L'interface (qui est un ClasseObjet) à ajouter.

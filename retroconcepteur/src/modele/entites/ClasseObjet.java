@@ -12,7 +12,7 @@ import java.util.List;
 public class ClasseObjet 
 {
 	/*-------------------------------------- */
-	/* Attributs */
+	/* Attributs                             */
 	/*-------------------------------------- */
 
 	private String                   nom             ;
@@ -26,7 +26,7 @@ public class ClasseObjet
 	private static final String ANSI_RESET     = "\u001B[0m";
 
 	/*-------------------------------------- */
-	/* Constructeur */
+	/* Constructeur                          */
 	/*-------------------------------------- */
 	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom, 
 		String specifique)
@@ -40,7 +40,7 @@ public class ClasseObjet
 	}
 
 	/*-------------------------------------- */
-	/* Les Accesseurs */
+	/* Les Accesseurs                        */
 	/*-------------------------------------- */
 	public String getNom       () { return this.nom       ; }
 	public String getSpecifique() {	return this.specifique; }
@@ -50,7 +50,7 @@ public class ClasseObjet
 	public ArrayList<ClasseObjet  > getClassesInternes() { return this.classesInternes; }
 
 	/*-------------------------------------- */
-	/* Modificateurs */
+	/* Modificateurs                         */
 	/*-------------------------------------- */
 	public void setNom(String nom) { this.nom = nom;}
 
@@ -58,7 +58,7 @@ public class ClasseObjet
 	public void setMethodes (ArrayList<MethodeObjet > methodes ) { this.methodes  = methodes ; }
 
 	/*-------------------------------------- */
-	/* Methode autre */
+	/* Methode autre                         */
 	/*-------------------------------------- */
 
 	public void ajouterClasseInterne(ClasseObjet inner) 
@@ -129,7 +129,7 @@ public class ClasseObjet
 	}
 
 	/*-------------------------------------- */
-	/* toString */
+	/* toString                              */
 	/*-------------------------------------- */
 
 	/**
