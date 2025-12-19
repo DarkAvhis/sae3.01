@@ -16,6 +16,7 @@ public class Sauvegarde
         try
         {
             File dossierFile = new File(dossier);
+
             if (!dossierFile.exists() || !dossierFile.isDirectory())
             {
                 System.out.println("Erreur : dossier invalide ou introuvable : " + dossier);
@@ -23,6 +24,7 @@ public class Sauvegarde
             }
 
             File outFile = new File(fichier);
+
             if (outFile.getParentFile() != null)
                 outFile.getParentFile().mkdirs();
 
@@ -36,7 +38,7 @@ public class Sauvegarde
             // Pour chaque fichier
             for (File f : fichiers)
             {
-                writer.write("Classe : " + f.getName() + "\n");
+                writer.write("Classe : " + f.getName()   + "\n");
                 writer.write("--------------------------\n");
                 
                 // Lire le fichier
@@ -50,16 +52,16 @@ public class Sauvegarde
                     if (ligne.contains("private ") || ligne.contains("public "))
                     {
                         if (ligne.contains(";") && !ligne.contains("("))
-                        {
                             writer.write("  " + ligne + "\n");
-                        }
                     }
                 }
                 reader.close();
                 
                 // Relire pour les méthodes
                 reader = new BufferedReader(new FileReader(f));
+
                 writer.write("\nMéthodes:\n");
+
                 while ((ligne = reader.readLine()) != null)
                 {
                     // Si c'est une méthode
@@ -68,9 +70,7 @@ public class Sauvegarde
                         if (ligne.contains("(") && ligne.contains(")"))
                         {
                             if (!ligne.contains(";"))
-                            {
                                 writer.write("  " + ligne + "\n");
-                            }
                         }
                     }
                 }
@@ -80,12 +80,10 @@ public class Sauvegarde
             }
             
             writer.close();
+
             System.out.println("Fichier sauvegardé : " + outFile.getAbsolutePath());
-        }
-        catch (Exception e)
-        {
-            System.out.println("Erreur : " + e.getMessage());
-        }
+
+        }catch (Exception e){  System.out.println("Erreur : " + e.getMessage()); }
     }
     
     /**
@@ -96,21 +94,18 @@ public class Sauvegarde
         List<File> fichiers = new ArrayList<>();
         
         File[] files = dossier.listFiles();
+
         if (files != null)
         {
             for (File f : files)
             {
                 if (f.isDirectory())
-                {
                     fichiers.addAll(trouverFichiers(f));
-                }
+
                 else if (f.getName().endsWith(".java"))
-                {
                     fichiers.add(f);
-                }
             }
         }
-        
         return fichiers;
     }
     
