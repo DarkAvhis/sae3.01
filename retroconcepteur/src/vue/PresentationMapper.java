@@ -130,122 +130,66 @@ public class PresentationMapper
         return liaisonsVue;
     }
 
-    public static List<String> convertirAttributs(List<AttributObjet> attributs    ,ClasseObjet classe, 
-                                                  List<ClasseObjet>   classesProjet)
+    
+    public static List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe, List<ClasseObjet> classesProjet)
     {
-        List<String> liste               = new ArrayList<>();
-        List<String> nomsClassesProjet   = new ArrayList<>();
-
-        for (ClasseObjet c : classesProjet)
-        {
-            nomsClassesProjet.add(c.getNom());
-        }
-
+        List<String> liste = new ArrayList<>();
+        
         for (AttributObjet att : attributs)
         {
-            String type       = att.getType();
+            String type = att.getType();
             String typeSimple = type;
 
             if (type.contains("<") && type.contains(">"))
             {
                 int idx1 = type.indexOf('<');
-                int idx2 = type.indexOf('>', idx1 + 1);
-
-                if (idx1 != -1 && idx2 != -1 && idx2 > idx1)
-                {
-                    typeSimple = type.substring(idx1 + 1, idx2).trim();
-                }
+                int idx2 = type.lastIndexOf('>');
+                typeSimple = type.substring(idx1 + 1, idx2).trim();
+                
+                int virgule = typeSimple.indexOf(',');
+                if (virgule != -1) typeSimple = typeSimple.substring(virgule + 1).trim();
             }
             else if (type.endsWith("[]"))
             {
-                typeSimple = type.replace("[]", "").trim();
+                typeSimple = type.substring(0, type.length() - 2).trim();
             }
 
-            if (nomsClassesProjet.contains(typeSimple) && !typeSimple.equals(classe.getNom()))
+            boolean estLiaison = false;
+            for (ClasseObjet c : classesProjet)
             {
-                continue;
+                if (c.getNom().equals(typeSimple) && !typeSimple.equals(classe.getNom()))
+                {
+                    estLiaison = true;
+                    break;
+                }
             }
-
-            String staticFlag = att.estStatique() ? " {static}" : "";
-            String finalFlag  = att.estFinale()   ? " {final}"  : "";
+            if (estLiaison) continue;
 
             char visibilite = classe.changementVisibilite(att.getVisibilite());
-
-            String mult = "";
-
-            if (att.getMultiplicite() != null)
-            {
-                mult = " [" + att.getMultiplicite().toString() + "]";
-            }
-
-            List<String> props = new ArrayList<>();
-
-            if (att.estFrozen() ) props.add("frozen" );
-            if (att.estAddOnly()) props.add("addOnly");
-            if (att.estRequete()) props.add("requête");
-
-            String propsStr = props.isEmpty() ? "" : " {" + String.join(", ", props) + "}";
-
-            String s = visibilite + " " + att.getNom() + " : " + att.getType() + mult + staticFlag + 
-                       finalFlag  + propsStr;
-            liste.add(s);
+            String staticFlag = att.estStatique() ? " {static}" : "";
+            String finalFlag  = att.estFinale()   ? " {final}"  : "";
+            
+            liste.add(visibilite + " " + att.getNom() + " : " + type + staticFlag + finalFlag);
         }
-
         return liste;
     }
 
-    public static List<String> convertirMethodes( List<MethodeObjet> methodes, ClasseObjet classe )
+    public static List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe)
     {
         List<String> liste = new ArrayList<>();
 
         for (MethodeObjet met : methodes)
         {
+            char visibilite = classe.changementVisibilite(met.getVisibilite());
             String staticFlag = met.estStatique() ? "{static} " : "";
+            String params = classe.affichageParametre(met.getParametres());
+            String retour = classe.retourType(met.getRetourType());
 
-            char   visibilite = classe.changementVisibilite(met.getVisibilite());
-            String params     = classe.affichageParametre(met.getParametres());
-            String retour     = classe.retourType(met.getRetourType());
-
-            String s = visibilite + staticFlag + met.getNom() + params + retour;
-            liste.add(s);
+            liste.add(visibilite + staticFlag + met.getNom() + params + retour);
         }
-
-        java.util.Set<String> nomsMethodesExistants = new java.util.HashSet<String>();
-
-        for (MethodeObjet met : methodes)
-        {
-            if (met.getNom() != null)
-            {
-                nomsMethodesExistants.add(met.getNom());
-            }
-        }
-
-        for (AttributObjet att : classe.getAttributs()) {
-            String nomAttr = att.getNom();
-
-            if (nomAttr == null || nomAttr.isEmpty())
-            {
-                continue;
-            }
-
-            String type      = att.getType() != null ? att.getType().trim() : "";
-            String nomGetter = nomAttr;
-
-            if (nomsMethodesExistants.contains(nomGetter))
-            {
-                continue;
-            }
-
-            char   vis    = classe.changementVisibilite("public");
-            String retour = classe.retourType(type);
-            String s      = vis + " " + nomGetter + "()" + retour;
-
-            liste.add(s);
-        }
-
         return liste;
     }
-
+    
     public static BlocClasse creerBlocComplet(ClasseObjet c, int x,int y)
     {
         BlocClasse bloc = new BlocClasse(c.getNom(),x ,y ,new ArrayList<>() ,new ArrayList<>());

@@ -3,68 +3,21 @@ package modele.outil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import modele.entites.AttributObjet;
 import modele.entites.MethodeObjet;
 
-
 public final class ParsingUtil
 {
-    private ParsingUtil() { }
-
-    public static List<String> separerMots(String s) 
-    {
-        List<String> tokens;
-        String       token ;
-        char         c     ;
-        
-        tokens = new ArrayList<String>();
-        token  = "";
-        
-        for (int i = 0; i < s.length(); i++)
-        {
-            c = s.charAt(i);
-            if (Character.isWhitespace(c))
-            {
-                if (!token.isEmpty())
-                {
-                    tokens.add(token);
-                    token = "";
-                }
-            }
-            else
-            {
-                token += c;
-            }
-        }
-        if (!token.isEmpty())   tokens.add(token); 
-        
-        return tokens;
+    /* -------------------------------------- */
+    /* CONSTRUCTEUR (Privé)                   */
+    /* -------------------------------------- */
+    private ParsingUtil() 
+    { 
     }
 
-    public static int indexEspace(String s) 
-    {
-        for (int i = 0; i < s.length(); i++) 
-        {
-            if (Character.isWhitespace(s.charAt(i))) 
-            { 
-                return i; 
-            }
-        }
-        return -1;
-    }
-
-    public static int dernierIndexEspace(String s) 
-    {
-        for (int i = s.length() - 1; i >= 0; i--) 
-        {
-            if (Character.isWhitespace(s.charAt(i)))
-            {
-                return i;
-            }
-        }
-        return -1;
-    }
+    /* -------------------------------------- */
+    /* MÉTHODES D'ANALYSE                     */
+    /* -------------------------------------- */
 
     public static String identifierStereotype(String ligne) 
     {
@@ -72,233 +25,122 @@ public final class ParsingUtil
         if (ligne.contains("record"))    return "record";
         if (ligne.contains("enum"))      return "enum";
         if (ligne.contains("abstract class")) return "abstract class";
-        return ""; // Classe standard
+        return ""; 
     }   
 
-    public static boolean aModifierMotCle(String s) 
-    {
-        return "public"  .equals(s) || "private".equals(s) || "protected".equals(s) || 
-               "static"  .equals(s) || "final"  .equals(s) || "transient".equals(s) || 
-               "volatile".equals(s) ;
-    }
-
-    public static boolean aMethodeModif(String s) 
-    {
-        return "public"      .equals(s) || "private".equals(s) || "protected".equals(s) || 
-               "static"      .equals(s) || "final"  .equals(s) || "abstract" .equals(s) || 
-               "synchronized".equals(s) || "default".equals(s);
-    }
-
-    public static boolean aVisibilite(String s) 
-    {
-        return "public".equals(s) || "private".equals(s) || "protected".equals(s);
-    }
-
-    /**
-     * Lit le premier identifiant utile dans la chaîne (arrêt sur espace, '{', '<', ',', '(' ).
-     */
     public static String lireNom(String s) 
     {        
-        String id ;
-        char   c  ;
-
+        if (s == null) return "";
         s = s.trim();
         
-        if (s.isEmpty()){ return ""; }
+        // Si la chaîne commence par un guillemet, ce n'est pas un nom de classe valide
+        if (s.isEmpty() || s.startsWith("\"") || s.startsWith("'")) return "";
 
-        id = "";
+        String id = "";
         for (int i = 0; i < s.length(); i++) 
         {
-            c = s.charAt(i);
-            if (Character.isWhitespace(c) || c == '{' || c == '<' || c == ',' || c == '(') 
+            char c = s.charAt(i);
+            // On arrête au premier délimiteur Java
+            if (Character.isWhitespace(c) || c == '{' || c == '<' || c == ',' || c == '(' || c == ')' || c == ';') 
             {
                 break;
             }
             id += c;
         }
-        return id;
-    }
-
-    /**
-     * Split par virgules au niveau "top-level" en ignorant les virgules à l'intérieur de < >.
-     */
-    public static List<String> decoupage(String s) 
-    {
-        List<String> parties ;
-        String part        ;
-        int cptChevrons    ;
         
-        cptChevrons   = 0  ;
-        part       = ""    ;
-        parties = new ArrayList<String>();
-
-        for (int i = 0; i < s.length(); i++) 
-        {
-            char c = s.charAt(i);
-            if (c == '<') 
-            {
-                cptChevrons++;
-                part += c;
-            } 
-            else if (c == '>') 
-            {
-                if (cptChevrons > 0) 
-                {
-                    cptChevrons--;
-                }
-                part += c;
-            } 
-            else if (c == ',' && cptChevrons == 0) 
-            {
-                parties.add(part);
-                part = "";
-            } 
-            else 
-            {
-                part += c;
-            }
-        }
-
-        if (!part.isEmpty()) { parties.add(part); }
-        return parties;
+        // Nettoyage final pour enlever d'éventuels guillemets résiduels
+        return id.replace("\"", "").replace("'", "");
     }
 
-    /**
-     * Extrait un attribut en nettoyant l'initialisation.
-     * Remarques:
-     * - Signature identique à la méthode avant refactor (pour compatibilité).
-     * - On travaille avec une ArrayList<AttributObjet> fournie par la classe qui l'apelle.
-     */
     public static void extraireAttribut(String ligne, boolean estStatique, boolean estFinal, ArrayList<AttributObjet> attributs) 
     {
+        int finIdx = ligne.indexOf('=');
+        if (finIdx == -1) finIdx = ligne.indexOf(';');
         
-        List<String> parties      ;
-        List<String> motsUtiles ;
+        String declaration = (finIdx != -1) ? ligne.substring(0, finIdx).trim() : ligne.trim();
 
-        String type             ;
-        String nom              ;
-        String visibilite       ;
-
-        if (ligne.contains("=")) 
+        int dernierEspace = declaration.lastIndexOf(' ');
+        if (dernierEspace != -1)
         {
-            ligne = ligne.substring(0, ligne.indexOf("=")).trim();
-        } 
-        else 
-        {
-            ligne = ligne.replace(";", "").trim();
-        }
+            String nom = declaration.substring(dernierEspace + 1).trim();
+            String reste = declaration.substring(0, dernierEspace).trim();
 
-        parties = separerMots(ligne);
+            int avantDernierEspace = reste.lastIndexOf(' ');
+            String type = (avantDernierEspace != -1) ? reste.substring(avantDernierEspace + 1).trim() : reste;
 
-        motsUtiles = new ArrayList<String>();
-
-        for (String p : parties) 
-        {
-            if (!aModifierMotCle(p)) 
-            {
-                motsUtiles.add(p);
-            }
-        }
-
-        if (motsUtiles.size() >= 2) 
-        {
-            type = motsUtiles.get(motsUtiles.size() - 2);
-            nom = motsUtiles.get(motsUtiles.size() - 1);
-
-            visibilite = parties.size() > 0 ? parties.get(0) : "";
-
-            if (!aVisibilite(visibilite)) { visibilite = "public"; }
+            String visibilite = "public";
+            if (ligne.contains("private"))   visibilite = "private";
+            if (ligne.contains("protected")) visibilite = "protected";
 
             attributs.add(new AttributObjet(nom, estStatique ? "static" : "instance", type, visibilite, estStatique, estFinal));
         }
     }
 
-    /**
-     * Extrait une méthode ou un constructeur.
-     * Remarques:
-     * - Signature identique à l’originale (pour compatibilité) :
-     *   extraireMethode(String, boolean, String, ArrayList<MethodeObjet>)
-     * - Retourne void et ajoute la méthode dans la liste fournie.
-     */
     public static void extraireMethode(String ligne, boolean estStatique, String nomClasse, ArrayList<MethodeObjet> methodes) 
     {
-        int       idxParenthOuvrante  ;
-        int       idxParenthFermante  ;
-        int       spaceIndex          ;
+        int parenOuvrante = ligne.indexOf('(');
+        int parenFermante = ligne.lastIndexOf(')');
 
-        List<String>       parties    ;
-        List<String>       motsUtiles ;
-        List<String>       paramList  ;
+        if (parenOuvrante == -1 || parenFermante == -1) return;
 
-        HashMap<String, String> params;
+        String signature = ligne.substring(0, parenOuvrante).trim();
+        int dernierEspace = signature.lastIndexOf(' ');
         
-        String             signature  ;
-        String             visibilite ;
-        String             nomMethode ;
-        String             typeRetour ;
-        String             paramsStr  ;
-        String             p          ;
-        String             pType      ;
-        String             pNom       ;
-
-        idxParenthOuvrante = ligne.indexOf('(');
-        idxParenthFermante = ligne.lastIndexOf(')');
-
-        if (idxParenthOuvrante == -1 || idxParenthFermante == -1) return;
-
-        signature = ligne.substring(0, idxParenthOuvrante).trim();
-        parties   = separerMots(signature);
-
-        if (parties.isEmpty()) return;
-
-        visibilite = parties.get(0);
-        nomMethode = parties.get(parties.size() - 1);
-        typeRetour = "void";
-
-        if (nomMethode.equals(nomClasse)) 
+        if (dernierEspace != -1)
         {
-            typeRetour = null; // Constructeur
-        } 
-        else 
-        {
-            motsUtiles = new ArrayList<String>();
-            for (String par : parties) 
+            String nomMethode = signature.substring(dernierEspace + 1).trim();
+            String reste = signature.substring(0, dernierEspace).trim();
+            
+            String typeRetour = "void";
+            if (nomMethode.equals(nomClasse)) 
             {
-                if (!aMethodeModif(par)) 
-                {
-                    motsUtiles.add(par);
-                }
+                typeRetour = null; 
             }
-            if (motsUtiles.size() >= 2) 
+            else
             {
-                typeRetour = motsUtiles.get(motsUtiles.size() - 2);
+                int typeEspace = reste.lastIndexOf(' ');
+                typeRetour = (typeEspace != -1) ? reste.substring(typeEspace + 1).trim() : reste;
             }
-        }
 
-        // --- EXTRACTION DES PARAMETRES (parsing manuel) ---
-        paramsStr = ligne.substring(idxParenthOuvrante + 1, idxParenthFermante).trim();
-        params    = new HashMap<String, String>();
+            String visibilite = "public";
+            if (ligne.contains("private"))   visibilite = "private";
+            if (ligne.contains("protected")) visibilite = "protected";
 
-        if (!paramsStr.isEmpty()) 
-        {
-            paramList = decoupage(paramsStr);
-
-            for (String param : paramList) 
+            HashMap<String, String> params = new HashMap<>();
+            String paramsStr = ligne.substring(parenOuvrante + 1, parenFermante).trim();
+            
+            if (!paramsStr.isEmpty())
             {
-                p = param.trim();
-                if (!p.isEmpty()) 
+                List<String> listeParamRaw = decoupage(paramsStr);
+                for (String p : listeParamRaw)
                 {
-                    spaceIndex = dernierIndexEspace(p);
-                    if (spaceIndex > 0) 
+                    String pTrim = p.trim();
+                    int sep = pTrim.lastIndexOf(' ');
+                    if (sep != -1)
                     {
-                        pType = p.substring(0, spaceIndex ).trim();
-                        pNom  = p.substring(spaceIndex + 1).trim();
-                        params.put(pNom, pType);
+                        params.put(pTrim.substring(sep + 1).trim(), pTrim.substring(0, sep).trim());
                     }
                 }
             }
+            methodes.add(new MethodeObjet(nomMethode, params, typeRetour, visibilite, estStatique));
         }
+    }
 
-        methodes.add(new MethodeObjet(nomMethode, params, typeRetour, visibilite, estStatique));
+    public static List<String> decoupage(String s) 
+    {
+        List<String> parties = new ArrayList<>();
+        String part = "";
+        int cptChevrons = 0;
+
+        for (int i = 0; i < s.length(); i++) 
+        {
+            char c = s.charAt(i);
+            if (c == '<') { cptChevrons++; part += c; } 
+            else if (c == '>') { if (cptChevrons > 0) cptChevrons--; part += c; } 
+            else if (c == ',' && cptChevrons == 0) { parties.add(part.trim()); part = ""; } 
+            else { part += c; }
+        }
+        if (!part.isEmpty()) parties.add(part.trim());
+        return parties;
     }
 }

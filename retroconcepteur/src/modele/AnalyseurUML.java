@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -20,21 +20,21 @@ import modele.outil.ParsingUtil;
 
 /**
  * Classe responsable de l'analyse syntaxique (parsing) manuelle des fichiers Java.
- 
+ * Optimisée pour éviter l'usage de split() et gérer proprement les collections.
  */
 public class AnalyseurUML 
 {
     /* -------------------------------------------------------------------------- */
-    /* ATTRIBUTS                                 */
+    /* ATTRIBUTS                                                                  */
     /* -------------------------------------------------------------------------- */
     
     private static final int MULT_INDEFINIE = 999999999;
 
-    private HashMap<String, String> lstIntentionHeritage;
-    private HashMap<String, ArrayList<String>> lstInterfaces;
+    private HashMap<String,String> lstIntentionHeritage;
+    private HashMap<String,ArrayList<String>> lstInterfaces;
 
     /* -------------------------------------------------------------------------- */
-    /* CONSTRUCTEUR                                */
+    /* CONSTRUCTEUR                                                               */
     /* -------------------------------------------------------------------------- */
 
     public AnalyseurUML() 
@@ -44,21 +44,21 @@ public class AnalyseurUML
     }
 
     /* -------------------------------------------------------------------------- */
-    /* MÉTHODES D'ACCÈS                              */
+    /* MÉTHODES D'ACCÈS                                                           */
     /* -------------------------------------------------------------------------- */
 
-    public HashMap<String, String> getIntentionsHeritage() 
+    public HashMap<String,String> getIntentionsHeritage() 
     {
         return this.lstIntentionHeritage;
     }
 
-    public HashMap<String, ArrayList<String>> getInterfaces() 
+    public HashMap<String,ArrayList<String>> getInterfaces() 
     {
         return this.lstInterfaces;
     }
 
     /* -------------------------------------------------------------------------- */
-    /* MÉTHODES DE GESTION                            */
+    /* MÉTHODES DE GESTION ET PARSING                                             */
     /* -------------------------------------------------------------------------- */
 
     public void resetRelations() 
@@ -67,6 +67,9 @@ public class AnalyseurUML
         this.lstInterfaces.clear();
     }
 
+    /**
+     * Analyse un fichier Java sans utiliser split() pour le parcours des données.
+     */
     public ClasseObjet analyserFichierUnique(String chemin) 
     {
         File file = new File(chemin);
@@ -88,18 +91,18 @@ public class AnalyseurUML
                     continue;
                 }
 
+                // Dans AnalyseurUML.java
+
                 // 1. Détection de déclaration (Class, Interface, Record, Enum)
                 String stereotype = ParsingUtil.identifierStereotype(ligneBrute);
-                
-                if (ligneBrute.contains("class ") || ligneBrute.contains("interface ") || 
-                    ligneBrute.contains("record ") || ligneBrute.contains("enum ")) 
+
+                if ((ligneBrute.contains("class ") || ligneBrute.contains("interface ") || 
+                    ligneBrute.contains("record ") || ligneBrute.contains("enum ")) && !estDansGuillemets(ligneBrute, ligneBrute.indexOf("class"))) 
                 {
-                    String nomEntite = extraireNomEntite(ligneBrute);
+                    // Au lieu de split, on cherche le mot après le mot-clé
+                    String nomEntite = extraireNomEntiteOptimise(ligneBrute);
                     
-                    if (nomEntite.isEmpty()) 
-                    {
-                        nomEntite = nomFichier;
-                    }
+                    if (nomEntite.isEmpty() || nomEntite.equals("\"")) continue; // Sécurité anti-guillemet
 
                     ClasseObjet nouvelleClasse = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nomEntite, stereotype);
 
@@ -114,7 +117,7 @@ public class AnalyseurUML
 
                     pileClasses.push(nouvelleClasse);
 
-                    // Résolution de l'héritage (extends)
+                    // Héritage
                     int idxExtends = ligneBrute.indexOf("extends");
                     if (idxExtends != -1) 
                     {
@@ -122,10 +125,11 @@ public class AnalyseurUML
                         this.lstIntentionHeritage.put(nomEntite, parent);
                     }
 
+                    // Interfaces (Optimisé sans split)
                     int idxImplements = ligneBrute.indexOf(" implements ");
                     if (idxImplements != -1) 
                     {
-                        extraireInterfaces(nomEntite, ligneBrute, idxImplements);
+                        extraireInterfacesSansSplit(nomEntite, ligneBrute, idxImplements);
                     }
 
                     if (ligneBrute.contains("{")) 
@@ -135,7 +139,7 @@ public class AnalyseurUML
                     continue;
                 }
 
-                // 2. Gestion des membres (Attributs et Méthodes)
+                // Membres
                 if (!pileClasses.isEmpty() && niveauAccolades == pileClasses.size()) 
                 {
                     ClasseObjet classeCourante = pileClasses.peek();
@@ -159,7 +163,6 @@ public class AnalyseurUML
                     }
                 }
 
-                // 3. Gestion des accolades
                 if (ligneBrute.contains("{")) 
                 {
                     niveauAccolades++;
@@ -183,9 +186,6 @@ public class AnalyseurUML
         return classeRacine;
     }
 
-    /**
-     * Parcourt la ligne manuellement pour trouver le nom après le mot-clé (class, interface, etc.)
-     */
     private String extraireNomEntite(String ligne) 
     {
         String[] motsCles = {"class", "interface", "record", "enum"};
@@ -195,13 +195,17 @@ public class AnalyseurUML
             int idx = ligne.indexOf(mc + " ");
             if (idx != -1) 
             {
-                return ParsingUtil.lireNom(ligne.substring(idx + mc.length() + 1).trim());
+                // Correction : On s'assure de ne pas prendre ce qui précède (comme une parenthèse)
+                String apresMotCle = ligne.substring(idx + mc.length() + 1).trim();
+                
+                // On utilise lireNom qui doit ignorer les caractères spéciaux
+                return ParsingUtil.lireNom(apresMotCle);
             }
         }
         return "";
     }
 
-    private void extraireInterfaces(String nomEntite, String ligne, int idxImplements) 
+    private void extraireInterfacesSansSplit(String nomEntite, String ligne, int idxImplements) 
     {
         int start = idxImplements + 12;
         int end = ligne.indexOf('{', start);
@@ -245,12 +249,11 @@ public class AnalyseurUML
     }
 
     /* -------------------------------------------------------------------------- */
-    /* RÉSOLUTION DES RELATIONS                           */
+    /* RÉSOLUTION DES RELATIONS ET COLLECTIONS                                    */
     /* -------------------------------------------------------------------------- */
 
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses) 
     {
-        List<AssociationObjet> associationsFinales = new ArrayList<>();
         List<AssociationObjet> unidirectionnelles = new ArrayList<>();
 
         for (ClasseObjet classeOrigine : classes) 
@@ -267,14 +270,21 @@ public class AnalyseurUML
                 MultipliciteObjet multCible = new MultipliciteObjet(1, 1);
                 boolean estCollection = false;
 
+                // Gestion propre des collections (ArrayList, HashMap, Tableaux) sans split
                 if (typeAttribut.contains("<") && typeAttribut.contains(">")) 
                 {
                     int idx1 = typeAttribut.indexOf('<');
-                    int idx2 = typeAttribut.indexOf('>', idx1 + 1);
+                    int idx2 = typeAttribut.lastIndexOf('>'); // On prend le dernier chevron pour les imbrications
                     
                     if (idx1 != -1 && idx2 != -1) 
                     {
                         typeCible = typeAttribut.substring(idx1 + 1, idx2).trim();
+                        // Pour les HashMap, on nettoie si plusieurs types sont présents
+                        int virguleGenerique = typeCible.indexOf(',');
+                        if (virguleGenerique != -1)
+                        {
+                            typeCible = typeCible.substring(virguleGenerique + 1).trim();
+                        }
                     }
                     estCollection = true;
                 } 
@@ -303,9 +313,11 @@ public class AnalyseurUML
     {
         List<HeritageObjet> resultat = new ArrayList<>();
         
-        for (String enfant : this.lstIntentionHeritage.keySet()) 
+        // Parcours propre de la Map d'intentions
+        for (Map.Entry<String, String> entree : this.lstIntentionHeritage.entrySet()) 
         {
-            String parent = this.lstIntentionHeritage.get(enfant);
+            String enfant = entree.getKey();
+            String parent = entree.getValue();
             
             if (mapClasses.containsKey(enfant) && mapClasses.containsKey(parent)) 
             {
@@ -319,17 +331,15 @@ public class AnalyseurUML
     {
         HashMap<String, InterfaceObjet> regroupement = new HashMap<>();
         
-        for (String nomClasse : this.lstInterfaces.keySet()) 
+        for (Map.Entry<String, ArrayList<String>> entree : this.lstInterfaces.entrySet()) 
         {
-            if (!mapClasses.containsKey(nomClasse)) 
-            {
-                continue;
-            }
+            String nomClasse = entree.getKey();
+            if (!mapClasses.containsKey(nomClasse)) continue;
             
             ClasseObjet classeConcrète = mapClasses.get(nomClasse);
             InterfaceObjet io = new InterfaceObjet(classeConcrète);
             
-            for (String nomI : this.lstInterfaces.get(nomClasse)) 
+            for (String nomI : entree.getValue()) 
             {
                 if (mapClasses.containsKey(nomI)) 
                 {
@@ -342,7 +352,7 @@ public class AnalyseurUML
     }
 
     /* -------------------------------------------------------------------------- */
-    /* OUTILS ET UTILITAIRES                          */
+    /* OUTILS                                                                     */
     /* -------------------------------------------------------------------------- */
 
     public void renumeroterLiaisonsFinales(List<LiaisonObjet> toutes) 
@@ -356,6 +366,32 @@ public class AnalyseurUML
         }
     }
 
+    private boolean estDansGuillemets(String ligne, int idx) 
+    {
+        if (ligne == null || idx <= 0) return false;
+        int count = 0;
+        for (int i = 0; i < Math.min(idx, ligne.length()); i++) 
+        {
+            if (ligne.charAt(i) == '"') count++;
+        }
+        return (count % 2) == 1; // Si le nombre est impair, on est dans un String
+    }
+
+    private String extraireNomEntiteOptimise(String ligne) 
+    {
+        String[] motsCles = {"class", "interface", "record", "enum"};
+        for (String mc : motsCles) 
+        {
+            int idx = ligne.indexOf(mc + " ");
+            if (idx != -1) 
+            {
+                // On prend ce qui suit le mot-clé et on délègue le nettoyage à lireNom
+                return ParsingUtil.lireNom(ligne.substring(idx + mc.length() + 1).trim());
+            }
+        }
+        return "";
+    }
+
     public List<File> ClassesDuDossier(String cheminDossier) 
     {
         File dossier = new File(cheminDossier);
@@ -366,7 +402,6 @@ public class AnalyseurUML
         {
             for (File f : tousLesFichiers) 
             {
-                // On ne prend que les fichiers .java
                 if (f.isFile() && f.getName().endsWith(".java")) 
                 {
                     fichiersJava.add(f);
