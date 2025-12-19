@@ -1,11 +1,7 @@
 package vue;
 
 import controleur.Controleur;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -19,242 +15,237 @@ import javax.swing.JScrollPane;
 
 /**
  * Panneau de navigation des projets.
- * 
+ *
  * Affiche la liste des dossiers de test disponibles et permet à l'utilisateur
  * de sélectionner un projet pour générer son diagramme UML.
- * 
- * @author Quentin MORVAN, Valentin LEROY, Celim CHAOU, Enzo DUMONT, Ariunbayar
- *         BUYANBADRAKH, Yassine EL MAADI
- * @date 12 décembre 2025
+ *
+ * @author Quentin MORVAN, Valentin LEROY, Celim CHAOU, Enzo DUMONT,
+ *         Ariunbayar BUYANBADRAKH, Yassine EL MAADI
+ * @date   12 décembre 2025
  */
 public class PanneauProjets extends JPanel implements ActionListener
 {
     private FenetrePrincipale fenetrePrincipale;
-    private PanneauDiagramme panneauDiagramme; // nouveau
-    private Controleur controleur ; 
-    private String cheminDossiers;
-    private JButton boutonAttributs;
-    private JButton boutonMethodes;
-    private JButton boutonActualiser;
-    private JPanel panelProjets;
-    private JLabel titreLabel;
+    private PanneauDiagramme  panneauDiagramme;
+    private Controleur        controleur;
+    private String            cheminDossiers;
+    private JButton           boutonAttributs;
+    private JButton           boutonMethodes;
+    private JButton           boutonActualiser;
+    private JPanel            panelProjets;
+    private JLabel            titreLabel;
 
     /**
      * Constructeur du panneau de projets.
-     * 
-     * Initialise le panneau avec la liste des projets disponibles et les boutons
-     * d'action.
-     * 
-     * @param fenetrePrincipale La fenêtre principale de l'application
-     * @param controleur        Le contrôleur principal
+     *
+     * @param fenetrePrincipale fenêtre principale de l'application
+     * @param controleur        contrôleur principal
+     * @param panneauDiagramme  panneau d'affichage du diagramme UML
      */
-    public PanneauProjets(FenetrePrincipale fenetrePrincipale, Controleur controleur, PanneauDiagramme panneauDiagramme) 
-{
+    public PanneauProjets(FenetrePrincipale fenetrePrincipale,Controleur controleur, 
+                          PanneauDiagramme  panneauDiagramme )
+    {
         this.fenetrePrincipale = fenetrePrincipale;
-        this.panneauDiagramme = panneauDiagramme; // nouveau
-        this.controleur        = controleur ; 
+        this.panneauDiagramme  = panneauDiagramme;
+        this.controleur        = controleur;
 
         this.cheminDossiers = "src";
 
         this.setLayout(new BorderLayout());
         this.setBackground(new Color(245, 245, 245));
-        this.setBorder(BorderFactory.createTitledBorder("test"));
+        this.setBorder( BorderFactory.createTitledBorder("test"));
 
-        // Titre
-        titreLabel = new JLabel("Liste des Projets");
-        titreLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        titreLabel.setHorizontalAlignment(JLabel.CENTER);
+        /* Titre */
+        this.titreLabel = new JLabel("Liste des Projets");
+        this.titreLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        this.titreLabel.setHorizontalAlignment(JLabel.CENTER);
 
-        this.add(titreLabel, BorderLayout.NORTH);
+        this.add(this.titreLabel, BorderLayout.NORTH);
 
-        // Panel scrollable
-        panelProjets = new JPanel();
-        panelProjets.setLayout(new BoxLayout(panelProjets, BoxLayout.Y_AXIS));
-        panelProjets.setBackground(new Color(245, 245, 245));
+        /* Panel projets */
+        this.panelProjets = new JPanel();
+        this.panelProjets.setLayout(new BoxLayout(this.panelProjets, BoxLayout.Y_AXIS));
+        this.panelProjets.setBackground(new Color(245, 245, 245));
 
-        this.chargerProjets(panelProjets);
+        this.chargerProjets(this.panelProjets);
 
-        JScrollPane scrollPane = new JScrollPane(panelProjets);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scrollPane =
+            new JScrollPane(this.panelProjets);
+
+        scrollPane.setVerticalScrollBarPolicy  (JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER  );
 
         this.add(scrollPane, BorderLayout.CENTER);
 
-        // actualiser la liste
+        /* Boutons */
         JPanel panelBouton = new JPanel(new BorderLayout());
         panelBouton.setBackground(new Color(245, 245, 245));
 
-        boutonAttributs = new JButton("Attributs");
-        boutonMethodes = new JButton("Méthodes");
-        boutonActualiser = new JButton("Réinitialiser Frame");
+        this.boutonAttributs   = new JButton("Attributs");
+        this.boutonMethodes    = new JButton("Méthodes");
+        this.boutonActualiser  = new JButton("Réinitialiser Frame");
 
-        panelBouton.add(boutonAttributs, BorderLayout.NORTH);
-        panelBouton.add(boutonMethodes, BorderLayout.CENTER);
-        panelBouton.add(boutonActualiser, BorderLayout.SOUTH);
+        panelBouton.add(this.boutonAttributs,  BorderLayout.NORTH);
+        panelBouton.add(this.boutonMethodes,   BorderLayout.CENTER);
+        panelBouton.add(this.boutonActualiser, BorderLayout.SOUTH);
 
-       
-        this.boutonAttributs.addActionListener(this);
-        this.boutonMethodes.addActionListener(this);
+        this.boutonAttributs .addActionListener(this);
+        this.boutonMethodes  .addActionListener(this);
         this.boutonActualiser.addActionListener(this);
-
 
         this.add(panelBouton, BorderLayout.SOUTH);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) 
+    public JPanel getPanelProjets()
     {
-
-         
-        if( e.getSource() == boutonActualiser )
-        {
-            panelProjets.removeAll();
-            this.chargerProjets(panelProjets);
-            panelProjets.revalidate();
-            panelProjets.repaint();
-
-            if( this.panneauDiagramme != null ) this.panneauDiagramme.clearDiagram();
-        }
-
-        if (e.getSource() == boutonAttributs) 
-        {
-        controleur.toggleAttributs();
-        majCouleurBouton(boutonAttributs);
-        }
-        if (e.getSource() == boutonMethodes) 
-        {
-            controleur.toggleMethodes();
-            majCouleurBouton(boutonMethodes);
-        }
-
-        
+        return this.panelProjets;
     }
 
-    private void majCouleurBouton(JButton btn) 
+    public PanneauDiagramme getPanneauDiagramme()
     {
-        // Change la couleur pour indiquer si le filtre est actif ou non
-        if (btn.getBackground().equals(new Color(100, 150, 200))) 
+        return this.panneauDiagramme;
+    }
+
+
+    private void majCouleurBouton(JButton btn)
+    {
+        Color actif = new Color(100, 150, 200);
+
+        if (btn.getBackground().equals(actif))
         {
             btn.setBackground(Color.GRAY);
-        } 
-        else 
+        }
+        else
         {
-            btn.setBackground(new Color(100, 150, 200));
+            btn.setBackground(actif);
         }
     }
 
     /**
      * Ajoute un projet à la liste des projets affichés.
-     * 
-     * Vérifie que le projet n'existe pas déjà avant de l'ajouter.
-     * 
-     * @param cheminProjet Chemin absolu vers le dossier du projet
+     *
+     * @param cheminProjet chemin absolu du dossier du projet
      */
-    public void ajouterProjet(String cheminProjet) 
+    public void ajouterProjet(String cheminProjet)
     {
         File projet = new File(cheminProjet);
 
-        // Vérifier que le chemin existe et est un dossier
-        if (!projet.exists() || !projet.isDirectory()) return;
-
-        // Récupérer JScrollPane → viewport → panelProjets
-        JScrollPane scrollPane = (JScrollPane) this.getComponent(1);
-        JPanel panelProjets    = (JPanel) scrollPane.getViewport().getView();
-
-        // 🔍 Vérifier si le projet existe déjà dans le panel
-        for (Component comp : panelProjets.getComponents()) 
+        if (!projet.exists() || !projet.isDirectory())
         {
-            if (comp instanceof JButton) 
+            return;
+        }
+
+        JScrollPane scrollPane = (JScrollPane) this.getComponent(1);
+
+        JPanel panel = (JPanel) scrollPane.getViewport().getView();
+
+        for (Component comp : panel.getComponents())
+        {
+            if (comp instanceof JButton)
             {
                 JButton btn = (JButton) comp;
 
-                // Ici je suppose que le texte du bouton = nom du dossier
-                // (ou tu peux mettre le chemin complet dans setName())
                 if (btn.getText().equals(projet.getName()))
-                    return; // 👉 Le projet existe déjà, donc on ne l'ajoute pas
+                {
+                    return;
+                }
             }
         }
 
-        // Créer le bouton
-        JButton bouton = creerBoutonProjet(projet);
+        JButton bouton = this.creerBoutonProjet(projet);
 
-        // Ajouter au panel
-        panelProjets.add(bouton);
-        panelProjets.add(Box.createVerticalStrut(5));
+        panel.add(bouton);
+        panel.add(Box.createVerticalStrut(5));
 
-        // Rafraîchir
-        panelProjets.revalidate();
-        panelProjets.repaint();
+        panel.revalidate();
+        panel.repaint();
     }
 
     /**
-     * Retourne le panneau diagramme associé à ce panneau de projets.
+     * Charge la liste des projets.
+     *
+     * @param panelProjets panneau cible
      */
-    public PanneauDiagramme getPanneauDiagramme() {
-        return this.panneauDiagramme;
-    }
-
-    /**
-     * Charge la liste des projets depuis le dossier spécifié.
-     * 
-     * Parcourt le dossier et crée un bouton pour chaque sous-dossier trouvé.
-     * 
-     * @param panelProjets Le panneau dans lequel afficher les boutons de projets
-     */
-    public void chargerProjets(JPanel panelProjets) 
+    public void chargerProjets(JPanel panelProjets)
     {
-        File dossier = new File(cheminDossiers);
+        File dossier = new File(this.cheminDossiers);
 
-        if (!dossier.exists() || !dossier.isDirectory()) 
-    {
-            JLabel labelErreur = new JLabel("Dossier non trouvé");
-            labelErreur.setForeground(Color.RED);
-            panelProjets.add(labelErreur);
+        if (!dossier.exists() || !dossier.isDirectory())
+        {
+            JLabel erreur = new JLabel("Dossier non trouvé");
+            erreur.setForeground(Color.RED);
+            panelProjets.add(erreur);
+            return;
         }
 
         File[] projets = dossier.listFiles(File::isDirectory);
 
-        if (projets == null || projets.length == 0) 
+        if (projets == null || projets.length == 0)
         {
-            JLabel labelVide = new JLabel("Aucun projet");
-            labelVide.setForeground(Color.GRAY);
-            panelProjets.add(labelVide);
+            JLabel vide = new JLabel("Aucun projet");
+            vide.setForeground(Color.GRAY);
+            panelProjets.add(vide);
+            return;
         }
 
-        for (File projet : projets) 
+        for (File projet : projets)
         {
-            JButton boutonProjet = creerBoutonProjet(projet);
-            panelProjets.add(boutonProjet);
+            JButton bouton = this.creerBoutonProjet(projet);
+            panelProjets.add(bouton);
             panelProjets.add(Box.createVerticalStrut(5));
         }
     }
 
     /**
-     * Crée un bouton pour un projet.
-     * 
-     * Configure l'apparence et l'action du bouton pour charger le projet au clic.
-     * 
-     * @param projet Le dossier du projet
-     * @return Le bouton configuré
+     * Crée un bouton correspondant à un projet.
+     *
+     * @param projet dossier du projet
+     * @return bouton configuré
      */
-    public JButton creerBoutonProjet(File projet) 
+    public JButton creerBoutonProjet(File projet)
     {
         JButton bouton = new JButton(projet.getName());
 
-        bouton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        bouton.setMaximumSize(
+            new Dimension(Integer.MAX_VALUE, 40)
+        );
         bouton.setFont(new Font("Arial", Font.PLAIN, 12));
         bouton.setBackground(new Color(100, 150, 200));
         bouton.setForeground(Color.WHITE);
         bouton.setFocusPainted(false);
 
-        bouton.addActionListener(e ->
-        {
-            fenetrePrincipale.chargerProjet(projet.getAbsolutePath());
-        });
+        bouton.addActionListener( e -> this.fenetrePrincipale.chargerProjet( projet.getAbsolutePath()));
 
         return bouton;
     }
 
-    public JPanel getPanelProjets() {return this.panelProjets;} 
 
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        if (e.getSource() == this.boutonActualiser)
+        {
+            this.panelProjets.removeAll();
+            this.chargerProjets(this.panelProjets);
+            this.panelProjets.revalidate();
+            this.panelProjets.repaint();
+
+            if (this.panneauDiagramme != null)
+            {
+                this.panneauDiagramme.clearDiagram();
+            }
+        }
+
+        if (e.getSource() == this.boutonAttributs)
+        {
+            this.controleur.toggleAttributs();
+            this.majCouleurBouton(this.boutonAttributs);
+        }
+
+        if (e.getSource() == this.boutonMethodes)
+        {
+            this.controleur.toggleMethodes();
+            this.majCouleurBouton(this.boutonMethodes);
+        }
+    }
 }
