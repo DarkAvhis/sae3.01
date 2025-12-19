@@ -27,7 +27,7 @@ public class AssociationObjet extends LiaisonObjet
     private int roleDestOffsetPerp  = 15;
 
     /*-------------------------------------- */
-    /* Constructeur */
+    /* Constructeur                          */
     /*-------------------------------------- */
 
     // Le constructeur reçoit classeDest et classeOrig (qui deviennent classeMere et
@@ -50,7 +50,7 @@ public class AssociationObjet extends LiaisonObjet
     }
 
     /*-------------------------------------- */
-    /* Les Accesseurs */
+    /* Les Accesseurs                        */
     /*-------------------------------------- */
     public MultipliciteObjet getMultOrig           () { return this.multiOrig          ; }
     public MultipliciteObjet getMultDest           () { return this.multiDest          ; }
@@ -67,7 +67,7 @@ public class AssociationObjet extends LiaisonObjet
     public boolean isRequete() { return this.requete; }
 
     /*-------------------------------------- */
-    /* Les Modificateur */
+    /* Les Modificateurs                     */
     /*-------------------------------------- */
     public void setMultOrig           (MultipliciteObjet multOrig       ) { this.multiOrig           = multOrig       ; }
     public void setMultDest           (MultipliciteObjet multDest       ) { this.multiDest           = multDest       ; }
@@ -83,7 +83,7 @@ public class AssociationObjet extends LiaisonObjet
     public void setRequete            (boolean           requete        ) { this.requete             = requete        ; }
 
     /*-------------------------------------- */
-    /* toString */
+    /* toString                              */
     /*-------------------------------------- */
     public String toString() 
     {

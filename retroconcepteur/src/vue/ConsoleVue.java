@@ -48,13 +48,9 @@ public class ConsoleVue
         }
     }
 
-    public void afficherAssociations(
-        List<AssociationObjet> associations
-    )
+    public void afficherAssociations(List<AssociationObjet> associations)
     {
-        System.out.println(
-            "\n=== LIAISONS D'ASSOCIATION (ETAPE 3) ==="
-        );
+        System.out.println("\n=== LIAISONS D'ASSOCIATION (ETAPE 3) ===");
 
         if (associations == null || associations.isEmpty())
         {
@@ -70,9 +66,7 @@ public class ConsoleVue
 
     public void afficherHeritages(List<HeritageObjet> heritages)
     {
-        System.out.println(
-            "\n=== HERITAGE (ETAPE 4) ==="
-        );
+        System.out.println("\n=== HERITAGE (ETAPE 4) ===");
 
         if (heritages == null || heritages.isEmpty())
         {
@@ -86,13 +80,9 @@ public class ConsoleVue
         }
     }
 
-    public void afficherImplementations(
-        List<InterfaceObjet> implementations
-    )
+    public void afficherImplementations(List<InterfaceObjet> implementations)
     {
-        System.out.println(
-            "\n=== IMPLEMENTATION (ETAPE 4) ==="
-        );
+        System.out.println("\n=== IMPLEMENTATION (ETAPE 4) ===");
 
         if (implementations == null || implementations.isEmpty())
         {

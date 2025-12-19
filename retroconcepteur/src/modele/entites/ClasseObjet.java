@@ -40,7 +40,7 @@ public class ClasseObjet
 	}
 
 	/*-------------------------------------- */
-	/* Les Accesseurs */
+	/* Les Accesseurs                        */
 	/*-------------------------------------- */
 	public String getNom       () { return this.nom       ; }
 	public String getSpecifique() {	return this.specifique; }
@@ -50,7 +50,7 @@ public class ClasseObjet
 	public ArrayList<ClasseObjet  > getClassesInternes() { return this.classesInternes; }
 
 	/*-------------------------------------- */
-	/* Modificateurs */
+	/* Les Modificateurs                     */
 	/*-------------------------------------- */
 	public void setNom(String nom) { this.nom = nom;}
 
@@ -58,7 +58,7 @@ public class ClasseObjet
 	public void setMethodes (ArrayList<MethodeObjet > methodes ) { this.methodes  = methodes ; }
 
 	/*-------------------------------------- */
-	/* Methode autre */
+	/* Autres Méthodes                       */
 	/*-------------------------------------- */
 
 	public void ajouterClasseInterne(ClasseObjet inner) 

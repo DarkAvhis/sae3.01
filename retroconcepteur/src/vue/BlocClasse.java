@@ -2,13 +2,13 @@
 package vue;
 
 import java.awt.BasicStroke;
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Canvas;
 
 /**
  * Représentation graphique d'une classe UML.
@@ -26,16 +26,8 @@ import java.awt.Canvas;
  */
 public class BlocClasse 
 {
-        // Ajout d'un champ pour le type spécifique (interface, record, abstract class)
-        private String typeSpecifique = null;
-
-        public void setTypeSpecifique(String type) {
-            this.typeSpecifique = type;
-        }
-
-        public String getTypeSpecifique() {
-            return this.typeSpecifique;
-        }
+    // Ajout d'un champ pour le type spécifique (interface, record, abstract class)
+    private String typeSpecifique = null;
     private boolean modeComplet = false;
     private String nom;
 
@@ -59,12 +51,8 @@ public class BlocClasse
     private static final Color COULEUR_BORDURE = new Color(0, 0, 0);
 
 
-    public BlocClasse(
-            String nom,
-            int x,
-            int y,
-            List<String> attributs,
-            List<String> methodes) {
+    public BlocClasse(String nom, int x, int y, List<String> attributs, List<String> methodes)
+    {
         this.nom = nom;
         this.x = x;
         this.y = y;
@@ -84,9 +72,13 @@ public class BlocClasse
 
         int largeurNom = fmNom.stringWidth(nom);
         int largeurSousTitre = 0;
-        if (typeSpecifique != null && !typeSpecifique.isEmpty()) {
+        
+        if (typeSpecifique != null && !typeSpecifique.isEmpty()) 
+        {
             largeurSousTitre = fmSousTitre.stringWidth("<<" + typeSpecifique + ">>");
-        } else if (estInterface) {
+        } 
+        else if (estInterface) 
+        {
             largeurSousTitre = fmSousTitre.stringWidth("<<interface>>");
         }
 
@@ -112,18 +104,65 @@ public class BlocClasse
         recalculerDimensions();
     }
 
-    public String getNom    () {  return nom     ;  }
-    public int    getX      () {  return x       ;  }
-    public int    getY      () {  return y       ;  }
-    public int    getLargeur() {  return largeur ;  }
-    public int    getHauteur() {  return hauteur ;  }
+    public BlocClasse(String nom, int x, int y)
+    {
+        this(nom, x, y, new ArrayList<>(), new ArrayList<>());
+    }
 
-    public void setLargeur    (int     largeur     ) {  this.largeur        = largeur      ; }
-    public void setX          (int     x           ) {  this.x              = x            ; }
-    public void setY          (int     y           ) {  this.y              = y            ; }
-    public void setInterface  (boolean estInterface) {  this.estInterface   = estInterface ; }
-    public void setSelectionne(boolean selectionne ) {  this.estSelectionne = selectionne  ; }
-    public void setExterne    (boolean externe     ) {  this.estExterne     = externe      ; }
+    public String getNom()
+    {
+        return nom;
+    }
+
+    public int getX()
+    {
+        return x;
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+
+    public int getLargeur()
+    {
+        return largeur;
+    }
+
+    public int getHauteur()
+    {
+        return hauteur;
+    }
+
+    public void setLargeur(int largeur)
+    {
+        this.largeur = largeur;
+    }
+
+    public void setX(int x)
+    {
+        this.x = x;
+    }
+
+    public void setY(int y)
+    {
+        this.y = y;
+    }
+
+    public void setInterface(boolean estInterface)
+    {
+        this.estInterface = estInterface;
+    }
+
+    public void setSelectionne(boolean selectionne)
+    {
+        this.estSelectionne = selectionne;
+    }
+
+    public void setExterne(boolean externe)
+    {
+        this.estExterne = externe;
+    }
 
     public void setAttributs(List<String> attributs) 
     {
@@ -137,27 +176,66 @@ public class BlocClasse
         recalculerDimensions();
     }
 
-    public boolean estInterface  () {  return estInterface  ;  }
-    public boolean estSelectionne() {  return estSelectionne;  }
-    public boolean estExterne    () {  return estExterne    ;  }
-
-    public BlocClasse(String nom, int x, int y) 
-    {    
-        this(nom, x, y, new ArrayList<>(), new ArrayList<>()) ;  
+    public boolean estInterface()
+    {
+        return estInterface;
     }
 
-    public boolean isModeComplet() {    return modeComplet;  }
+    public boolean estSelectionne()
+    {
+        return estSelectionne;
+    }
 
-    public void setModeComplet(boolean complet) {
+    public boolean estExterne()
+    {
+        return estExterne;
+    }
+
+    public boolean isModeComplet()
+    {
+        return modeComplet;
+    }
+
+    public void setModeComplet(boolean complet)
+    {
         this.modeComplet = complet;
         recalculerDimensions();
+    }
+
+    public void setTypeSpecifique(String type)
+    {
+        this.typeSpecifique = type;
+    }
+
+    public String getTypeSpecifique()
+    {
+        return this.typeSpecifique;
+    }
+
+    public void dessiner(Graphics2D g)
+    {
+        dessinerFondEtBordure(g);
+        int currentY = dessinerNom(g);
+        
+        // Appel des méthodes de dessin internes
+
+        currentY = dessinerAttributs(g, currentY);
+        currentY = dessinerSeparateur(g, currentY);
+        currentY = dessinerMethodes(g, currentY);
+
+    }
+
+    public boolean contient(int px, int py)
+    {
+        return px >= x && px <= x + largeur && py >= y && py <= y + hauteur;
     }
 
     /**
      * Limite l'affichage des paramètres d'une méthode à 2 paramètres.
      * Si plus de 2 paramètres, affiche les 2 premiers suivis de "..."
      */
-    private String limiterParametres(String methode) {
+    private String limiterParametres(String methode)
+    {
         int idxParenthese = methode.indexOf('(');
         if (idxParenthese < 0)
             return methode;
@@ -180,20 +258,9 @@ public class BlocClasse
         return avant + paramsTab[0].trim() + ", " + paramsTab[1].trim() + ", ..." + apres;
     }
 
-   public void dessiner(Graphics2D g) 
-   {
-        dessinerFondEtBordure(g);
-        int currentY = dessinerNom(g);
-        
-        // Appel des méthodes de dessin internes
 
-        currentY = dessinerAttributs(g, currentY);
-        currentY = dessinerSeparateur(g, currentY);
-        currentY = dessinerMethodes(g, currentY);
-
-    }
     // Affiche le fond et la bordure du bloc
-    private void dessinerFondEtBordure(Graphics2D g) 
+    private void dessinerFondEtBordure(Graphics2D g)
     {
         // Choix de la couleur de fond selon que la classe est externe ou non
         g.setColor(estExterne ? COULEUR_FOND_EXTERNE : COULEUR_FOND);
@@ -241,14 +308,16 @@ public class BlocClasse
     }
 
 
-    private int dessinerAttributs(Graphics2D g, int currentY) {
+    private int dessinerAttributs(Graphics2D g, int currentY)
+    {
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 12));
         
         int maxAttributs = modeComplet ? Integer.MAX_VALUE : 3;
         int iAtt = 0;
         
-        for (String att : attributsAffichage) {
+        for (String att : attributsAffichage)
+        {
             if (iAtt >= maxAttributs) break;
             currentY += HAUTEUR_LIGNE;
             
@@ -257,14 +326,16 @@ public class BlocClasse
             
             g.drawString(libelle, x + PADDING, currentY);
             
-            if (estStatique) {
+            if (estStatique)
+            {
                 FontMetrics fm = g.getFontMetrics();
                 g.drawLine(x + PADDING, currentY + 2, x + PADDING + fm.stringWidth(libelle), currentY + 2);
             }
             iAtt++;
         }
         
-        if (!modeComplet && attributsAffichage.size() > maxAttributs) {
+        if (!modeComplet && attributsAffichage.size() > maxAttributs)
+        {
             currentY += HAUTEUR_LIGNE;
             g.drawString("...", x + PADDING, currentY);
         }
@@ -272,7 +343,8 @@ public class BlocClasse
     }
 
     // Affiche le séparateur et retourne la position Y courante
-    private int dessinerSeparateur(Graphics2D g, int currentY) {
+    private int dessinerSeparateur(Graphics2D g, int currentY)
+    {
         currentY += PADDING / 2;
         g.setColor(COULEUR_BORDURE);
         g.drawLine(x, currentY, x + largeur, currentY);
@@ -307,23 +379,22 @@ public class BlocClasse
             iMet++;
         }
         
-        if (!modeComplet && methodesAffichage.size() > maxMethodes) {
+        if (!modeComplet && methodesAffichage.size() > maxMethodes)
+        {
             currentY += HAUTEUR_LIGNE;
             g.drawString("...", x + PADDING, currentY);
         }
         return currentY;
     }
 
-    public boolean contient(int px, int py) {
-        return px >= x && px <= x + largeur
-                && py >= y && py <= y + hauteur;
-    }
-
-    private void recalculerDimensions() {
+    private void recalculerDimensions()
+    {
         int maxLongueur = nom != null ? nom.length() : 0;
 
-        for (String att : attributsAffichage) {
-            if (att == null) {
+        for (String att : attributsAffichage)
+        {
+            if (att == null)
+            {
                 continue;
             }
 
@@ -332,9 +403,12 @@ public class BlocClasse
             maxLongueur = Math.max(maxLongueur, longueur);
         }
 
-        for (String met : methodesAffichage) 
+        for (String met : methodesAffichage)
         {
-            if (met == null) continue;
+            if (met == null)
+            {
+                continue;
+            }
             String s = met.replace("{static}", "").trim();
             
             // On calcule la largeur basée sur ce qui sera RÉELLEMENT affiché
@@ -348,10 +422,13 @@ public class BlocClasse
 
         // Calculer hauteur en fonction du mode
         int nbLignesAtt, nbLignesMet;
-        if (modeComplet) {
+        if (modeComplet)
+        {
             nbLignesAtt = attributsAffichage.size();
             nbLignesMet = methodesAffichage.size();
-        } else {
+        }
+        else
+        {
             // Mode condensé : max 3 attributs + ligne "..." si nécessaire
             int nbAttAffiches = Math.min(attributsAffichage.size(), 3);
             nbLignesAtt = nbAttAffiches + (attributsAffichage.size() > 3 ? 1 : 0);

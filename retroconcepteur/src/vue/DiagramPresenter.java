@@ -4,15 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import modele.entites.*;
 
-public class DiagramPresenter {
+public class DiagramPresenter 
+{
 
     public static List<BlocClasse> buildBlocs(List<ClasseObjet> classes, boolean afficherClassesExternes,
-            boolean afficherAttributs, boolean afficherMethodes, int startX, int startY) {
+            boolean afficherAttributs, boolean afficherMethodes, int startX, int startY) 
+       {
         List<BlocClasse> blocs = new ArrayList<>();
         int x = startX;
         int y = startY;
 
-        for (ClasseObjet c : classes) {
+        for (ClasseObjet c : classes) 
+        {
             // Utilisation stricte du stéréotype pour le filtrage
             boolean estExterne = "externe".equals(c.getSpecifique());
             if (!afficherClassesExternes && estExterne) continue;
@@ -26,7 +29,8 @@ public class DiagramPresenter {
             BlocClasse bloc = new BlocClasse(c.getNom(), x, y, attrVue, methVue);
 
             // Définition propre du type (interface, abstract, record) sans se fier au nom du fichier
-            if (c.getSpecifique() != null) {
+            if (c.getSpecifique() != null) 
+            {
                 bloc.setTypeSpecifique(c.getSpecifique());
                 if ("interface".equals(c.getSpecifique())) bloc.setInterface(true);
             }
@@ -35,7 +39,8 @@ public class DiagramPresenter {
             blocs.add(bloc);
 
             // Gestion des classes internes (ex: TestInterne dans Disque.java)
-            for (ClasseObjet inner : c.getClassesInternes()) {
+            for (ClasseObjet inner : c.getClassesInternes()) 
+            {
                 List<String> iAttr = afficherAttributs ? 
                     PresentationMapper.convertirAttributs(inner.getAttributs(), inner, classes) : new ArrayList<>();
                 List<String> iMeth = afficherMethodes ? 
@@ -54,7 +59,8 @@ public class DiagramPresenter {
     }
 
     public static List<LiaisonVue> buildLiaisons(List<AssociationObjet> associations, List<HeritageObjet> heritages,
-            List<InterfaceObjet> implementations, List<ClasseObjet> classes) {
+            List<InterfaceObjet> implementations, List<ClasseObjet> classes) 
+    {
         List<LiaisonVue> liaisons = new ArrayList<>();
 
         // Utilisation des méthodes de conversion du PresentationMapper
@@ -63,8 +69,10 @@ public class DiagramPresenter {
         liaisons.addAll(PresentationMapper.convertirLiaisons(implementations, LiaisonVue.TypeLiaison.IMPLEMENTATION, classes));
 
         // Ajout automatique des liens de contenance pour les classes internes
-        for (ClasseObjet c : classes) {
-            for (ClasseObjet inner : c.getClassesInternes()) {
+        for (ClasseObjet c : classes) 
+        {
+            for (ClasseObjet inner : c.getClassesInternes()) 
+            {
                 liaisons.add(new LiaisonVue(inner.getNom(), c.getNom(), LiaisonVue.TypeLiaison.NESTED, null, null));
             }
         }
