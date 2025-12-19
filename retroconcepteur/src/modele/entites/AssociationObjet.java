@@ -62,10 +62,6 @@ public class AssociationObjet extends LiaisonObjet
     public int               getRoleDestOffsetAlong() { return this.roleDestOffsetAlong; }
     public int               getRoleDestOffsetPerp () { return this.roleDestOffsetPerp ; }
 
-    public boolean isFrozen () { return this.frozen ; }
-    public boolean isAddOnly() { return this.addOnly; }
-    public boolean isRequete() { return this.requete; }
-
     /*-------------------------------------- */
     /* Les Modificateurs                     */
     /*-------------------------------------- */
@@ -82,18 +78,22 @@ public class AssociationObjet extends LiaisonObjet
     public void setAddOnly            (boolean           addOnly        ) { this.addOnly             = addOnly        ; }
     public void setRequete            (boolean           requete        ) { this.requete             = requete        ; }
 
+    public boolean isFrozen () { return this.frozen ; }
+    public boolean isAddOnly() { return this.addOnly; }
+    public boolean isRequete() { return this.requete; }
+
     /*-------------------------------------- */
     /* toString                              */
     /*-------------------------------------- */
     public String toString() 
     {
-        String sens = (this.estUnidirectionnel) ? "unidirectionnelle" : "bidirectionnelle";
+        String sens    = (this.estUnidirectionnel) ? "unidirectionnelle" : "bidirectionnelle";
 
         String origine = (this.getClasseFille() != null) ? this.getClasseFille().getNom() : "?";
         String dest    = (this.getClasseMere () != null) ? this.getClasseMere ().getNom() : "?";
 
-        String multO = (this.multiOrig != null) ? this.multiOrig.toString() : ""; 
-        String multD = (this.multiDest != null) ? this.multiDest.toString() : "";
+        String multO   = (this.multiOrig != null) ? this.multiOrig.toString() : ""; 
+        String multD   = (this.multiDest != null) ? this.multiDest.toString() : "";
 
         return String.format("Association %d : %s de %s(%s) vers %s(%s)",
                 this.getNum(), sens, origine, multD, dest, multO);

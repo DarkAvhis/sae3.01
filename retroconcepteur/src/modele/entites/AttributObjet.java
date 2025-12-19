@@ -52,12 +52,6 @@ public class AttributObjet
 	public String            getType        () {  return this.type        ; }
 	public MultipliciteObjet getMultiplicite() {  return this.multiplicite; }
 
-	public boolean estStatique() {  return this.statique; }
-	public boolean estFinale  () {  return this.finale  ; }
-	public boolean estFrozen  () {  return this.frozen  ; }
-	public boolean estAddOnly () {  return this.addOnly ; }
-	public boolean estRequete () {  return this.requete ; }
-
 	/*-------------------------------------- */
 	/* Les Modificateurs                     */
 	/*-------------------------------------- */
@@ -71,4 +65,10 @@ public class AttributObjet
 	public void setFrozen      (boolean           frozen      ) {	this.frozen       = frozen      ; }
 	public void setAddOnly     (boolean           addOnly     ) {	this.addOnly      = addOnly     ; }
 	public void setRequete     (boolean           requete     ) {	this.requete      = requete     ; }
+
+	public boolean estStatique() {  return this.statique; }
+	public boolean estFinale  () {  return this.finale  ; }
+	public boolean estFrozen  () {  return this.frozen  ; }
+	public boolean estAddOnly () {  return this.addOnly ; }
+	public boolean estRequete () {  return this.requete ; }
 }

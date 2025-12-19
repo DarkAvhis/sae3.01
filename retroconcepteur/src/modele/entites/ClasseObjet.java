@@ -100,11 +100,9 @@ public class ClasseObjet
 		if (parametre != null && !parametre.isEmpty()) 
 		{
 			sRet += "(";
-			for (String key : parametre.keySet())
-				sRet += key + ": " + parametre.get(key) + ", ";
+			for (String key : parametre.keySet()) sRet += key + ": " + parametre.get(key) + ", ";
 
 			sRet = sRet.substring(0, sRet.length() - 2);
-
 			sRet += ")";
 		} 
 		else 
@@ -122,7 +120,6 @@ public class ClasseObjet
 	public String retourType(String type) 
 	{
 		if (type == null) return " ";
-
 		if (type.equals("public") || type.equals("void")) return " ";
 
 		return " : " + type;
@@ -210,10 +207,10 @@ public class ClasseObjet
 			String nomMethodeFormatte;
 			
 			if (met.estStatique()) 
+			{
 				nomMethodeFormatte = ClasseObjet.ANSI_SOUSTITRE + methodeBaseFormatte + ClasseObjet.ANSI_RESET;
-
-			else 
-				nomMethodeFormatte = methodeBaseFormatte;
+			}
+			else nomMethodeFormatte = methodeBaseFormatte;
 
 			String visibiliteUML = String.format("%-2c", changementVisibilite(met.getVisibilite()));
 
