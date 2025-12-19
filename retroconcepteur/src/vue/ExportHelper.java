@@ -17,10 +17,7 @@ public class ExportHelper
 
     public static void exportDiagram(FenetrePrincipale vuePrincipale)
     {
-        if (vuePrincipale == null)
-        {
-            return;
-        }
+        if (vuePrincipale == null)  return;
 
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Exporter le diagramme");

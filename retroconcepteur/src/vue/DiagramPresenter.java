@@ -23,6 +23,7 @@ public class DiagramPresenter
             // Préparation des membres via le PresentationMapper centralisé
             List<String> attrVue = afficherAttributs ? 
                 PresentationMapper.convertirAttributs(c.getAttributs(), c, classes) : new ArrayList<>();
+                
             List<String> methVue = afficherMethodes ?
                 PresentationMapper.convertirMethodes(c.getMethodes(), c) : new ArrayList<>();
 
@@ -43,6 +44,7 @@ public class DiagramPresenter
             {
                 List<String> iAttr = afficherAttributs ? 
                     PresentationMapper.convertirAttributs(inner.getAttributs(), inner, classes) : new ArrayList<>();
+
                 List<String> iMeth = afficherMethodes ?
                     PresentationMapper.convertirMethodes(inner.getMethodes(), inner) : new ArrayList<>();
 
@@ -66,8 +68,10 @@ public class DiagramPresenter
         // Utilisation des méthodes de conversion du PresentationMapper
         liaisons.addAll(PresentationMapper.convertirLiaisons(associations,
                 LiaisonVue.TypeLiaison.ASSOCIATION_UNIDI, classes));
+
         liaisons.addAll(PresentationMapper.convertirLiaisons(heritages,
                 LiaisonVue.TypeLiaison.HERITAGE, classes));
+
         liaisons.addAll(PresentationMapper.convertirLiaisons(implementations,
                 LiaisonVue.TypeLiaison.IMPLEMENTATION, classes));
 
