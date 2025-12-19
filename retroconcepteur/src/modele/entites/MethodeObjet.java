@@ -57,7 +57,7 @@ public class MethodeObjet
     public boolean                 estStatique  () { return this.estStatique ;  }
 
     /*-------------------------------------- */
-	/* Modificateurs                         */
+	/* Les Modificateurs                     */
 	/*-------------------------------------- */
     public void setNom       (String                  nom        ) { this.nom         = nom         ;  }
     public void setVisibilite(String                  visibilite ) { this.visibilite  = visibilite  ;  }

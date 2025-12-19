@@ -44,7 +44,7 @@ public class AttributObjet
 	}
 
 	/*-------------------------------------- */
-	/* Les Accesseurs */
+	/* Les Accesseurs                        */
 	/*-------------------------------------- */
 	public String            getVisibilite  () {  return this.visibilite  ; }
 	public String            getPortee      () {  return this.portee      ; }
@@ -59,7 +59,7 @@ public class AttributObjet
 	public boolean estRequete () {  return this.requete ; }
 
 	/*-------------------------------------- */
-	/* Modificateurs */
+	/* Les Modificateurs                     */
 	/*-------------------------------------- */
 	public void setPortee      (String            portee      ) {	this.portee       = portee      ; }
 	public void setVisibilite  (String            visibilite  ) {	this.visibilite   = visibilite  ; }

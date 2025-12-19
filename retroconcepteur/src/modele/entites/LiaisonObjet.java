@@ -56,7 +56,7 @@ public class LiaisonObjet
     public int         getNum        () { return this.num        ; }
     
 	/*-------------------------------------- */
-	/* Modificateurs                         */
+	/* Les Modificateurs                     */
 	/*-------------------------------------- */
     public void setNomAttribut(String      nomAttribut) { this.nomAttribut = nomAttribut ;   }
     public void setClasseFille(ClasseObjet classeFille) { this.classeFille = classeFille ;   }
@@ -64,7 +64,7 @@ public class LiaisonObjet
     public void setNum        (int         num        ) { this.num         = num         ;   }
 
     /*-------------------------------------- */
-	/* Autre methodes                        */
+	/* methodes Autre                        */
 	/*-------------------------------------- */
     public static void reinitialiserCompteur() {LiaisonObjet.nbLiaisons = 0;}
 }

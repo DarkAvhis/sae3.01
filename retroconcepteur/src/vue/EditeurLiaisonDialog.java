@@ -46,8 +46,10 @@ public class EditeurLiaisonDialog extends JDialog
 		panelDisposition.add(tfRoleDest);
 
 		this.btnOK = new JButton("OK");
-		this.btnOK.addActionListener((ActionEvent e) -> { liaison.setRoleOrig(tfRoleOrig.getText());
-													      liaison.setRoleDest(tfRoleDest.getText());
+		this.btnOK.addActionListener((ActionEvent e) -> 
+		{
+			liaison.setRoleOrig(tfRoleOrig.getText()        );
+			liaison.setRoleDest(tfRoleDest.getText()        );
 			// Multiplicités
 			liaison.setMultipliciteOrig(tfMultOrig.getText());
 			liaison.setMultipliciteDest(tfMultDest.getText());

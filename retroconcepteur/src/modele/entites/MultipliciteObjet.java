@@ -28,7 +28,7 @@ public class MultipliciteObjet
     public int getFin  () { return this.fin   ; }
 
     /*-------------------------------------- */
-	/* Modificateurs                         */
+	/* Les Modificateurs                     */
 	/*-------------------------------------- */
     public void setDebut(int debut) { this.debut = debut  ; }
     public void setFin  (int fin  ) { this.fin   = fin    ; }
