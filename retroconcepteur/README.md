@@ -34,6 +34,7 @@ Voici la commande à utiliser pour compiler et exécuter, selon votre système d
      - Pour compiler : `javac -d class @compile.list`
      - Pour exécuter : `java -cp class controleur.Controleur gui`              (mode graphique) ou 
                        `java -cp class controleur.Controleur console <chemin>` (mode console)
+                       `./run.bat` (choisir gui ou console)
 
    - Sous Linux/macOS :
      - Pour compiler : `javac -d class @compile.list`
