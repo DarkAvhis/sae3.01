@@ -1,23 +1,20 @@
 package controleur;
 
-import java.awt.Point;
-import java.util.HashMap;
+import java.awt.*;
+
 import java.util.List;
+import java.util.Map;
+
 import modele.Sauvegarde;
 import modele.entites.AssociationObjet;
-import modele.entites.AttributObjet;
 import modele.entites.ClasseObjet;
 import modele.entites.HeritageObjet;
 import modele.entites.InterfaceObjet;
-import modele.entites.LiaisonObjet;
-import modele.entites.MethodeObjet;
-import modele.outil.DispositionOptimiseur;
 import vue.BlocClasse;
 import vue.ExportHelper;
 import vue.FenetrePrincipale;
 import vue.LiaisonVue;
-import vue.LiaisonVue.TypeLiaison;
-import vue.PresentationMapper;
+
 
 /**
  * Contrôleur principal de l'application de génération de diagrammes UML.
@@ -32,7 +29,8 @@ import vue.PresentationMapper;
  *         BUYANBADRAKH, Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class Controleur {
+public class Controleur 
+{
     private modele.AnalyseMetier metierComplet;
     private FenetrePrincipale vuePrincipale;
     private String cheminProjetActuel;
@@ -41,14 +39,16 @@ public class Controleur {
      * Initialise le modèle d'analyse et crée la fenêtre principale de
      * l'application.
      */
-    public Controleur() {
+    public Controleur() 
+    {
         this.metierComplet = new modele.AnalyseMetier();
         this.vuePrincipale = new FenetrePrincipale(this);
         this.cheminProjetActuel = null;
     }
 
     // nouveau (permettre l'exportation)
-    public void exporterDiagramme() {
+    public void exporterDiagramme() 
+    {
         ExportHelper.exportDiagram(this.vuePrincipale);
     }
 
@@ -145,63 +145,6 @@ public class Controleur {
     }
 
     /**
-     * Calcule les positions optimales des classes dans le diagramme.
-     * 
-     * Utilise un algorithme hiérarchique inspiré de Sugiyama pour organiser les
-     * classes
-     * en couches et minimiser les croisements de liaisons.
-     * 
-     * @param classes          Liste des classes à positionner
-     * @param liaisons         Liste des liaisons entre les classes
-     * @param blocsAvecTailles Liste des blocs graphiques avec leurs dimensions
-     *                         calculées
-     * @return Map associant chaque nom de classe à sa position (Point) dans le
-     *         diagramme
-     */
-    private HashMap<String, Point> calculerPositionsOptimales(List<ClasseObjet> classes, List<LiaisonVue> liaisons,
-            List<BlocClasse> blocsAvecTailles) 
-    {
-        return DispositionOptimiseur.calculerPositionsOptimales(classes, liaisons, blocsAvecTailles);
-    }
-
-    /**
-     * Assigne une couche (niveau hiérarchique) à chaque classe.
-     * 
-     * Les classes parentes sont placées dans des couches supérieures,
-     * les classes enfants dans des couches inférieures.
-     * 
-     * @param classes  Liste des classes à organiser
-     * @param liaisons Liste des liaisons entre classes
-     * @return Map associant chaque nom de classe à son numéro de couche
-     */
-    private HashMap<String, Integer> assignerCouches(List<ClasseObjet> classes, List<LiaisonVue> liaisons) {
-        return DispositionOptimiseur.assignerCouches(classes, liaisons);
-    }
-
-    /**
-     * Minimise les croisements de liaisons en réorganisant les classes d'une
-     * couche.
-     * 
-     * Utilise la méthode du barycentre pour optimiser l'ordre des classes
-     * en fonction de leurs connexions avec la couche adjacente.
-     * 
-     * @param coucheCouranteIndex Index de la couche courante
-     * @param nomsCoucheCourante  Noms des classes de la couche à réorganiser
-     * @param nomsCoucheFixe      Noms des classes de la couche de référence
-     * @param liaisons            Liste des liaisons entre classes
-     * @param blocMap             Map des blocs graphiques
-     * @param forward             true pour parcours descendant, false pour parcours
-     *                            ascendant
-     */
-    private void minimiserCroisements(int coucheCouranteIndex, List<String> nomsCoucheCourante,
-            List<String> nomsCoucheFixe, List<LiaisonVue> liaisons, HashMap<String, BlocClasse> blocMap,
-            boolean forward) {
-        DispositionOptimiseur.minimiserCroisements(coucheCouranteIndex, nomsCoucheCourante, nomsCoucheFixe, liaisons, blocMap, forward);
-    }
-
-    // ... (Reste des méthodes auxiliaires et main inchangés) ...
-
-    /**
      * Sauvegarde les positions actuelles des blocs du diagramme.
      * 
      * @note Cette méthode est actuellement en développement
@@ -246,61 +189,6 @@ public class Controleur {
     }
 
     /**
-     * Convertit les liaisons du modèle vers les liaisons de la vue.
-     * 
-     * Transforme les objets LiaisonObjet (modèle métier) en objets LiaisonVue
-     * (représentation graphique) en extrayant les informations nécessaires à
-     * l'affichage.
-     * 
-     * @param liaisons Liste des liaisons du modèle à convertir
-     * @param type     Type de liaison (ASSOCIATION, HERITAGE, IMPLEMENTATION)
-     * @return Liste des liaisons prêtes pour l'affichage graphique
-     */
-    private List<LiaisonVue> convertirLiaisons(List<? extends LiaisonObjet> liaisons, TypeLiaison type)
-    {
-        return PresentationMapper.convertirLiaisons(liaisons, type, metierComplet.getClasses());
-    }
-    
-
-    /**
-     * Convertit les attributs d'une classe en format d'affichage UML.
-     * 
-     * Transforme les objets AttributObjet en chaînes formatées selon la notation
-     * UML,
-     * incluant la visibilité, le nom, le type et les modificateurs (static).
-     * 
-     * @param attributs Liste des attributs à convertir
-     * @param classe    Classe contenant les attributs (pour accéder aux méthodes de
-     *                  conversion)
-     * @return Liste des attributs formatés pour l'affichage
-     */
-    private List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe) {
-        return PresentationMapper.convertirAttributs(attributs, classe, metierComplet.getClasses());
-    }
-
-    /**
-     * Convertit les méthodes d'une classe en format d'affichage UML.
-     * 
-     * Transforme les objets MethodeObjet en chaînes formatées selon la notation
-     * UML,
-     * incluant la visibilité, le nom, les paramètres, le type de retour et les
-     * modificateurs (static).
-     * 
-     * @param methodes Liste des méthodes à convertir
-     * @param classe   Classe contenant les méthodes (pour accéder aux méthodes de
-     *                 conversion)
-     * @return Liste des méthodes formatées pour l'affichage
-     */
-    private List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe) {
-        return PresentationMapper.convertirMethodes(methodes, classe);
-    }
-
-    private BlocClasse creerBlocComplet(ClasseObjet c, int x, int y) 
-    {
-    return PresentationMapper.creerBlocComplet(c, x, y);
-    }
-
-    /**
      * Optimise la disposition des blocs de classe dans le diagramme.
      * 
      * Déclenche l'algorithme d'optimisation de la disposition pour améliorer
@@ -339,6 +227,28 @@ public class Controleur {
     {
         // Rebuild blocs to reflect member visibility changes
         reafficherAvecFiltreExternes();
+    }
+
+    public void demanderOptimisationDisposition() 
+    {
+        // 1. Récupérer les données
+        List<ClasseObjet> classes = metierComplet.getClasses();
+        List<LiaisonVue> liaisons = vuePrincipale.getPanneauDiagramme().getLiaisonsVue();
+
+        // 2. Calculer via le modèle centralisé
+        Map<String, Point> nouvellesPositions = modele.outil.DispositionOptimiseur.calculerPositions(classes, liaisons);
+
+        // 3. Mettre à jour les blocs dans la vue
+        for (BlocClasse bloc : vuePrincipale.getPanneauDiagramme().getBlocsClasses()) {
+            Point p = nouvellesPositions.get(bloc.getNom());
+            if (p != null) {
+                bloc.setX(p.x);
+                bloc.setY(p.y);
+            }
+        }
+        
+        // 4. Rafraîchir l'affichage
+        vuePrincipale.getPanneauDiagramme().repaint();
     }
 
     public static void main(String[] args) 
