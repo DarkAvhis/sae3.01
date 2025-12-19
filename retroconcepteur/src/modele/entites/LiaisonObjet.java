@@ -19,8 +19,8 @@ public class LiaisonObjet
 	/*-------------------------------------- */
 	protected String      nomAttribut;
 	protected ClasseObjet classeFille;
-	protected ClasseObjet classeMere;
-	protected int         num;
+	protected ClasseObjet classeMere ;
+	protected int         num        ;
 
 	private static int    nbLiaisons = 0;
 
@@ -52,8 +52,8 @@ public class LiaisonObjet
 	/*-------------------------------------- */
     public String      getNomAttribut() { return this.nomAttribut; }
     public ClasseObjet getClasseFille() { return this.classeFille; }
-    public ClasseObjet getClasseMere () { return  this.classeMere; }
-    public int         getNum        () { return  this.num;        }
+    public ClasseObjet getClasseMere () { return this.classeMere ; }
+    public int         getNum        () { return this.num        ; }
     
 	/*-------------------------------------- */
 	/* Modificateurs                         */

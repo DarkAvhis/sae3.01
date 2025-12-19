@@ -68,7 +68,7 @@ public class PresentationMapper {
 
         // Liaisons issues des attributs
         for (ClasseObjet c : classes) {
-            for (AttributObjet att : c.getattributs()) {
+            for (AttributObjet att : c.getAttributs()) {
                 String typeAtt = att.getType();
                 String typeSimple = typeAtt;
                 if (typeAtt.endsWith("[]"))
@@ -170,7 +170,7 @@ public class PresentationMapper {
             if (met.getNom() != null) nomsMethodesExistants.add(met.getNom());
         }
 
-        for (AttributObjet att : classe.getattributs()) {
+        for (AttributObjet att : classe.getAttributs()) {
             String nomAttr = att.getNom();
             if (nomAttr == null || nomAttr.isEmpty()) continue;
 

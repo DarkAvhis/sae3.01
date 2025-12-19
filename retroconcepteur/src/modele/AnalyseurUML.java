@@ -124,7 +124,7 @@ public class AnalyseurUML {
 
                     // Délégation de l'extraction à ParsingUtil pour éviter la duplication de logique
                     if (ligneBrute.endsWith(";") && !ligneBrute.contains("(")) {
-                        ParsingUtil.extraireAttribut(ligneBrute, estStatique, estFinal, classeCourante.getattributs());
+                        ParsingUtil.extraireAttribut(ligneBrute, estStatique, estFinal, classeCourante.getAttributs());
                     } 
                     else if (ligneBrute.contains("(") && !ligneBrute.contains("=")) {
                         // Normalisation pour les interfaces (méthodes implicitement publiques)
@@ -173,10 +173,10 @@ public class AnalyseurUML {
         HashSet<AssociationObjet> associationsDansFusion = new HashSet<AssociationObjet>();
 
         for (ClasseObjet classeOrigine : classes) {
-            if (classeOrigine.getattributs() == null)
+            if (classeOrigine.getAttributs() == null)
                 continue;
 
-            for (AttributObjet attribut : classeOrigine.getattributs()) {
+            for (AttributObjet attribut : classeOrigine.getAttributs()) {
                 String typeAttribut = attribut.getType();
                 String typeCible = typeAttribut;
                 MultipliciteObjet multCible = new MultipliciteObjet(1, 1);

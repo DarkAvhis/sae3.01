@@ -9,76 +9,57 @@ import java.util.List;
  * Représente une classe UML analysée à partir d'un fichier Java.
  * Contient son nom, sa liste d'attributs et sa liste de méthodes.
  */
-public class ClasseObjet {
+public class ClasseObjet 
+{
 	/*-------------------------------------- */
 	/* Attributs */
 	/*-------------------------------------- */
 
-	private String nom;
-	private ArrayList<AttributObjet> attributs;
-	private ArrayList<MethodeObjet> methodes;
-	private String specifique;
-	private ArrayList<ClasseObjet> classesInternes ;
-
-
+	private String                   nom             ;
+	private String                   specifique      ;
+	private ArrayList<AttributObjet> attributs       ;
+	private ArrayList<MethodeObjet > methodes        ;
+	private ArrayList<ClasseObjet  > classesInternes ;
+	
 	private static final String ANSI_SOUSTITRE = "\u001B[4m";
-	private static final String ANSI_GRAS = "\u001B[1m";
-	private static final String ANSI_RESET = "\u001B[0m";
+	private static final String ANSI_GRAS      = "\u001B[1m";
+	private static final String ANSI_RESET     = "\u001B[0m";
 
 	/*-------------------------------------- */
 	/* Constructeur */
 	/*-------------------------------------- */
-	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom,
-			String specifique) {
-		this.attributs = attributs;
-		this.methodes = methodes;
-		this.nom = nom;
+	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom, 
+		String specifique)
+	{
+		this.attributs  = attributs;
+		this.methodes   = methodes;
+		this.nom        = nom;
 		this.specifique = specifique;
+
 		this.classesInternes = new ArrayList<ClasseObjet>();
 	}
 
 	/*-------------------------------------- */
 	/* Les Accesseurs */
 	/*-------------------------------------- */
-	public String getNom() {
-		return this.nom;
-	}
+	public String getNom       () { return this.nom       ; }
+	public String getSpecifique() {	return this.specifique; }
 
-	public ArrayList<AttributObjet> getattributs() {
-		return this.attributs;
-	}
-
-	public ArrayList<MethodeObjet> getMethodes() {
-		return this.methodes;
-	}
-
-	public String getSpecifique() {
-		return this.specifique;
-	}
-
-	public ArrayList<ClasseObjet> getClassesInternes() 
-	{
-        return this.classesInternes;
-    }
-
-    
+	public ArrayList<AttributObjet> getAttributs      () { return this.attributs      ; }
+	public ArrayList<MethodeObjet > getMethodes       () { return this.methodes       ; }
+	public ArrayList<ClasseObjet  > getClassesInternes() { return this.classesInternes; }
 
 	/*-------------------------------------- */
 	/* Modificateurs */
 	/*-------------------------------------- */
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
+	public void setNom(String nom) { this.nom = nom;}
 
-	public void setattributs(ArrayList<AttributObjet> attributs) 
-	{
-		this.attributs = attributs;
-	}
+	public void setAttributs(ArrayList<AttributObjet> attributs) { this.attributs = attributs; }
+	public void setMethodes (ArrayList<MethodeObjet > methodes ) { this.methodes  = methodes ; }
 
-	public void setmethodes(ArrayList<MethodeObjet> methodes) 
-	{
-		this.methodes = methodes;
-	}
+	/*-------------------------------------- */
+	/* Methode autre */
+	/*-------------------------------------- */
 
 	public void ajouterClasseInterne(ClasseObjet inner) 
 	{
@@ -88,26 +69,21 @@ public class ClasseObjet {
         }
     }
 
-	/*-------------------------------------- */
-	/* Methode autre */
-	/*-------------------------------------- */
-
 	/**
 	 * Convertit une visibilité Java en symbole UML.
 	 *
 	 * @param visibilite "public", "private", "protected" ou autre
 	 * @return symbole UML correspondant (+, -, #, ~)
 	 */
-	public char changementVisibilite(String visibilite) {
-		switch (visibilite) {
-			case "private":
-				return '-';
-			case "public":
-				return '+';
-			case "protected":
-				return '#';
-			default:
-				return '~';
+	public char changementVisibilite(String visibilite) 
+	{
+		switch (visibilite) 
+		{
+			case "private"  : return '-';
+			case "public"   : return '+';
+			case "protected": return '#';
+
+			default: return '~';
 		}
 	}
 
@@ -117,19 +93,22 @@ public class ClasseObjet {
 	 * @param parametre hashmap contenant nomParam → typeParam
 	 * @return chaîne formatée des paramètres (exemple : "(x: int, y: String)")
 	 */
-	public String affichageParametre(HashMap<String, String> parametre) {
+	public String affichageParametre(HashMap<String, String> parametre) 
+	{
 		String sRet = "";
 
-		if (parametre != null && !parametre.isEmpty()) {
+		if (parametre != null && !parametre.isEmpty()) 
+		{
 			sRet += "(";
 			for (String key : parametre.keySet())
 				sRet += key + ": " + parametre.get(key) + ", ";
 
 			sRet = sRet.substring(0, sRet.length() - 2);
+
 			sRet += ")";
-		} else {
+		} 
+		else 
 			sRet = "()";
-		}
 
 		return sRet;
 	}
@@ -140,12 +119,11 @@ public class ClasseObjet {
 	 * @param type type de retour Java
 	 * @return ": type" ou chaîne vide si void
 	 */
-	public String retourType(String type) {
-		if (type == null)
-			return " ";
+	public String retourType(String type) 
+	{
+		if (type == null) return " ";
 
-		if (type.equals("public") || type.equals("void"))
-			return " ";
+		if (type.equals("public") || type.equals("void")) return " ";
 
 		return " : " + type;
 	}
@@ -159,7 +137,8 @@ public class ClasseObjet {
 	 *
 	 * @return chaîne formatée représentant la classe (attributs + méthodes)
 	 */
-	public String toString() {
+	public String toString() 
+	{
 
 		// Liste des types de référence standards à ne pas masquer (String,
 		// Integer,etc...)
@@ -168,19 +147,23 @@ public class ClasseObjet {
 
 		String sRet = "";
 
-		if (!this.specifique.equals("")) {
+		if (!this.specifique.equals("")) 
+		{
 			sRet += "-------------------------------------------------------------------------------------------\n";
-			sRet += String.format("%53s", ClasseObjet.ANSI_GRAS + "<<" + this.specifique + ">>") + "\n";
-			sRet += String.format("%50s", this.nom + ClasseObjet.ANSI_RESET) + "\n";
+			sRet += String.format("%53s", ClasseObjet.ANSI_GRAS + "<<" + this.specifique + ">>")      + "\n";
+			sRet += String.format("%50s", this.nom + ClasseObjet.ANSI_RESET)                          + "\n";
 			sRet += "-------------------------------------------------------------------------------------------\n";
-		} else {
+		} 
+		else 
+		{
 			sRet += "-------------------------------------------------------------------------------------------\n";
-			sRet += String.format("%50s", ClasseObjet.ANSI_GRAS + this.nom + ClasseObjet.ANSI_RESET) + "\n";
+			sRet += String.format("%50s", ClasseObjet.ANSI_GRAS + this.nom + ClasseObjet.ANSI_RESET) + " \n";
 			sRet += "-------------------------------------------------------------------------------------------\n";
 		}
 
 		// --- AFFICHAGE DES ATTRIBUTS ---
-		for (AttributObjet att : attributs) {
+		for (AttributObjet att : attributs) 
+		{
 			String typeAttribut = att.getType().trim();
 
 			// 1. Vérifier si le type commence par une Majuscule (potentiellement une classe
@@ -193,21 +176,22 @@ public class ClasseObjet {
 
 			// Si c'est un attribut d'association (simple objet OU tableau d'objets), on le
 			// masque.
-			if (estAssociation) {
-				continue;
-			}
+			if (estAssociation)  continue;
+			
 
 			String finalFlag = att.estFinale() ? " {gelé}" : "";
 
 			String nomBaseFormatte = String.format("%-15s", att.getNom());
 
 			String nomFormatte;
-			if (att.estStatique()) {
+
+			if (att.estStatique()) 
+			{
 				nomFormatte = String.format("%-10s",
 						ClasseObjet.ANSI_SOUSTITRE + nomBaseFormatte + ClasseObjet.ANSI_RESET);
-			} else {
+			} 
+			else 
 				nomFormatte = nomBaseFormatte;
-			}
 
 			sRet += String.format("%-2c", changementVisibilite(att.getVisibilite())) + nomFormatte +
 					String.format("%-15s", retourType(att.getType())) +
@@ -224,11 +208,12 @@ public class ClasseObjet {
 			String methodeBaseFormatte = String.format("%-25s", nomMethodeBrut);
 
 			String nomMethodeFormatte;
-			if (met.estStatique()) {
+			
+			if (met.estStatique()) 
 				nomMethodeFormatte = ClasseObjet.ANSI_SOUSTITRE + methodeBaseFormatte + ClasseObjet.ANSI_RESET;
-			} else {
+
+			else 
 				nomMethodeFormatte = methodeBaseFormatte;
-			}
 
 			String visibiliteUML = String.format("%-2c", changementVisibilite(met.getVisibilite()));
 

@@ -24,6 +24,8 @@ public class InterfaceObjet extends LiaisonObjet
         super(classe); 
         this.lstInterfaces = new ArrayList<>();
     }
+
+    public List<ClasseObjet> getLstInterfaces(){ return this.lstInterfaces; }
     
     /**
      * Ajoute une interface à la liste des implémentations.
@@ -32,16 +34,9 @@ public class InterfaceObjet extends LiaisonObjet
     public void ajouterInterface(ClasseObjet interfaceObjet)
     {
         if (interfaceObjet != null)
-        {
             this.lstInterfaces.add(interfaceObjet);
-        }
     }
-
-    public List<ClasseObjet> getLstInterfaces()
-    {
-        return this.lstInterfaces;
-    }
-    
+ 
     /*-------------------------------------- */
 	/* toString                              */
 	/*-------------------------------------- */
@@ -54,9 +49,7 @@ public class InterfaceObjet extends LiaisonObjet
         String nomFille = (this.classeFille != null) ? this.classeFille.getNom() : "[Classe Concrète manquante]";
         
         if (this.lstInterfaces.isEmpty())
-        {
             return nomFille + " n'en implémente aucune."; //(interface)
-        }
 
         String sRet = "";
         
@@ -65,10 +58,9 @@ public class InterfaceObjet extends LiaisonObjet
             if (this.lstInterfaces.get(i) != null)
             {
                 sRet += this.lstInterfaces.get(i).getNom();
+
                 if (i < this.lstInterfaces.size() - 1)
-                {
                     sRet+= " , " ; 
-                }
             }
         }
 

@@ -27,7 +27,7 @@ public class DiagramPresenter {
             if (!afficherClassesExternes && estExterne) continue;
 
             // Conversion des membres selon les flags
-            List<String> attrVue = afficherAttributs ? PresentationMapper.convertirAttributs(c.getattributs(), c, classes) : new ArrayList<>();
+            List<String> attrVue = afficherAttributs ? PresentationMapper.convertirAttributs(c.getAttributs(), c, classes) : new ArrayList<>();
             List<String> methVue = afficherMethodes ? PresentationMapper.convertirMethodes(c.getMethodes(), c) : new ArrayList<>();
 
             BlocClasse bloc = new BlocClasse(c.getNom(), x, y, attrVue, methVue);
@@ -49,7 +49,7 @@ public class DiagramPresenter {
             int offsetY = 180;
             for (ClasseObjet inner : c.getClassesInternes()) {
                 // Réutiliser la même logique pour les internes
-                List<String> attrInner = afficherAttributs ? PresentationMapper.convertirAttributs(inner.getattributs(), inner, classes) : new ArrayList<>();
+                List<String> attrInner = afficherAttributs ? PresentationMapper.convertirAttributs(inner.getAttributs(), inner, classes) : new ArrayList<>();
                 List<String> methInner = afficherMethodes ? PresentationMapper.convertirMethodes(inner.getMethodes(), inner) : new ArrayList<>();
                 BlocClasse blocInner = new BlocClasse(inner.getNom(), x + offsetX, y + offsetY, attrInner, methInner);
                 if (inner.getSpecifique() != null && inner.getSpecifique().equals("externe")) blocInner.setExterne(true);
