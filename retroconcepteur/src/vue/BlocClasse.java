@@ -2,13 +2,13 @@
 package vue;
 
 import java.awt.BasicStroke;
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Canvas;
 
 /**
  * Représentation graphique d'une classe UML.
@@ -28,14 +28,6 @@ public class BlocClasse
 {
         // Ajout d'un champ pour le type spécifique (interface, record, abstract class)
         private String typeSpecifique = null;
-
-        public void setTypeSpecifique(String type) {
-            this.typeSpecifique = type;
-        }
-
-        public String getTypeSpecifique() {
-            return this.typeSpecifique;
-        }
     private boolean modeComplet = false;
     private String nom;
 
@@ -112,18 +104,20 @@ public class BlocClasse
         recalculerDimensions();
     }
 
-    public String getNom    () {  return nom     ;  }
-    public int    getX      () {  return x       ;  }
-    public int    getY      () {  return y       ;  }
-    public int    getLargeur() {  return largeur ;  }
-    public int    getHauteur() {  return hauteur ;  }
+    public String getNom           () {  return nom                ;  }
+    public int    getX             () {  return x                  ;  }
+    public int    getY             () {  return y                  ;  }
+    public int    getLargeur       () {  return largeur            ;  }
+    public int    getHauteur       () {  return hauteur            ;  }
+    public String getTypeSpecifique() {  return this.typeSpecifique;  }
 
-    public void setLargeur    (int     largeur     ) {  this.largeur        = largeur      ; }
-    public void setX          (int     x           ) {  this.x              = x            ; }
-    public void setY          (int     y           ) {  this.y              = y            ; }
-    public void setInterface  (boolean estInterface) {  this.estInterface   = estInterface ; }
-    public void setSelectionne(boolean selectionne ) {  this.estSelectionne = selectionne  ; }
-    public void setExterne    (boolean externe     ) {  this.estExterne     = externe      ; }
+    public void setLargeur       (int     largeur     ) {  this.largeur        = largeur      ; }
+    public void setX             (int     x           ) {  this.x              = x            ; }
+    public void setY             (int     y           ) {  this.y              = y            ; }
+    public void setInterface     (boolean estInterface) {  this.estInterface   = estInterface ; }
+    public void setSelectionne   (boolean selectionne ) {  this.estSelectionne = selectionne  ; }
+    public void setExterne       (boolean externe     ) {  this.estExterne     = externe      ; }
+    public void setTypeSpecifique(String type         ) {this.typeSpecifique   = type         ; }
 
     public void setAttributs(List<String> attributs) 
     {
@@ -146,9 +140,10 @@ public class BlocClasse
         this(nom, x, y, new ArrayList<>(), new ArrayList<>()) ;  
     }
 
-    public boolean isModeComplet() {    return modeComplet;  }
+    public boolean isModeComplet() { return modeComplet; }
 
-    public void setModeComplet(boolean complet) {
+    public void setModeComplet(boolean complet) 
+    {
         this.modeComplet = complet;
         recalculerDimensions();
     }
@@ -157,25 +152,22 @@ public class BlocClasse
      * Limite l'affichage des paramètres d'une méthode à 2 paramètres.
      * Si plus de 2 paramètres, affiche les 2 premiers suivis de "..."
      */
-    private String limiterParametres(String methode) {
+    private String limiterParametres(String methode) 
+    {
         int idxParenthese = methode.indexOf('(');
-        if (idxParenthese < 0)
-            return methode;
+        if (idxParenthese < 0) return methode;
 
         int idxFermante = methode.lastIndexOf(')');
-        if (idxFermante < 0)
-            return methode;
+        if (idxFermante < 0) return methode;
 
         String avant = methode.substring(0, idxParenthese + 1);
         String params = methode.substring(idxParenthese + 1, idxFermante);
         String apres = methode.substring(idxFermante);
 
-        if (params.trim().isEmpty())
-            return methode;
+        if (params.trim().isEmpty()) return methode;
 
         String[] paramsTab = params.split(",");
-        if (paramsTab.length <= 2)
-            return methode;
+        if (paramsTab.length <= 2) return methode;
 
         return avant + paramsTab[0].trim() + ", " + paramsTab[1].trim() + ", ..." + apres;
     }
@@ -187,9 +179,9 @@ public class BlocClasse
         
         // Appel des méthodes de dessin internes
 
-        currentY = dessinerAttributs(g, currentY);
+        currentY = dessinerAttributs (g, currentY);
         currentY = dessinerSeparateur(g, currentY);
-        currentY = dessinerMethodes(g, currentY);
+        currentY = dessinerMethodes  (g, currentY);
 
     }
     // Affiche le fond et la bordure du bloc
