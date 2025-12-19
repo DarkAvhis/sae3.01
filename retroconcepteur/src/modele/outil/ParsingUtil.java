@@ -102,9 +102,8 @@ public final class ParsingUtil
             String typeRetour = "void";
 
             if (nomMethode.equals(nomClasse)) 
-            {
                 typeRetour = null; 
-            }
+
             else
             {
                 int typeEspace = reste.lastIndexOf(' ');
@@ -146,8 +145,9 @@ public final class ParsingUtil
         for (int i = 0; i < s.length(); i++) 
         {
             char c = s.charAt(i);
-            if      (c == '<') { cptChevrons++; part += c; } 
-            else if (c == '>') { if (cptChevrons > 0) cptChevrons--; part += c; } 
+
+                 if (c == '<')                     { cptChevrons++; part += c; } 
+            else if (c == '>')                     { if (cptChevrons > 0) cptChevrons--; part += c; } 
             else if (c == ',' && cptChevrons == 0) { parties.add(part.trim()); part = ""; } 
             else { part += c; }
         }
@@ -157,9 +157,12 @@ public final class ParsingUtil
         return parties;
     }
 
-    public static String nettoyerLigne(String ligne) {
+    public static String nettoyerLigne(String ligne) 
+    {
         if (ligne == null) return "";
+
         int idxCommentaire = ligne.indexOf("//");
+
         if (idxCommentaire != -1) ligne = ligne.substring(0, idxCommentaire);
         return ligne.trim();
     }
@@ -171,19 +174,24 @@ public final class ParsingUtil
     public static String extraireTypeSimple(String type) 
     {
         if (type == null) return "";
+
         String typeSimple = type;
 
-        if (type.contains("<") && type.contains(">")) {
-            int idx1 = type.indexOf('<');
-            int idx2 = type.lastIndexOf('>');
+        if (type.contains("<") && type.contains(">")) 
+        {
+            int idx1   = type.indexOf    ('<');
+            int idx2   = type.lastIndexOf('>');
             typeSimple = type.substring(idx1 + 1, idx2).trim();
             
             // Gestion des Maps (ex: HashMap<String, Carre>) -> on prend le dernier type
             int virgule = typeSimple.lastIndexOf(',');
+
             if (virgule != -1) typeSimple = typeSimple.substring(virgule + 1).trim();
-        } else if (type.endsWith("[]")) {
-            typeSimple = type.substring(0, type.length() - 2).trim();
+
         }
+        else if (type.endsWith("[]")) 
+            typeSimple = type.substring(0, type.length() - 2).trim();
+
         return typeSimple;
     }
 
@@ -193,9 +201,9 @@ public final class ParsingUtil
         
         // 1. Suppression des commentaires de fin de ligne
         int idxCommentaire = ligne.indexOf("//");
-        if (idxCommentaire != -1) {
+        
+        if (idxCommentaire != -1) 
             ligne = ligne.substring(0, idxCommentaire);
-        }
         
         // 2. Neutralisation des String (Remplace "contenu" par "")
         // Utilise une regex non-gourmande pour vider chaque guillemet
