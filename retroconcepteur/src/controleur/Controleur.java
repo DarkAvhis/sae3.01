@@ -1,7 +1,7 @@
 package controleur;
 
 import java.awt.*;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -63,11 +63,19 @@ public class Controleur
      * @param cheminProjet Chemin absolu vers le dossier contenant les fichiers Java
      *                     à analyser
      */
-    public void analyserEtAfficherDiagramme(String cheminProjet)
+    public void analyserEtAfficherDiagramme(String cheminProjet) 
     {
-        if (!this.metierComplet.analyserDossier(cheminProjet)) return;
+        // Si l'analyse échoue, on pourrait vouloir vider la vue
+        if (!this.metierComplet.analyserDossier(cheminProjet)) 
+        {
+            // Envoi de listes vides pour "nettoyer" visuellement
+            this.vuePrincipale.getPanneauDiagramme().setBlocsClasses(new ArrayList<>());
+            this.vuePrincipale.getPanneauDiagramme().setLiaisonsVue(new ArrayList<>());
+            return;
+        }
+
         this.cheminProjetActuel = cheminProjet;
-        reafficherAvecFiltreExternes();
+        reafficherAvecFiltreExternes(); // Reconstruit et set les nouveaux blocs
     }
 
     /**
@@ -124,21 +132,6 @@ public class Controleur
         
     }
 
-    /**
-     * Calcule les positions optimales des classes dans le diagramme.
-     * 
-     * Utilise un algorithme hiérarchique inspiré de Sugiyama pour organiser les
-     * classes
-     * en couches et minimiser les croisements de liaisons.
-     * 
-     * @param classes          Liste des classes à positionner
-     * @param liaisons         Liste des liaisons entre les classes
-     * @param blocsAvecTailles Liste des blocs graphiques avec leurs dimensions
-     *                         calculées
-     * @return Map associant chaque nom de classe à sa position (Point) dans le
-     *         diagramme
-     */
-    // ... (Reste des méthodes auxiliaires et main inchangés) ...
 
     /**
      * Sauvegarde les positions actuelles des blocs du diagramme.
@@ -162,11 +155,7 @@ public class Controleur
         Sauvegarde.sauvegarder(dossier, fichier);
     }
 
-    /**
-     * Supprime la classe actuellement sélectionnée du diagramme.
-     * 
-     */
-    /**
+    /* 
      * Supprime la classe identifiée par son nom. Le nom doit provenir de la Vue
      * (ex : PanneauDiagramme.getNomClasseSelectionnee()).
      *
