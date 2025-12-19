@@ -26,7 +26,8 @@ import javax.swing.SwingUtilities;
  *         Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class BarreMenus extends JMenuBar implements ActionListener {
+public class BarreMenus extends JMenuBar implements ActionListener 
+{
     // Références aux items de menu
     private JMenuItem ouvrirClasse;
     private JMenuItem sauvegarderClasse;

@@ -13,6 +13,7 @@ public class ConsoleVue
 {
     public ConsoleVue()
     {
+        
     }
 
     public void afficherUsage()
