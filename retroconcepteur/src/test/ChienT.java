@@ -1,6 +1,6 @@
 package test;
 
-public record ChienT (String nom , int nbyecou , int poils)
+public record ChienT (String nom , int age , int poils)
 {
 
 }

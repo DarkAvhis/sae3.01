@@ -1,4 +1,4 @@
-package controleur;
+package modele;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -6,19 +6,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import modele.AnalyseurUML;
 import modele.entites.AssociationObjet;
 import modele.entites.ClasseObjet;
 import modele.entites.HeritageObjet;
 import modele.entites.InterfaceObjet;
 import modele.entites.LiaisonObjet;
 import modele.entites.MethodeObjet;
-import vue.ConsoleVue;
 
 /**
- * Contrôleur principal pour l'IHM (Interface Homme-Machine).
+ * Contrôleur métier déplacé dans le package `modele`.
  */
-public class AnalyseIHMControleur {
+public class AnalyseMetier {
     /*-------------------------------------- */
     /* Attributs */
     /*-------------------------------------- */
@@ -34,7 +32,7 @@ public class AnalyseIHMControleur {
     /*-------------------------------------- */
 
     // Constructeur par défaut
-    public AnalyseIHMControleur() {
+    public AnalyseMetier() {
         this.classes = new ArrayList<ClasseObjet>();
         this.associations = new ArrayList<AssociationObjet>();
         this.heritages = new ArrayList<HeritageObjet>();
@@ -44,23 +42,11 @@ public class AnalyseIHMControleur {
         this.analyseur = new AnalyseurUML();
     }
 
-    // Constructeur intégral qui fait l'analyse et affiche
-    public AnalyseIHMControleur(String cheminDossier) {
+    // Constructeur intégral capable d'être utilisé par un contrôleur externe
+    // pour lancer une analyse mais ne réalise pas d'affichage (séparation MVC).
+    public AnalyseMetier(String cheminDossier) {
         this(); // initialise les listes
-
-        ConsoleVue vue = new ConsoleVue();
-
-        boolean ok = this.analyserDossier(cheminDossier);
-        if (!ok) {
-            vue.afficherMessage(
-                    "Erreur : l'analyse a échoué pour le chemin '" + cheminDossier + "'.");
-            return;
-        }
-
-        vue.afficherClasses(this.getClasses());
-        vue.afficherAssociations(this.getAssociations());
-        vue.afficherHeritages(this.getHeritages());
-        vue.afficherImplementations(this.getImplementations());
+        this.analyserDossier(cheminDossier);
     }
 
     /*-------------------------------------- */
@@ -233,16 +219,9 @@ public class AnalyseIHMControleur {
     }
 
     /*-------------------------------------- */
-    /* Main */
-    /*-------------------------------------- */
-    public static void main(String[] args) {
-        ConsoleVue vue = new ConsoleVue();
-
-        if (args.length == 0) {
-            vue.afficherUsage();
-            return;
-        }
-
-        new AnalyseIHMControleur(args[0]);
-    }
+    /* Note: suppression du main pour que le seul point d'entrée
+     * soit `controleur.Controleur` (respect du souhait d'un seul
+     * contrôleur). L'affichage doit être réalisé par le contrôleur
+     * (vue séparée du modèle).
+     */
 }

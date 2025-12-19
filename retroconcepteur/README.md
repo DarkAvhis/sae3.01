@@ -32,11 +32,11 @@ Voici la commande à utiliser pour compiler et exécuter, selon votre système d
 
    - Sous Windows     :
     - Pour compiler   :  javac -encoding UTF-8 -d class @compile.list
-    - Pour exécuter   :  java -cp class src/AnalyseIHMControleur data
+    - Pour exécuter   :  java -cp class src/AnalyseMetier data
 
    - Sous Linux/macOS : 
     - Pour compiler   :  javac -d class @compile.list
-    - Pour exécuter   :  java -cp class src/AnalyseIHMControleur data
+    - Pour exécuter   :  java -cp class src/AnalyseMetier data
 
 
 # Arborescence du projet
@@ -45,7 +45,7 @@ sae3.01/
 └── retroconcepteur/
     ├── class/                     # Fichiers compilés (.class)
     │   └── src/
-    │       ├── AnalyseIHMControleur.class
+    │       ├── AnalyseMetier.class
     │       ├── Controleur.class
     │       ├── modele/
     │       │   ├── AnalyseurUML.class
@@ -72,7 +72,7 @@ sae3.01/
     │           └── PanneauProjets.class
     │
     ├── src/                       # Code source Java
-    │   ├── AnalyseIHMControleur.java
+    │   ├── AnalyseMetier.java
     │   ├── Controleur.java
     │   ├── modele/
     │   │   ├── AnalyseurUML.java

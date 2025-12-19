@@ -33,24 +33,16 @@ import vue.PresentationMapper;
  * @date 12 décembre 2025
  */
 public class Controleur {
-    private AnalyseIHMControleur metierComplet;
+    private modele.AnalyseMetier metierComplet;
     private FenetrePrincipale vuePrincipale;
     private String cheminProjetActuel;
-
-    // --- Constantes pour le Layout Hiérarchique ---
-    private static final int H_LAYER_SPACING = 150; // Espacement vertical minimum entre les couches
-    private static final int W_NODE_SPACING = 100; // Espacement horizontal minimum entre les blocs (votre demande)
-    private static final int Y_ANCHOR = 50; // Ancrage Y
-    private static final int X_ANCHOR = 50; // Ancrage X
-    private static final int ITERATIONS = 10; // Nombre d'itérations pour la minimisation des croisements
-
     /**
      * Constructeur du contrôleur.
      * Initialise le modèle d'analyse et crée la fenêtre principale de
      * l'application.
      */
     public Controleur() {
-        this.metierComplet = new AnalyseIHMControleur();
+        this.metierComplet = new modele.AnalyseMetier();
         this.vuePrincipale = new FenetrePrincipale(this);
         this.cheminProjetActuel = null;
     }
@@ -60,12 +52,6 @@ public class Controleur {
         ExportHelper.exportDiagram(this.vuePrincipale);
     }
 
-    /**
-     * Exporte le diagramme (positions + liaisons) au format JSON lisible.
-     */
-    public void exporterDiagrammeJSON() {
-        ExportHelper.exportDiagramJSON(this.vuePrincipale);
-    }
 
     /**
      * Analyse un projet Java et affiche le diagramme UML correspondant.
@@ -368,6 +354,46 @@ public class Controleur {
      */
     public static void main(String[] args) 
     {
-        new Controleur();
+        // If no args -> launch GUI
+        if (args == null || args.length == 0) {
+            new Controleur();
+            return;
+        }
+
+        String mode = args[0].toLowerCase();
+        if ("gui".equals(mode) || "graphique".equals(mode)) {
+            Controleur ctrl = new Controleur();
+            if (args.length > 1) {
+                ctrl.analyserEtAfficherDiagramme(args[1]);
+            }
+            return;
+        }
+
+        if ("console".equals(mode) || "cui".equals(mode)) {
+            if (args.length < 2) {
+                new vue.ConsoleVue().afficherUsage();
+                System.out.println("Usage: java -cp class controleur.Controleur console <chemin_du_repertoire>");
+                return;
+            }
+
+            String chemin = args[1];
+                modele.AnalyseMetier metier = new modele.AnalyseMetier();
+            boolean ok = metier.analyserDossier(chemin);
+            vue.ConsoleVue vue = new vue.ConsoleVue();
+            if (!ok) {
+                vue.afficherMessage("Erreur : impossible d'analyser le dossier '" + chemin + "'.");
+                return;
+            }
+
+            vue.afficherClasses(metier.getClasses());
+            vue.afficherAssociations(metier.getAssociations());
+            vue.afficherHeritages(metier.getHeritages());
+            vue.afficherImplementations(metier.getImplementations());
+            return;
+        }
+
+        // Unknown mode -> show usage
+        new vue.ConsoleVue().afficherUsage();
+        System.out.println("Modes supportés: (aucun)=GUI | gui | console <chemin_du_repertoire>");
     }
 }

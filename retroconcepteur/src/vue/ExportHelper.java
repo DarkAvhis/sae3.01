@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -36,7 +35,7 @@ public class ExportHelper {
         }
 
         try {
-            exportComponent(
+            ExportHelper.exportComponent(
                     vuePrincipale.getPanneauDiagramme(),
                     fichier
             );
@@ -53,42 +52,6 @@ public class ExportHelper {
                     "Erreur",
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
-        }
-    }
-
-    public static void exportDiagramJSON(FenetrePrincipale vuePrincipale) {
-        if (vuePrincipale == null)
-            return;
-
-        JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Exporter le diagramme (JSON)");
-        chooser.setSelectedFile(new File("diagramme.json"));
-        chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Fichier JSON", "json"));
-
-        int choix = chooser.showSaveDialog(vuePrincipale);
-        if (choix != JFileChooser.APPROVE_OPTION)
-            return;
-
-        File fichier = chooser.getSelectedFile();
-
-        if (!fichier.getName().toLowerCase().endsWith(".json")) {
-            fichier = new File(fichier.getAbsolutePath() + ".json");
-        }
-
-        try {
-            List<BlocClasse> blocs = vuePrincipale.getPanneauDiagramme().getBlocsClasses();
-            List<LiaisonVue> liaisons = vuePrincipale.getPanneauDiagramme().getLiaisonsVue();
-
-            // TODO: appeler un sérialiseur JSON centralisé si besoin
-
-            JOptionPane.showMessageDialog(vuePrincipale,
-                    "Diagramme exporté en JSON :\n" + fichier.getAbsolutePath(),
-                    "Export JSON réussi", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(vuePrincipale,
-                    "Erreur lors de l'export JSON :\n" + ex.getMessage(),
-                    "Erreur", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
         }
     }
 

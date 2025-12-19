@@ -49,264 +49,96 @@ public class AnalyseurUML {
         return this.lstInterfaces;
     }
 
-    public ClasseObjet analyserFichierUnique(String chemin) {
-        
+    public ClasseObjet analyserFichierUnique(String chemin) 
+    {
         File file = new File(chemin);
         String nomFichier = file.getName().replace(".java", "");
 
-
-
-        // NOUVEAU : Utilisation d'une pile pour gérer la hiérarchie des classes
+        // Pile pour gérer les classes internes et le contexte de parsing
         java.util.Stack<ClasseObjet> pileClasses = new java.util.Stack<>();
         ClasseObjet classeRacine = null;
-
-        // NOUVEAU : Compteur pour suivre la profondeur des blocs { }
         int niveauAccolades = 0;
-
-        String ligneBrute;
-        boolean commentaireBlocActif = false;
 
         try (Scanner sc = new Scanner(file)) {
             while (sc.hasNextLine()) {
-                ligneBrute = sc.nextLine().trim();
-                if (ligneBrute.isEmpty())
+                String ligneBrute = sc.nextLine().trim();
+                if (ligneBrute.isEmpty() || ligneBrute.startsWith("//") || ligneBrute.startsWith("package") || ligneBrute.startsWith("import")) {
                     continue;
-
-                // --- GESTION DES COMMENTAIRES (Logique existante conservée) ---
-                if (commentaireBlocActif) {
-                    if (ligneBrute.contains("*/")) {
-                        commentaireBlocActif = false;
-                        if (ligneBrute.endsWith("*/"))
-                            continue;
-                        ligneBrute = ligneBrute.substring(ligneBrute.indexOf("*/") + 2).trim();
-                    } else
-                        continue;
-                }
-                if (ligneBrute.startsWith("/*")) {
-                    if (!ligneBrute.contains("*/")) {
-                        commentaireBlocActif = true;
-                        continue;
-                    } else {
-                        int finCom = ligneBrute.lastIndexOf("*/");
-                        if (finCom + 2 < ligneBrute.length())
-                            ligneBrute = ligneBrute.substring(finCom + 2).trim();
-                        else
-                            continue;
-                    }
-                }
-                if (ligneBrute.startsWith("//"))
-                    continue;
-                if (ligneBrute.contains("//"))
-                    ligneBrute = ligneBrute.substring(0, ligneBrute.indexOf("//")).trim();
-                if (ligneBrute.startsWith("package") || ligneBrute.startsWith("import"))
-                    continue;
-                // --- DÉTECTION D'UNE DÉCLARATION DE CLASSE (RACINE OU INTERNE) ---
-                // Version simple : on cherche les mots-clés et on vérifie qu'ils ne sont
-                // pas à l'intérieur d'une chaîne entre guillemets.
-                String[] mots = {"class", "interface", "record", "enum"};
-                String foundKeyword = null;
-                int foundIdx = -1;
-                int nameStart = -1;
-
-                for (String kw : mots) {
-                    int idx = ligneBrute.indexOf(kw);
-                    while (idx != -1) {
-                        // si le mot est dans une chaîne, on ignore
-                        if (estDansGuillemets(ligneBrute, idx)) {
-                            idx = ligneBrute.indexOf(kw, idx + 1);
-                            continue;
-                        }
-
-                        // vérifier que le caractère précédent n'est pas un identifiant (pour éviter les sous-chaînes)
-                        boolean okBefore = (idx == 0) || !Character.isJavaIdentifierPart(ligneBrute.charAt(idx - 1));
-                        if (!okBefore) {
-                            idx = ligneBrute.indexOf(kw, idx + 1);
-                            continue;
-                        }
-
-                        // trouver le début du nom après le mot-clé
-                        int after = idx + kw.length();
-
-                        // Si le mot-clé est immédiatement suivi d'un caractère d'identifiant
-                        // (ex: "classeRacine" contient "class" suivi de 'e'), alors il s'agit
-                        // d'un identifiant plus long et non d'une déclaration : on ignore.
-                        if (after < ligneBrute.length() && Character.isJavaIdentifierPart(ligneBrute.charAt(after))) {
-                            idx = ligneBrute.indexOf(kw, idx + 1);
-                            continue;
-                        }
-
-                        // Sinon on saute les espaces et on vérifie qu'un nom commence bien
-                        while (after < ligneBrute.length() && Character.isWhitespace(ligneBrute.charAt(after)))
-                            after++;
-                        if (after < ligneBrute.length() && Character.isJavaIdentifierStart(ligneBrute.charAt(after))) {
-                            foundKeyword = kw;
-                            foundIdx = idx;
-                            nameStart = after;
-                            break;
-                        }
-                        idx = ligneBrute.indexOf(kw, idx + 1);
-                    }
-                    if (foundKeyword != null) break;
                 }
 
-                if (foundKeyword != null) {
-                    // Ne pas afficher simplement le mot-clé "class" sous le bloc :
-                    // garder vide pour les classes normales, mais conserver "abstract"
-                    // si la déclaration est abstraite. Pour les autres mots-clés
-                    // (interface/record/enum) on conserve le terme.
-                    String specifique = foundKeyword.equals("class") ? "" : foundKeyword;
-                    if (ligneBrute.contains("abstract") && foundKeyword.equals("class")) {
-                        // Utiliser la même valeur que le reste du code attend ("abstract class")
-                        specifique = "abstract class";
-                    }
+                // 1. Détection de déclaration (Class, Interface, Record, Enum)
+                // On utilise ParsingUtil pour identifier le type de structure
+                String stereotype = ParsingUtil.identifierStereotype(ligneBrute);
+                
+                // Vérification si la ligne contient une nouvelle déclaration d'entité
+                if (ligneBrute.contains("class ") || ligneBrute.contains("interface ") || 
+                    ligneBrute.contains("record ") || ligneBrute.contains("enum ")) {
+                    
+                    // Extraction du nom via ParsingUtil
+                    String nomEntite = ParsingUtil.lireNom(ligneBrute.substring(ligneBrute.indexOf(
+                        ligneBrute.contains("interface") ? "interface" : 
+                        (ligneBrute.contains("record") ? "record" : "class")
+                    )).trim().split("\\s+")[1]);
 
-                    // Extraire le nom sans split ni regex
-                    StringBuilder nameBuilder = new StringBuilder();
-                    int p = nameStart;
-                    while (p < ligneBrute.length() && Character.isJavaIdentifierPart(ligneBrute.charAt(p))) {
-                        nameBuilder.append(ligneBrute.charAt(p));
-                        p++;
-                    }
-                    String nomEntite = nameBuilder.toString();
                     if (nomEntite.isEmpty()) nomEntite = nomFichier;
 
-                    ClasseObjet nouvelleClasse = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nomEntite,
-                            specifique);
+                    ClasseObjet nouvelleClasse = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nomEntite, stereotype);
 
-                        // Si c'est un record, extraire les composants entre parenthèses comme attributs
-                        if (foundKeyword.equals("record")) {
-                            int idxOpen = ligneBrute.indexOf('(', foundIdx + foundKeyword.length());
-                            int idxClose = (idxOpen != -1) ? ligneBrute.indexOf(')', idxOpen + 1) : -1;
-                            if (idxOpen != -1 && idxClose != -1 && idxClose > idxOpen + 0) {
-                                String comps = ligneBrute.substring(idxOpen + 1, idxClose).trim();
-                                if (!comps.isEmpty()) {
-                                    // découper en paramètres top-level (ignorant les chevrons)
-                                    for (String part : ParsingUtil.decoupage(comps)) {
-                                        String comp = part.trim();
-                                        if (comp.isEmpty()) continue;
-                                        int sep = ParsingUtil.dernierIndexEspace(comp);
-                                        if (sep > 0) {
-                                            String type = comp.substring(0, sep).trim();
-                                            String name = comp.substring(sep + 1).trim();
-                                            if (!type.isEmpty() && !name.isEmpty()) {
-                                                // record components are effectively final instance fields
-                                                nouvelleClasse.getattributs().add(
-                                                        new modele.entites.AttributObjet(name, "instance", type, "private", false, true));
-                                            }
-                                        }
-                                    }
-                                    // Créer un constructeur synthétique avec ces paramètres (pour affichage)
-                                    try {
-                                        java.util.HashMap<String, String> ctorParams = new java.util.HashMap<>();
-                                        for (modele.entites.AttributObjet a : nouvelleClasse.getattributs()) {
-                                            // n'ajouter que ceux issus du record (on suppose private final)
-                                            ctorParams.put(a.getNom(), a.getType());
-                                        }
-                                        if (!ctorParams.isEmpty()) {
-                                            nouvelleClasse.getMethodes().add(
-                                                    new modele.entites.MethodeObjet(nomEntite, ctorParams, null, "public", false));
-                                        }
-                                    } catch (Exception ex) {
-                                        // Ne pas bloquer l'analyse si problème mineur
-                                    }
-                                }
-                            }
-                        }
-                    // DÉTECTION DES INTERFACES IMPLÉMENTÉES
-                    if (ligneBrute.contains(" implements ")) 
-                    {
-                        String partieImplements = ligneBrute.substring(ligneBrute.indexOf(" implements ") + 12);
-                        
-                        // Nettoyage de la fin de ligne (accolade ou extends éventuel)
-                        if (partieImplements.contains("{")) partieImplements = partieImplements.split("\\{")[0];
-
-                        // Utilisation du Scanner avec délimiteur
-                        Scanner delimiterScanner = new Scanner(partieImplements);
-                        // Délimiteur : virgule entourée d'espaces OU espaces simples
-                        // On utilise une regex qui ignore les virgules à l'intérieur des chevrons < >
-                        delimiterScanner.useDelimiter(",(?![^<>]*>)|\\s+");
-
-                        ArrayList<String> listeInterfaces = new ArrayList<>();
-                        while (delimiterScanner.hasNext()) {
-                            String nomInterface = delimiterScanner.next().trim();
-                            if (!nomInterface.isEmpty()) {
-                                // Nettoyage des génériques si nécessaire
-                                if (nomInterface.contains("<")) {
-                                    nomInterface = nomInterface.substring(0, nomInterface.indexOf("<")).trim();
-                                }
-                                listeInterfaces.add(nomInterface);
-                            }
-                        }
-                        if (!listeInterfaces.isEmpty()) {
-                            this.lstInterfaces.put(nomEntite, listeInterfaces);
-                        }
-                        delimiterScanner.close();
-                    }
-
-                    // LOGIQUE DE PILE : Si la pile n'est pas vide, c'est une classe interne
+                    // Gestion de la hiérarchie : si la pile n'est pas vide, c'est une classe interne
                     if (classeRacine == null) {
                         classeRacine = nouvelleClasse;
                     } else if (!pileClasses.isEmpty()) {
                         pileClasses.peek().ajouterClasseInterne(nouvelleClasse);
                     }
 
-                    // On pousse la classe sur la pile pour y ajouter ses membres
                     pileClasses.push(nouvelleClasse);
 
-                    // Gestion héritage (logique simplifiée pour l'exemple)
+                    // Résolution des héritages
                     if (ligneBrute.contains("extends")) {
-                        String parent = ParsingUtil
-                                .lireNom(ligneBrute.substring(ligneBrute.indexOf("extends") + 7).trim());
+                        String parent = ParsingUtil.lireNom(ligneBrute.substring(ligneBrute.indexOf("extends") + 7).trim());
                         this.lstIntentionHeritage.put(nomEntite, parent);
                     }
 
-                    // Si la ligne contient déjà l'accolade ouvrante, on l'incrémente ici
-                    if (ligneBrute.contains("{"))
-                        niveauAccolades++;
+                    // Résolution unique des interfaces (évite la redondance dans PresentationMapper)
+                    if (ligneBrute.contains(" implements ")) {
+                        String partieImplements = ligneBrute.substring(ligneBrute.indexOf(" implements ") + 12);
+                        if (partieImplements.contains("{")) partieImplements = partieImplements.split("\\{")[0];
+                        
+                        ArrayList<String> interfaces = new ArrayList<>();
+                        for (String s : partieImplements.split(",")) {
+                            interfaces.add(s.trim().split("<")[0]); // Nettoyage des génériques
+                        }
+                        this.lstInterfaces.put(nomEntite, interfaces);
+                    }
+
+                    if (ligneBrute.contains("{")) niveauAccolades++;
                     continue;
                 }
 
-                // --- GESTION DES ACCOLADES ET ISOLATION DES MEMBRES ---
-                if (ligneBrute.contains("{") && !ligneBrute.contains(" class "))
-                    niveauAccolades++;
+                // 2. Gestion des membres (Attributs et Méthodes)
+                // On n'extrait que si on est dans le bloc d'une classe (niveauAccolades == pile.size())
+                if (!pileClasses.isEmpty() && niveauAccolades == pileClasses.size()) {
+                    ClasseObjet classeCourante = pileClasses.peek();
+                    boolean estStatique = ligneBrute.contains("static");
+                    boolean estFinal = ligneBrute.contains("final");
 
-                    // ISOLATION : On n'extrait que si on est au niveau de la classe (niveau == taille pile)
-                    // Cela évite de prendre les variables locales dans les méthodes (niveau > taille pile)
-                    if (!pileClasses.isEmpty() && niveauAccolades == pileClasses.size()) {
-                        ClasseObjet classeCourante = pileClasses.peek();
-                        boolean estStatique = ligneBrute.contains("static");
-                        boolean estFinal = ligneBrute.contains("final");
-
-                        // Extraction Attributs (inclut constantes d'interface)
-                        if (ligneBrute.endsWith(";") && !ligneBrute.contains("(")) {
-                            ParsingUtil.extraireAttribut(ligneBrute, estStatique, estFinal, classeCourante.getattributs());
+                    // Délégation de l'extraction à ParsingUtil pour éviter la duplication de logique
+                    if (ligneBrute.endsWith(";") && !ligneBrute.contains("(")) {
+                        ParsingUtil.extraireAttribut(ligneBrute, estStatique, estFinal, classeCourante.getattributs());
+                    } 
+                    else if (ligneBrute.contains("(") && !ligneBrute.contains("=")) {
+                        // Normalisation pour les interfaces (méthodes implicitement publiques)
+                        String lignePourMethode = ligneBrute;
+                        if (!ligneBrute.contains("public") && "interface".equals(classeCourante.getSpecifique())) {
+                            lignePourMethode = "public " + ligneBrute;
                         }
-                        // Extraction Méthodes :
-                        // - normales (avec visibilité)
-                        // - ou si la classe est une interface (les méthodes y sont souvent sans
-                        // visibilité explicite)
-                        // - ou si la classe est un record (les méthodes peuvent s'y trouver)
-                        else if (ligneBrute.contains("(") && !ligneBrute.contains("=") &&
-                                (ligneBrute.contains("public") || ligneBrute.contains("private") || ligneBrute.contains("protected")
-                                || (classeCourante.getSpecifique() != null && classeCourante.getSpecifique().equals("interface"))
-                                || (classeCourante.getSpecifique() != null && classeCourante.getSpecifique().equals("record")))) {
-
-                            // Si c'est une interface et qu'il n'y a pas de visibilité, préfixer par
-                            // 'public' pour que ParsingUtil.extraireMethode fonctionne correctement
-                            boolean hasVisibility = ligneBrute.contains("public") || ligneBrute.contains("private") || ligneBrute.contains("protected");
-                            String lignePourMethode = ligneBrute;
-                            if (!hasVisibility && classeCourante.getSpecifique() != null && classeCourante.getSpecifique().equals("interface")) {
-                                lignePourMethode = "public " + ligneBrute;
-                            }
-
-                            ParsingUtil.extraireMethode(lignePourMethode, estStatique, classeCourante.getNom(),
-                                    classeCourante.getMethodes());
-                        }
+                        ParsingUtil.extraireMethode(lignePourMethode, estStatique, classeCourante.getNom(), classeCourante.getMethodes());
                     }
+                }
 
-                // SORTIE DE CONTEXTE : On dépile quand on ferme une classe
+                // 3. Gestion des accolades pour le dépilage
+                if (ligneBrute.contains("{")) niveauAccolades++;
                 if (ligneBrute.contains("}")) {
-                    // Si l'accolade fermante correspond à la fin d'une classe
                     if (niveauAccolades == pileClasses.size() && !pileClasses.isEmpty()) {
                         pileClasses.pop();
                     }
