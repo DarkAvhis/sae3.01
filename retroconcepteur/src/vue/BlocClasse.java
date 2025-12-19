@@ -26,13 +26,8 @@ import java.util.List;
  */
 public class BlocClasse 
 {
-<<<<<<< HEAD
     // Ajout d'un champ pour le type spécifique (interface, record, abstract class)
     private String typeSpecifique = null;
-=======
-        // Ajout d'un champ pour le type spécifique (interface, record, abstract class)
-        private String typeSpecifique = null;
->>>>>>> 561e1f7924768d6c951c7502a08a95d04b07f570
     private boolean modeComplet = false;
     private String nom;
 
@@ -186,7 +181,6 @@ public class BlocClasse
         return estInterface;
     }
 
-<<<<<<< HEAD
     public boolean estSelectionne()
     {
         return estSelectionne;
@@ -203,11 +197,6 @@ public class BlocClasse
     }
 
     public void setModeComplet(boolean complet)
-=======
-    public boolean isModeComplet() { return modeComplet; }
-
-    public void setModeComplet(boolean complet) 
->>>>>>> 561e1f7924768d6c951c7502a08a95d04b07f570
     {
         this.modeComplet = complet;
         recalculerDimensions();
@@ -245,11 +234,7 @@ public class BlocClasse
      * Limite l'affichage des paramètres d'une méthode à 2 paramètres.
      * Si plus de 2 paramètres, affiche les 2 premiers suivis de "..."
      */
-<<<<<<< HEAD
     private String limiterParametres(String methode)
-=======
-    private String limiterParametres(String methode) 
->>>>>>> 561e1f7924768d6c951c7502a08a95d04b07f570
     {
         int idxParenthese = methode.indexOf('(');
         if (idxParenthese < 0) return methode;
@@ -270,14 +255,6 @@ public class BlocClasse
     }
 
 
-<<<<<<< HEAD
-=======
-        currentY = dessinerAttributs (g, currentY);
-        currentY = dessinerSeparateur(g, currentY);
-        currentY = dessinerMethodes  (g, currentY);
-
-    }
->>>>>>> 561e1f7924768d6c951c7502a08a95d04b07f570
     // Affiche le fond et la bordure du bloc
     private void dessinerFondEtBordure(Graphics2D g)
     {
