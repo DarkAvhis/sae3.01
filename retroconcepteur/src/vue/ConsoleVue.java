@@ -18,7 +18,7 @@ public class ConsoleVue
     public void afficherUsage()
     {
         System.out.println(
-            "Usage: java AnalyseIHMControleur <chemin_du_repertoire>"
+            "Usage: java AnalyseMetier <chemin_du_repertoire>"
         );
     }
 

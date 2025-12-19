@@ -1,9 +1,9 @@
 package vue;
 
+import controleur.Controleur;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
@@ -11,8 +11,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
-import controleur.Controleur;
 
 /**
  * Barre de menus de l'application.
@@ -66,20 +64,17 @@ public class BarreMenus extends JMenuBar implements ActionListener {
         this.ouvrirClasse          = new JMenuItem("Ouvrir projet");
         this.sauvegarderClasse     = new JMenuItem("Sauvegarder au format txt");
         this.itemExporter          = new JMenuItem("Exporter le diagramme (PNG)");
-        JMenuItem itemExporterJSON = new JMenuItem("Exporter le diagramme (JSON)");
         this.quitterClasse         = new JMenuItem("Quitter");
 
         ouvrirClasse.addActionListener(this);
         sauvegarderClasse.addActionListener(this);
         itemExporter.addActionListener(this);
-        itemExporterJSON.addActionListener(this);
         quitterClasse.addActionListener(this);
 
         menu.add(ouvrirClasse);
         menu.addSeparator();
         menu.add(sauvegarderClasse);
         menu.add(itemExporter);
-        menu.add(itemExporterJSON);
         menu.addSeparator();
         menu.add(quitterClasse);
 
@@ -134,11 +129,11 @@ public class BarreMenus extends JMenuBar implements ActionListener {
         if (src == itemExporter       ) {    actionExporter()         ;    }
         if (src == afficherExternes   ) {    actionToggleExternes()   ;    }
         if (src == quitterClasse      ) {    System.exit(0)   ;    }
-        if (src instanceof JMenuItem && ((JMenuItem) src).getText().contains("JSON")) {        actionExporterJSON();    }
+        
     }
 
     public void actionExporter    () {    controleur.exporterDiagramme()     ;  }
-    public void actionExporterJSON() {    controleur.exporterDiagrammeJSON( );  }
+
 
     public void actionOuvrirProjet() {
         JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.dir")));
