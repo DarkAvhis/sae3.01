@@ -1,7 +1,7 @@
 package controleur;
 
 import java.awt.*;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -63,12 +63,19 @@ public class Controleur
      * @param cheminProjet Chemin absolu vers le dossier contenant les fichiers Java
      *                     à analyser
      */
-    public void analyserEtAfficherDiagramme(String cheminProjet)
+    public void analyserEtAfficherDiagramme(String cheminProjet) 
     {
-        if (!this.metierComplet.analyserDossier(cheminProjet)) return;
+        // Si l'analyse échoue, on pourrait vouloir vider la vue
+        if (!this.metierComplet.analyserDossier(cheminProjet)) 
+        {
+            // Envoi de listes vides pour "nettoyer" visuellement
+            this.vuePrincipale.getPanneauDiagramme().setBlocsClasses(new ArrayList<>());
+            this.vuePrincipale.getPanneauDiagramme().setLiaisonsVue(new ArrayList<>());
+            return;
+        }
 
         this.cheminProjetActuel = cheminProjet;
-        reafficherAvecFiltreExternes();
+        reafficherAvecFiltreExternes(); // Reconstruit et set les nouveaux blocs
     }
 
     /**
@@ -145,7 +152,7 @@ public class Controleur
         Sauvegarde.sauvegarder(dossier, fichier);
     }
 
-    /**
+    /* 
      * Supprime la classe identifiée par son nom. Le nom doit provenir de la Vue
      * (ex : PanneauDiagramme.getNomClasseSelectionnee()).
      *
