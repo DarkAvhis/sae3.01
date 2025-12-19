@@ -16,15 +16,17 @@ import modele.entites.MethodeObjet;
 /**
  * Contrôleur métier déplacé dans le package `modele`.
  */
-public class AnalyseMetier {
+public class AnalyseMetier 
+{
     /*-------------------------------------- */
     /* Attributs */
     /*-------------------------------------- */
-    private List<ClasseObjet> classes;
-    private HashMap<String, ClasseObjet> mapClasses;
-    private List<AssociationObjet> associations;
-    private List<HeritageObjet> heritages;
-    private List<InterfaceObjet> implementations;
+    private List   <ClasseObjet        > classes        ;
+    private HashMap<String, ClasseObjet> mapClasses     ;
+    private List   <AssociationObjet   > associations   ;
+    private List   <HeritageObjet      > heritages      ;
+    private List   <InterfaceObjet     > implementations;
+
     private AnalyseurUML analyseur;
 
     /*-------------------------------------- */
@@ -32,19 +34,21 @@ public class AnalyseMetier {
     /*-------------------------------------- */
 
     // Constructeur par défaut
-    public AnalyseMetier() {
-        this.classes = new ArrayList<ClasseObjet>();
-        this.associations = new ArrayList<AssociationObjet>();
-        this.heritages = new ArrayList<HeritageObjet>();
-        this.implementations = new ArrayList<InterfaceObjet>();
+    public AnalyseMetier() 
+    {
+        this.classes         = new ArrayList<ClasseObjet     >();
+        this.associations    = new ArrayList<AssociationObjet>();
+        this.heritages       = new ArrayList<HeritageObjet   >();
+        this.implementations = new ArrayList<InterfaceObjet  >();
 
         this.mapClasses = new HashMap<String, ClasseObjet>();
-        this.analyseur = new AnalyseurUML();
+        this.analyseur  = new AnalyseurUML();
     }
 
     // Constructeur intégral capable d'être utilisé par un contrôleur externe
     // pour lancer une analyse mais ne réalise pas d'affichage (séparation MVC).
-    public AnalyseMetier(String cheminDossier) {
+    public AnalyseMetier(String cheminDossier) 
+    {
         this(); // initialise les listes
         this.analyserDossier(cheminDossier);
     }
@@ -52,19 +56,23 @@ public class AnalyseMetier {
     /*-------------------------------------- */
     /* Accesseurs */
     /*-------------------------------------- */
-    public List<ClasseObjet> getClasses() {
+    public List<ClasseObjet> getClasses() 
+    {
         return this.classes;
     }
 
-    public List<AssociationObjet> getAssociations() {
+    public List<AssociationObjet> getAssociations() 
+    {
         return this.associations;
     }
 
-    public List<HeritageObjet> getHeritages() {
+    public List<HeritageObjet> getHeritages() 
+    {
         return this.heritages;
     }
 
-    public List<InterfaceObjet> getImplementations() {
+    public List<InterfaceObjet> getImplementations() 
+    {
         return this.implementations;
     }
 
@@ -75,24 +83,28 @@ public class AnalyseMetier {
     /**
      * Analyse complète du dossier.
      */
-    public boolean analyserDossier(String cheminDossier) {
+    public boolean analyserDossier(String cheminDossier) 
+    {
         File cible = new File(cheminDossier);
-        if (!cible.isDirectory()) {
+        if (!cible.isDirectory()) 
+            {
             return false;
         }
 
-        this.classes.clear();
-        this.mapClasses.clear();
-        this.associations.clear();
-        this.heritages.clear();
+        this.classes        .clear();
+        this.mapClasses     .clear();
+        this.associations   .clear();
+        this.heritages      .clear();
         this.implementations.clear();
         this.analyseur.resetRelations();
 
         List<File> fichiersJava = analyseur.ClassesDuDossier(cheminDossier);
 
-        for (File f : fichiersJava) {
+        for (File f : fichiersJava) 
+        {
             ClasseObjet c = analyseur.analyserFichierUnique(f.getAbsolutePath());
-            if (c != null) {
+            if (c != null) 
+            {
                 this.classes.add(c);
                 this.mapClasses.put(c.getNom(), c);
             }
@@ -105,11 +117,14 @@ public class AnalyseMetier {
 
         this.associations.addAll(
                 analyseur.detecterAssociations(this.classes, this.mapClasses));
+
         this.heritages.addAll(analyseur.resoudreHeritage(this.mapClasses));
+
         this.implementations.addAll(
                 analyseur.resoudreImplementation(this.mapClasses));
 
         List<LiaisonObjet> toutes = new ArrayList<LiaisonObjet>();
+
         toutes.addAll(this.associations);
         toutes.addAll(this.heritages);
         toutes.addAll(this.implementations);
@@ -119,55 +134,71 @@ public class AnalyseMetier {
         return true;
     }
 
-    private void ajouterClassesExternes() {
+    private void ajouterClassesExternes() 
+    {
         HashSet<String> manquantes = new HashSet<String>();
 
-        for (String parent : this.analyseur.getIntentionsHeritage().values()) {
-            if (parent == null || "Object".equals(parent)) {
+        for (String parent : this.analyseur.getIntentionsHeritage().values()) 
+        {
+            if (parent == null || "Object".equals(parent)) 
+            {
                 continue;
             }
-            if (!this.mapClasses.containsKey(parent)) {
+            if (!this.mapClasses.containsKey(parent)) 
+            {
                 manquantes.add(parent);
             }
         }
 
-        for (ArrayList<String> lst : this.analyseur.getInterfaces().values()) {
-            for (String iface : lst) {
-                if (iface == null || iface.isEmpty()) {
+        for (ArrayList<String> lst : this.analyseur.getInterfaces().values()) 
+        {
+            for (String iface : lst) 
+            {
+                if (iface == null || iface.isEmpty()) 
+                {
                     continue;
                 }
-                if (!this.mapClasses.containsKey(iface)) {
+
+                if (!this.mapClasses.containsKey(iface)) 
+                {
                     manquantes.add(iface);
                 }
             }
         }
 
-        if (manquantes.isEmpty()) {
+        if (manquantes.isEmpty()) 
+        {
             return;
         }
 
-        for (String nom : manquantes) {
+        for (String nom : manquantes) 
+        {
             ClasseObjet placeholder = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nom, "externe");
             this.classes.add(placeholder);
             this.mapClasses.put(nom, placeholder);
         }
     }
 
-    public void supprimerClasse(String nomClasse) {
-        if (nomClasse == null || nomClasse.isEmpty()) {
+    public void supprimerClasse(String nomClasse) 
+{
+        if (nomClasse == null || nomClasse.isEmpty()) 
+        {
             return;
         }
 
         ClasseObjet aSupprimer = null;
 
-        for (ClasseObjet c : this.classes) {
-            if (nomClasse.equals(c.getNom())) {
+        for (ClasseObjet c : this.classes) 
+        {
+            if (nomClasse.equals(c.getNom())) 
+            {
                 aSupprimer = c;
                 break;
             }
         }
 
-        if (aSupprimer != null) {
+        if (aSupprimer != null) 
+        {
             this.classes.remove(aSupprimer);
         }
 
@@ -186,19 +217,26 @@ public class AnalyseMetier {
      * Ajoute un constructeur par défaut à chaque classe qui n'en a pas.
      * Le constructeur par défaut a la signature : public NomClasse()
      */
-    private void ajouterConstructeursParDefaut() {
-        for (ClasseObjet classe : this.classes) {
+    private void ajouterConstructeursParDefaut() 
+{
+        for (ClasseObjet classe : this.classes) 
+        {
             // Les interfaces n'ont pas de constructeurs
-            if (classe.getSpecifique() != null && classe.getSpecifique().equals("interface")) {
+            if (classe.getSpecifique() != null && classe.getSpecifique().equals("interface")) 
+            {
                 continue;
             }
 
             // Vérifier si la classe a déjà un constructeur
             boolean aUnConstructeur = false;
-            if (classe.getMethodes() != null) {
-                for (MethodeObjet methode : classe.getMethodes()) {
+
+            if (classe.getMethodes() != null) 
+            {
+                for (MethodeObjet methode : classe.getMethodes()) 
+                {
                     // Un constructeur a retourType = null et son nom = nom de la classe
-                    if (methode.getRetourType() == null && methode.getNom().equals(classe.getNom())) {
+                    if (methode.getRetourType() == null && methode.getNom().equals(classe.getNom())) 
+                    {
                         aUnConstructeur = true;
                         break;
                     }
@@ -206,7 +244,8 @@ public class AnalyseMetier {
             }
 
             // Si pas de constructeur, en ajouter un par défaut
-            if (!aUnConstructeur) {
+            if (!aUnConstructeur) 
+            {
                 MethodeObjet constructeurParDefaut = new MethodeObjet(
                         classe.getNom(), // nom = nom de la classe
                         new HashMap<String, String>(), // pas de paramètres

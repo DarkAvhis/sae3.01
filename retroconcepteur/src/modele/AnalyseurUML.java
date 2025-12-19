@@ -264,7 +264,7 @@ public class AnalyseurUML
     public List<HeritageObjet> resoudreHeritage(HashMap<String, ClasseObjet> mapClasses) 
     {
         List<HeritageObjet> res = new ArrayList<>();
-        for (Map.Entry<String, String> e : lstIntentionHeritage.entrySet()) 
+        for (Map.Entry<String, String> e : this.lstIntentionHeritage.entrySet()) 
         {
             if (mapClasses.containsKey(e.getKey()) && mapClasses.containsKey(e.getValue()))
             {
@@ -277,7 +277,7 @@ public class AnalyseurUML
     public List<InterfaceObjet> resoudreImplementation(HashMap<String, ClasseObjet> mapClasses) 
     {
         List<InterfaceObjet> res = new ArrayList<>();
-        for (Map.Entry<String, ArrayList<String>> e : lstInterfaces.entrySet()) 
+        for (Map.Entry<String, ArrayList<String>> e : this.lstInterfaces.entrySet()) 
         {
             if (!mapClasses.containsKey(e.getKey())) continue;
             InterfaceObjet io = new InterfaceObjet(mapClasses.get(e.getKey()));
