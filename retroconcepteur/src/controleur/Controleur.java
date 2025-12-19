@@ -32,23 +32,26 @@ import vue.PresentationMapper;
  *         BUYANBADRAKH, Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class Controleur {
-    private modele.AnalyseMetier metierComplet;
-    private FenetrePrincipale vuePrincipale;
-    private String cheminProjetActuel;
+public class Controleur
+{
+    private modele.AnalyseMetier  metierComplet;
+    private FenetrePrincipale     vuePrincipale;
+    private String                cheminProjetActuel;
     /**
      * Constructeur du contrôleur.
      * Initialise le modèle d'analyse et crée la fenêtre principale de
      * l'application.
      */
-    public Controleur() {
+    public Controleur()
+    {
         this.metierComplet = new modele.AnalyseMetier();
         this.vuePrincipale = new FenetrePrincipale(this);
         this.cheminProjetActuel = null;
     }
 
     // nouveau (permettre l'exportation)
-    public void exporterDiagramme() {
+    public void exporterDiagramme()
+    {
         ExportHelper.exportDiagram(this.vuePrincipale);
     }
 
@@ -65,21 +68,20 @@ public class Controleur {
      * @param cheminProjet Chemin absolu vers le dossier contenant les fichiers Java
      *                     à analyser
      */
-    public void analyserEtAfficherDiagramme(String cheminProjet) {
-        if (!this.metierComplet.analyserDossier(cheminProjet)) {
-            return;
-        }
-
+    public void analyserEtAfficherDiagramme(String cheminProjet)
+    {
+        if (!this.metierComplet.analyserDossier(cheminProjet)) return;
         this.cheminProjetActuel = cheminProjet;
-
         reafficherAvecFiltreExternes();
     }
 
     /**
      * Active/désactive l'affichage des classes externes et réaffiche.
      */
-    public void setAfficherClassesExternes(boolean afficher) {
-        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) {
+    public void setAfficherClassesExternes(boolean afficher)
+    {
+        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null)
+        {
             vuePrincipale.getPanneauDiagramme().setAfficherClassesExternes(afficher);
         }
         reafficherAvecFiltreExternes();
@@ -93,16 +95,19 @@ public class Controleur {
     {
         List<ClasseObjet> classes = this.metierComplet.getClasses();
         boolean afficherExternes = true;
-        boolean afficherAttr = true;
-        boolean afficherMeth = true;
-        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) {
+        boolean afficherAttr     = true;
+        boolean afficherMeth     = true;
+
+        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null)
+        {
             afficherExternes = vuePrincipale.getPanneauDiagramme().isAfficherClassesExternes();
             afficherAttr = vuePrincipale.getPanneauDiagramme().isAfficherAttributs();
             afficherMeth = vuePrincipale.getPanneauDiagramme().isAfficherMethodes();
         }
         List<BlocClasse> blocs = vue.DiagramPresenter.buildBlocs(classes, afficherExternes, afficherAttr, afficherMeth, 50, 50);
-        // set on the view directly
-        if (vuePrincipale != null) {
+
+        if (vuePrincipale != null) 
+        {
             vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocs);
         }
         majAffichage();
@@ -119,13 +124,11 @@ public class Controleur {
 
     public void ajouterMethodes() 
     {
-        // Rebuild blocs with methods visible
         reafficherAvecFiltreExternes();
     }
 
     public void ajouterAttributs() 
     {
-        // Rebuild blocs with attributes visible
         reafficherAvecFiltreExternes();
     }
 
@@ -134,14 +137,15 @@ public class Controleur {
      */
     private void majAffichage() 
     {
-        List<AssociationObjet> associations = this.metierComplet.getAssociations();
-        List<HeritageObjet> heritages = this.metierComplet.getHeritages();
-        List<InterfaceObjet> implementations = this.metierComplet.getImplementations();
+        List<AssociationObjet> associations    = this.metierComplet.getAssociations   ();
+        List<HeritageObjet>    heritages       = this.metierComplet.getHeritages      ();
+        List<InterfaceObjet>   implementations = this.metierComplet.getImplementations();
 
-        List<LiaisonVue> liaisonsVue = vue.DiagramPresenter.buildLiaisons(associations, heritages, implementations, this.metierComplet.getClasses());
-        if (vuePrincipale != null) {
-            vuePrincipale.getPanneauDiagramme().setLiaisonsVue(liaisonsVue);
-        }
+        List<LiaisonVue> liaisonsVue = vue.DiagramPresenter.buildLiaisons(associations,
+                heritages, implementations, this.metierComplet.getClasses());
+
+        if (vuePrincipale != null) vuePrincipale.getPanneauDiagramme().setLiaisonsVue(liaisonsVue);
+        
     }
 
     /**
@@ -158,47 +162,6 @@ public class Controleur {
      * @return Map associant chaque nom de classe à sa position (Point) dans le
      *         diagramme
      */
-    private HashMap<String, Point> calculerPositionsOptimales(List<ClasseObjet> classes, List<LiaisonVue> liaisons,
-            List<BlocClasse> blocsAvecTailles) 
-    {
-        return DispositionOptimiseur.calculerPositionsOptimales(classes, liaisons, blocsAvecTailles);
-    }
-
-    /**
-     * Assigne une couche (niveau hiérarchique) à chaque classe.
-     * 
-     * Les classes parentes sont placées dans des couches supérieures,
-     * les classes enfants dans des couches inférieures.
-     * 
-     * @param classes  Liste des classes à organiser
-     * @param liaisons Liste des liaisons entre classes
-     * @return Map associant chaque nom de classe à son numéro de couche
-     */
-    private HashMap<String, Integer> assignerCouches(List<ClasseObjet> classes, List<LiaisonVue> liaisons) {
-        return DispositionOptimiseur.assignerCouches(classes, liaisons);
-    }
-
-    /**
-     * Minimise les croisements de liaisons en réorganisant les classes d'une
-     * couche.
-     * 
-     * Utilise la méthode du barycentre pour optimiser l'ordre des classes
-     * en fonction de leurs connexions avec la couche adjacente.
-     * 
-     * @param coucheCouranteIndex Index de la couche courante
-     * @param nomsCoucheCourante  Noms des classes de la couche à réorganiser
-     * @param nomsCoucheFixe      Noms des classes de la couche de référence
-     * @param liaisons            Liste des liaisons entre classes
-     * @param blocMap             Map des blocs graphiques
-     * @param forward             true pour parcours descendant, false pour parcours
-     *                            ascendant
-     */
-    private void minimiserCroisements(int coucheCouranteIndex, List<String> nomsCoucheCourante,
-            List<String> nomsCoucheFixe, List<LiaisonVue> liaisons, HashMap<String, BlocClasse> blocMap,
-            boolean forward) {
-        DispositionOptimiseur.minimiserCroisements(coucheCouranteIndex, nomsCoucheCourante, nomsCoucheFixe, liaisons, blocMap, forward);
-    }
-
     // ... (Reste des méthodes auxiliaires et main inchangés) ...
 
     /**
@@ -206,18 +169,20 @@ public class Controleur {
      * 
      * @note Cette méthode est actuellement en développement
      */
-    public void sauvegarde() {
-        // Délégué au module de sauvegarde métier. On n'interroge pas l'état
-        // graphique depuis le contrôleur pour respecter MVC.
-        if (this.cheminProjetActuel == null || this.cheminProjetActuel.isEmpty()) {
+    public void sauvegarde()
+    {
+        if (this.cheminProjetActuel == null || this.cheminProjetActuel.isEmpty())
+        {
             // Pas de projet courant : sauvegarde dans fichier local par défaut
             Sauvegarde.sauvegarder(".", "diagramme.txt");
-        } else {
+        } else
+        {
             Sauvegarde.sauvegarder(this.cheminProjetActuel, this.cheminProjetActuel + "/DiagrammeUML.txt");
         }
     }
 
-    public void sauvegarde(String dossier, String fichier) {
+    public void sauvegarde(String dossier, String fichier) 
+    {
         Sauvegarde.sauvegarder(dossier, fichier);
     }
 
@@ -233,71 +198,15 @@ public class Controleur {
      * @param nomClasse nom de la classe métier à supprimer
      * @return nom supprimé ou null
      */
-    public String supprimerClasseSelectionnee(String nomClasse) {
+    public String supprimerClasseSelectionnee(String nomClasse) 
+    {
         if (nomClasse == null || nomClasse.isEmpty()) return null;
 
-        // Supprimer côté métier
         metierComplet.supprimerClasse(nomClasse);
 
-        // Rebuild the view to reflect model changes
         reafficherAvecFiltreExternes();
 
         return nomClasse;
-    }
-
-    /**
-     * Convertit les liaisons du modèle vers les liaisons de la vue.
-     * 
-     * Transforme les objets LiaisonObjet (modèle métier) en objets LiaisonVue
-     * (représentation graphique) en extrayant les informations nécessaires à
-     * l'affichage.
-     * 
-     * @param liaisons Liste des liaisons du modèle à convertir
-     * @param type     Type de liaison (ASSOCIATION, HERITAGE, IMPLEMENTATION)
-     * @return Liste des liaisons prêtes pour l'affichage graphique
-     */
-    private List<LiaisonVue> convertirLiaisons(List<? extends LiaisonObjet> liaisons, TypeLiaison type)
-    {
-        return PresentationMapper.convertirLiaisons(liaisons, type, metierComplet.getClasses());
-    }
-    
-
-    /**
-     * Convertit les attributs d'une classe en format d'affichage UML.
-     * 
-     * Transforme les objets AttributObjet en chaînes formatées selon la notation
-     * UML,
-     * incluant la visibilité, le nom, le type et les modificateurs (static).
-     * 
-     * @param attributs Liste des attributs à convertir
-     * @param classe    Classe contenant les attributs (pour accéder aux méthodes de
-     *                  conversion)
-     * @return Liste des attributs formatés pour l'affichage
-     */
-    private List<String> convertirAttributs(List<AttributObjet> attributs, ClasseObjet classe) {
-        return PresentationMapper.convertirAttributs(attributs, classe, metierComplet.getClasses());
-    }
-
-    /**
-     * Convertit les méthodes d'une classe en format d'affichage UML.
-     * 
-     * Transforme les objets MethodeObjet en chaînes formatées selon la notation
-     * UML,
-     * incluant la visibilité, le nom, les paramètres, le type de retour et les
-     * modificateurs (static).
-     * 
-     * @param methodes Liste des méthodes à convertir
-     * @param classe   Classe contenant les méthodes (pour accéder aux méthodes de
-     *                 conversion)
-     * @return Liste des méthodes formatées pour l'affichage
-     */
-    private List<String> convertirMethodes(List<MethodeObjet> methodes, ClasseObjet classe) {
-        return PresentationMapper.convertirMethodes(methodes, classe);
-    }
-
-    private BlocClasse creerBlocComplet(ClasseObjet c, int x, int y) 
-    {
-    return PresentationMapper.creerBlocComplet(c, x, y);
     }
 
     /**
@@ -306,20 +215,21 @@ public class Controleur {
      * Déclenche l'algorithme d'optimisation de la disposition pour améliorer
      * la lisibilité du diagramme en réduisant les croisements de liaisons.
      */
-    public void optimiserDisposition() {
-        if (this.vuePrincipale != null) {
+    public void optimiserDisposition() 
+    {
+        if (this.vuePrincipale != null) 
+        {
             this.vuePrincipale.getPanneauDiagramme().optimiserDisposition();
         }
     }
 
 
-    public String getCheminProjetActuel() {
-        return this.cheminProjetActuel;
-    }
+    public String getCheminProjetActuel() { return this.cheminProjetActuel; }
 
     public void toggleAttributs() 
     {
-        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) {
+        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) 
+        {
             boolean cur = vuePrincipale.getPanneauDiagramme().isAfficherAttributs();
             vuePrincipale.getPanneauDiagramme().setAfficherAttributs(!cur);
         }
@@ -328,7 +238,8 @@ public class Controleur {
 
     public void toggleMethodes() 
     {
-        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) {
+        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) 
+        {
             boolean cur = vuePrincipale.getPanneauDiagramme().isAfficherMethodes();
             vuePrincipale.getPanneauDiagramme().setAfficherMethodes(!cur);
         }
@@ -337,28 +248,29 @@ public class Controleur {
 
     private void rafraichirMembres() 
     {
-        // Rebuild blocs to reflect member visibility changes
         reafficherAvecFiltreExternes();
     }
 
     public static void main(String[] args) 
     {
-        if (args == null || args.length == 0) {
+        if (args == null || args.length == 0) 
+        {
             new Controleur();
             return;
         }
 
         String mode = args[0].toLowerCase();
-        if ("gui".equals(mode) || "graphique".equals(mode)) {
+        if ("gui".equals(mode) || "graphique".equals(mode)) 
+        {
             Controleur ctrl = new Controleur();
-            if (args.length > 1) {
-                ctrl.analyserEtAfficherDiagramme(args[1]);
-            }
+            if (args.length > 1) ctrl.analyserEtAfficherDiagramme(args[1]);
             return;
         }
 
-        if ("console".equals(mode) || "cui".equals(mode)) {
-            if (args.length < 2) {
+        if ("console".equals(mode) || "cui".equals(mode)) 
+        {
+            if (args.length < 2) 
+            {
                 new vue.ConsoleVue().afficherUsage();
                 System.out.println("Usage: java -cp class controleur.Controleur console <chemin_du_repertoire>");
                 return;
@@ -368,7 +280,8 @@ public class Controleur {
                 modele.AnalyseMetier metier = new modele.AnalyseMetier();
             boolean ok = metier.analyserDossier(chemin);
             vue.ConsoleVue vue = new vue.ConsoleVue();
-            if (!ok) {
+            if (!ok) 
+            {
                 vue.afficherMessage("Erreur : impossible d'analyser le dossier '" + chemin + "'.");
                 return;
             }
