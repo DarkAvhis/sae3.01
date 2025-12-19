@@ -4,7 +4,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import modele.Sauvegarde;
 import modele.entites.AssociationObjet;
 import modele.entites.ClasseObjet;
@@ -108,7 +107,7 @@ public class Controleur
             afficherMeth     = vuePrincipale.getPanneauDiagramme().isAfficherMethodes       ();
         }
 
-        List<BlocClasse> blocs = vue.DiagramPresenter.buildBlocs(classes, afficherExternes, afficherAttr, afficherMeth, 50, 50);
+        List<BlocClasse> blocs = vue.DiagramPresenter.construireBlocs(classes, afficherExternes, afficherAttr, afficherMeth, 50, 50);
 
         if (vuePrincipale != null) 
             vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocs);
@@ -125,7 +124,7 @@ public class Controleur
         List<HeritageObjet   > heritages       = this.metierComplet.getHeritages      ();
         List<InterfaceObjet  > implementations = this.metierComplet.getImplementations();
 
-        List<LiaisonVue> liaisonsVue = vue.DiagramPresenter.buildLiaisons(associations,
+        List<LiaisonVue> liaisonsVue = vue.DiagramPresenter.construireLiaisons(associations,
                 heritages, implementations, this.metierComplet.getClasses());
 
         if (vuePrincipale != null) vuePrincipale.getPanneauDiagramme().setLiaisonsVue(liaisonsVue);

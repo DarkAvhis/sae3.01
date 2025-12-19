@@ -1,5 +1,6 @@
 package vue;
 
+import controleur.Controleur;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,16 +13,11 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-
 import java.awt.event.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import javax.swing.*;
-
-import controleur.Controleur;
 import vue.LiaisonVue.TypeLiaison;
 
 /**
@@ -72,41 +68,29 @@ public class PanneauDiagramme extends JPanel
 
     }
 
-    // Flags accessors
-    public boolean isAfficherClassesExternes() 
+    public double getZoom() { return this.zoom; }
+    public List<LiaisonVue> getLiaisonsVue () { return liaisonsVue ; }
+    public List<BlocClasse> getBlocsClasses() { return blocsClasses; }
+
+    public String getNomClasseSelectionnee() 
     {
-        return this.afficherClassesExternes;
+        BlocClasse b = getBlocsClasseSelectionnee();
+        return b == null ? null : b.getNom();
     }
 
-    public void setAfficherClassesExternes(boolean v) 
+    public BlocClasse getBlocsClasseSelectionnee() 
     {
-        this.afficherClassesExternes = v;
+        for (BlocClasse bloc : blocsClasses) 
+        {
+            if (bloc.estSelectionne())  return bloc;
+        }
+        return null;
     }
 
-    public boolean isAfficherAttributs() 
-    {
-        return this.afficherAttributs;
-    }
 
-    public void setAfficherAttributs(boolean v) 
-    {
-        this.afficherAttributs = v;
-    }
-
-    public boolean isAfficherMethodes() 
-    {
-        return this.afficherMethodes;
-    }
-
-    public void setAfficherMethodes(boolean v) 
-    {
-        this.afficherMethodes = v;
-    }
-
-    public List<LiaisonVue> getLiaisonsVue() 
-    {
-        return liaisonsVue;
-    }
+    public void setAfficherClassesExternes(boolean v) { this.afficherClassesExternes = v; }
+    public void setAfficherAttributs      (boolean v) { this.afficherAttributs       = v; }
+    public void setAfficherMethodes       (boolean v) { this.afficherMethodes        = v; }
 
     public void setLiaisonsVue(List<LiaisonVue> liaisonsVue) 
     {
@@ -114,44 +98,24 @@ public class PanneauDiagramme extends JPanel
         this.repaint();
     }
 
-    public List<BlocClasse> getBlocsClasses() 
-    {
-        return blocsClasses;
-    }
-
-    public BlocClasse getBlocsClasseSelectionnee() 
-    {
-        for (BlocClasse bloc : blocsClasses) 
-            {
-            if (bloc.estSelectionne()) 
-            {
-                return bloc;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Retourne le nom de la classe sélectionnée (sans exposer l'objet BlocClasse).
-     * Retourne null si aucune classe sélectionnée.
-     */
-    public String getNomClasseSelectionnee() 
-    {
-        BlocClasse b = getBlocsClasseSelectionnee();
-        return b == null ? null : b.getNom();
-    }
-
-    /**
-     * Définit la liste des blocs à afficher et recalcule la taille du panneau.
-     * 
-     * @param blocsVue Liste des blocs de classes à afficher
-     */
     public void setBlocsClasses(List<BlocClasse> blocsVue) 
     {
         this.blocsClasses = blocsVue;
-        // Met à jour la taille du panneau pour le JScrollPane
         calculerTailleDynamique();
     }
+
+    public void setZoom(double zoom) 
+    {
+        // Limiter le zoom entre 0.2x et 5x
+        this.zoom = Math.max(0.2, Math.min(zoom, 5.0));
+        calculerTailleDynamique(); // Ajuste la taille du panneau selon le zoom
+        repaint();
+    }
+
+    public boolean isAfficherMethodes       () { return this.afficherMethodes       ; }
+    public boolean isAfficherAttributs      () { return this.afficherAttributs      ; }
+    public boolean isAfficherClassesExternes() { return this.afficherClassesExternes; }
+
 
     /*
      * nouvelle méthode permettant de netoyer le panneauDiagramme
@@ -166,18 +130,6 @@ public class PanneauDiagramme extends JPanel
         this.repaint();
     }
 
-    public double getZoom() 
-    {
-        return this.zoom;
-    }
-
-    public void setZoom(double zoom) 
-    {
-        // Limiter le zoom entre 0.2x et 5x
-        this.zoom = Math.max(0.2, Math.min(zoom, 5.0));
-        calculerTailleDynamique(); // Ajuste la taille du panneau selon le zoom
-        repaint();
-    }
 
     /**
      * Gestionnaire d'événements souris pour l'interaction avec les blocs.

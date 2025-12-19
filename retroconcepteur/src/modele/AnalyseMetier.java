@@ -56,25 +56,10 @@ public class AnalyseMetier
     /*-------------------------------------- */
     /* Accesseurs */
     /*-------------------------------------- */
-    public List<ClasseObjet> getClasses() 
-    {
-        return this.classes;
-    }
-
-    public List<AssociationObjet> getAssociations() 
-    {
-        return this.associations;
-    }
-
-    public List<HeritageObjet> getHeritages() 
-    {
-        return this.heritages;
-    }
-
-    public List<InterfaceObjet> getImplementations() 
-    {
-        return this.implementations;
-    }
+    public List<ClasseObjet>      getClasses        () { return this.classes        ; }
+    public List<AssociationObjet> getAssociations   () { return this.associations   ; }
+    public List<HeritageObjet>    getHeritages      () { return this.heritages      ; }
+    public List<InterfaceObjet>   getImplementations() { return this.implementations; }
 
     /*-------------------------------------- */
     /* Méthodes */

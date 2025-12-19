@@ -69,8 +69,7 @@ public class PanneauProjets extends JPanel implements ActionListener
 
         this.chargerProjets(this.panelProjets);
 
-        JScrollPane scrollPane =
-            new JScrollPane(this.panelProjets);
+        JScrollPane scrollPane = new JScrollPane(this.panelProjets);
 
         scrollPane.setVerticalScrollBarPolicy  (JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER  );
@@ -96,15 +95,8 @@ public class PanneauProjets extends JPanel implements ActionListener
         this.add(panelBouton, BorderLayout.SOUTH);
     }
 
-    public JPanel getPanelProjets()
-    {
-        return this.panelProjets;
-    }
-
-    public PanneauDiagramme getPanneauDiagramme()
-    {
-        return this.panneauDiagramme;
-    }
+    public JPanel getPanelProjets() { return this.panelProjets; }
+    public PanneauDiagramme getPanneauDiagramme() { return this.panneauDiagramme; }
 
 
     private void majCouleurBouton(JButton btn)

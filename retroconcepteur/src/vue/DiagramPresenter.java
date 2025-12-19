@@ -7,7 +7,7 @@ import modele.entites.*;
 public class DiagramPresenter 
 {
 
-    public static List<BlocClasse> buildBlocs(List<ClasseObjet> classes, boolean afficherClassesExternes,
+    public static List<BlocClasse> construireBlocs(List<ClasseObjet> classes, boolean afficherClassesExternes,
             boolean afficherAttributs, boolean afficherMethodes, int startX, int startY) 
        {
         List<BlocClasse> blocs = new ArrayList<>();
@@ -60,7 +60,7 @@ public class DiagramPresenter
         return blocs;
     }
 
-    public static List<LiaisonVue> buildLiaisons(List<AssociationObjet> associations, List<HeritageObjet> heritages,
+    public static List<LiaisonVue> construireLiaisons(List<AssociationObjet> associations, List<HeritageObjet> heritages,
             List<InterfaceObjet> implementations, List<ClasseObjet> classes) 
     {
         List<LiaisonVue> liaisons = new ArrayList<>();
