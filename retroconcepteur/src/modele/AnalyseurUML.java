@@ -333,7 +333,7 @@ public class AnalyseurUML
             
             if (mapClasses.containsKey(enfant) && mapClasses.containsKey(parent)) 
             {
-                resultat.add(new HeritageObjet(mapClasses.get(parent), mapClasses.get(enfant)));
+                resultat.add(new HeritageObjet(mapClasses.get(enfant), mapClasses.get(parent)));
             }
         }
         return resultat;

@@ -10,7 +10,7 @@ public class HeritageObjet extends LiaisonObjet
 {
     public HeritageObjet(ClasseObjet classeFille, ClasseObjet classeMere) 
     {
-        super(classeFille, classeMere);
+        super("", classeMere, classeFille);
     } 
 
     /**
