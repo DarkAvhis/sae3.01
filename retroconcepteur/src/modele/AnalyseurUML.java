@@ -405,19 +405,25 @@ public class AnalyseurUML
     {
         List<File> fichiersJava = new ArrayList<>();
         File dossier = new File(cheminDossier);
-        if (!dossier.isDirectory()) {
+        if (!dossier.isDirectory()) 
+        {
             return fichiersJava;
         }
 
         File[] fichiers = dossier.listFiles();
-        if (fichiers == null) {
+        if (fichiers == null) 
+        {
             return fichiersJava;
         }
 
-        for (File f : fichiers) {
-            if (f.isDirectory()) {
+        for (File f : fichiers) 
+        {
+            if (f.isDirectory()) 
+            {
                 fichiersJava.addAll(ClassesDuDossier(f.getAbsolutePath()));
-            } else if (f.isFile() && f.getName().endsWith(".java")) {
+            } 
+            else if (f.isFile() && f.getName().endsWith(".java")) 
+            {
                 fichiersJava.add(f);
             }
         }
