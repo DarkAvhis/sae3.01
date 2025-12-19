@@ -243,9 +243,9 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
                 int newX = mouseX - offsetX;
                 int newY = mouseY - offsetY;
 
-                // Limiter pour que le bloc reste dans le panel
-                newX = Math.max(0, Math.min(newX, getWidth() - blocSelectionne.getLargeur()));
-                newY = Math.max(0, Math.min(newY, getHeight() - blocSelectionne.getHauteur()));
+                // Empêcher les positions négatives
+                newX = Math.max(0, newX);
+                newY = Math.max(0, newY);
 
                 blocSelectionne.setX(newX);
                 blocSelectionne.setY(newY);
