@@ -1,8 +1,12 @@
 package vue;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -32,7 +36,7 @@ public class ExportHelper {
         }
 
         try {
-            ExportIHM.exportComponent(
+            exportComponent(
                     vuePrincipale.getPanneauDiagramme(),
                     fichier
             );
@@ -86,5 +90,27 @@ public class ExportHelper {
                     "Erreur", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
+    }
+
+    public static void exportComponent(JComponent component, File file) throws IOException
+    {
+        Dimension size = component.getSize();
+        if (size.width == 0 || size.height == 0)
+        {
+            size = component.getPreferredSize();
+            component.setSize(size);
+        }
+
+        BufferedImage image = new BufferedImage(
+            size.width,
+            size.height,
+            BufferedImage.TYPE_INT_ARGB
+        );
+
+        Graphics2D g2d = image.createGraphics();
+        component.paintAll(g2d);
+        g2d.dispose();
+
+        ImageIO.write(image, "png", file);
     }
 }
