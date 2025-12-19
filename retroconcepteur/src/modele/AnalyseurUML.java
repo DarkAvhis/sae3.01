@@ -32,6 +32,9 @@ public class AnalyseurUML
         this.lstInterfaces = new HashMap<>();
     }
 
+    public HashMap<String,String           > getIntentionsHeritage() { return this.lstIntentionHeritage; }
+    public HashMap<String,ArrayList<String>> getInterfaces        () { return this.lstInterfaces; }
+
     public void resetRelations() 
     {
         this.lstIntentionHeritage.clear();
@@ -300,7 +303,4 @@ public class AnalyseurUML
         LiaisonObjet.reinitialiserCompteur();
         int i = 1; for (LiaisonObjet l : toutes) l.setNum(i++);
     }
-
-    public HashMap<String,String> getIntentionsHeritage() { return lstIntentionHeritage; }
-    public HashMap<String,ArrayList<String>> getInterfaces() { return lstInterfaces; }
 }
