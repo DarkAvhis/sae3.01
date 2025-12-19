@@ -217,11 +217,4 @@ public class AnalyseMetier {
             }
         }
     }
-
-    /*-------------------------------------- */
-    /* Note: suppression du main pour que le seul point d'entrée
-     * soit `controleur.Controleur` (respect du souhait d'un seul
-     * contrôleur). L'affichage doit être réalisé par le contrôleur
-     * (vue séparée du modèle).
-     */
 }
