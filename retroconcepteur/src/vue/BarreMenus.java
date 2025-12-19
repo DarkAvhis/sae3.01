@@ -32,7 +32,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
     private JMenuItem ouvrirClasse;
     private JMenuItem sauvegarderClasse;
     private JMenuItem quitterClasse;
-    private JMenuItem alignerClasse;
     private JMenuItem optimiserClasse;
     private JMenuItem itemExporter;
     private JMenuItem supprimerClasse;
@@ -88,17 +87,14 @@ public class BarreMenus extends JMenuBar implements ActionListener
     {
         JMenu menu = new JMenu("Affichage");
 
-        this.alignerClasse    = new JMenuItem("Aligner les symboles");
         this.optimiserClasse  = new JMenuItem("Optimiser les positions");
         this.supprimerClasse  = new JMenuItem("Supprimer");
         this.afficherExternes = new JCheckBoxMenuItem("Afficher les classes externes", true);
 
-        alignerClasse   .addActionListener(this);
         optimiserClasse .addActionListener(this);
         supprimerClasse .addActionListener(this);
         afficherExternes.addActionListener(this);
 
-        menu.add(alignerClasse);
         menu.add(optimiserClasse);
         menu.addSeparator();
         menu.add(supprimerClasse);
@@ -127,7 +123,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
         if (src == ouvrirClasse       ) {    actionOuvrirProjet()     ;    }
         if (src == sauvegarderClasse  ) {    actionSauvegarder()      ;    }
         if (src == supprimerClasse    ) {    actionSupprimer()        ;    }
-        if (src == alignerClasse      ) {    actionAligner()          ;    }
         if (src == optimiserClasse    ) {    actionOptimiser()        ;    }
         if (src == aProposClasse      ) {    actionAPropos()          ;    }
         if (src == itemExporter       ) {    actionExporter()         ;    }
@@ -241,11 +236,6 @@ public class BarreMenus extends JMenuBar implements ActionListener
         }
     }
 
-
-    public void actionAligner()
-    {
-        JOptionPane.showMessageDialog( SwingUtilities.getWindowAncestor(this),"Pas fini");
-    }
 
     public void actionOptimiser() 
     {
