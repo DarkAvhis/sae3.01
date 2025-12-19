@@ -21,7 +21,6 @@
 ./src/vue/FenetrePrincipale.java
 ./src/vue/LiaisonVue.java
 ./src/vue/EditeurLiaisonDialog.java
-./src/vue/OptimisateurDisposition.java
 ./src/vue/PanneauDiagramme.java
 ./src/vue/PanneauProjets.java
 

@@ -109,27 +109,6 @@ public class Controleur
     }
 
     /**
-     * Crée récursivement les blocs graphiques et gère l'affichage des types spécifiques.
-     * Cette méthode assure que chaque bloc (classe racine ou interne) est initialisé 
-     * avec ses membres et son stéréotype UML.
-     */
-    // bloc construction delegated to DiagramPresenter
-
-    // helper removed: use DiagramPresenter to rebuild blocs when needed
-
-    public void ajouterMethodes() 
-    {
-        // Rebuild blocs with methods visible
-        reafficherAvecFiltreExternes();
-    }
-
-    public void ajouterAttributs() 
-    {
-        // Rebuild blocs with attributes visible
-        reafficherAvecFiltreExternes();
-    }
-
-    /**
      * Met à jour l'affichage des blocs et des liaisons.
      */
     private void majAffichage() 
@@ -167,7 +146,6 @@ public class Controleur
     /**
      * Supprime la classe actuellement sélectionnée du diagramme.
      * 
-     * @note Cette méthode est actuellement en développement
      */
     /**
      * Supprime la classe identifiée par son nom. Le nom doit provenir de la Vue
@@ -207,26 +185,24 @@ public class Controleur
 
     public void toggleAttributs() 
     {
-        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) {
+        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) 
+        {
             boolean cur = vuePrincipale.getPanneauDiagramme().isAfficherAttributs();
             vuePrincipale.getPanneauDiagramme().setAfficherAttributs(!cur);
+            // Appel direct à la reconstruction
+            reafficherAvecFiltreExternes();
         }
-        rafraichirMembres();
     }   
 
     public void toggleMethodes() 
     {
-        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) {
+        if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null) 
+        {
             boolean cur = vuePrincipale.getPanneauDiagramme().isAfficherMethodes();
             vuePrincipale.getPanneauDiagramme().setAfficherMethodes(!cur);
+            // Appel direct à la reconstruction
+            reafficherAvecFiltreExternes();
         }
-        rafraichirMembres();
-    }
-
-    private void rafraichirMembres() 
-    {
-        // Rebuild blocs to reflect member visibility changes
-        reafficherAvecFiltreExternes();
     }
 
     public void demanderOptimisationDisposition() 
