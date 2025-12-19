@@ -207,9 +207,8 @@ public class BlocClasse
         if (typeSpecifique != null && !typeSpecifique.isEmpty()) 
         {
             labelType = "<<" + typeSpecifique + ">>";
-        } else if (estInterface) {
-            labelType = "<<interface>>";
-        }
+        } 
+        else if (estInterface) labelType = "<<interface>>";
 
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 12));
@@ -219,7 +218,8 @@ public class BlocClasse
 
         int dernierTexteY = nomY;
 
-        if (labelType != null) {
+        if (labelType != null) 
+        {
             g.setFont(new Font("Arial", Font.ITALIC, 11));
             FontMetrics fmSous = g.getFontMetrics();
             int sousY = nomY + fmSous.getHeight();
@@ -233,14 +233,16 @@ public class BlocClasse
     }
 
 
-    private int dessinerAttributs(Graphics2D g, int currentY) {
+    private int dessinerAttributs(Graphics2D g, int currentY) 
+    {
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 12));
         
         int maxAttributs = modeComplet ? Integer.MAX_VALUE : 3;
         int iAtt = 0;
         
-        for (String att : attributsAffichage) {
+        for (String att : attributsAffichage) 
+        {
             if (iAtt >= maxAttributs) break;
             currentY += HAUTEUR_LIGNE;
             
@@ -249,14 +251,16 @@ public class BlocClasse
             
             g.drawString(libelle, x + PADDING, currentY);
             
-            if (estStatique) {
+            if (estStatique) 
+            {
                 FontMetrics fm = g.getFontMetrics();
                 g.drawLine(x + PADDING, currentY + 2, x + PADDING + fm.stringWidth(libelle), currentY + 2);
             }
             iAtt++;
         }
         
-        if (!modeComplet && attributsAffichage.size() > maxAttributs) {
+        if (!modeComplet && attributsAffichage.size() > maxAttributs) 
+        {
             currentY += HAUTEUR_LIGNE;
             g.drawString("...", x + PADDING, currentY);
         }
@@ -264,7 +268,8 @@ public class BlocClasse
     }
 
     // Affiche le séparateur et retourne la position Y courante
-    private int dessinerSeparateur(Graphics2D g, int currentY) {
+    private int dessinerSeparateur(Graphics2D g, int currentY) 
+    {
         currentY += PADDING / 2;
         g.setColor(COULEUR_BORDURE);
         g.drawLine(x, currentY, x + largeur, currentY);
@@ -276,15 +281,15 @@ public class BlocClasse
     private int dessinerMethodes(Graphics2D g, int currentY) 
     {
         int maxMethodes = modeComplet ? Integer.MAX_VALUE : 3;
-        int iMet = 0;
+        int iMet        = 0                                  ;
         
         for (String met : methodesAffichage) 
-            {
+        {
             if (iMet >= maxMethodes) break;
             currentY += HAUTEUR_LIGNE;
             
             boolean estStatique = met.contains("{static}");
-            String libelle = met.replace("{static}", "").trim();
+            String libelle      = met.replace("{static}", "").trim();
             
             // CORRECTION : On ne limite QUE si on n'est PAS en mode complet
             String libelleFinal = modeComplet ? libelle : limiterParametres(libelle);
@@ -299,29 +304,29 @@ public class BlocClasse
             iMet++;
         }
         
-        if (!modeComplet && methodesAffichage.size() > maxMethodes) {
+        if (!modeComplet && methodesAffichage.size() > maxMethodes) 
+        {
             currentY += HAUTEUR_LIGNE;
             g.drawString("...", x + PADDING, currentY);
         }
         return currentY;
     }
 
-    public boolean contient(int px, int py) {
-        return px >= x && px <= x + largeur
-                && py >= y && py <= y + hauteur;
+    public boolean contient(int px, int py) 
+    {
+        return px >= x && px <= x + largeur && py >= y && py <= y + hauteur;
     }
 
-    private void recalculerDimensions() {
+    private void recalculerDimensions() 
+    {
         int maxLongueur = nom != null ? nom.length() : 0;
 
-        for (String att : attributsAffichage) {
-            if (att == null) {
-                continue;
-            }
+        for (String att : attributsAffichage) 
+        {
+            if (att == null) continue;
 
             int longueur = att.replace("{static}", "").trim().length();
-
-            maxLongueur = Math.max(maxLongueur, longueur);
+            maxLongueur  = Math.max(maxLongueur, longueur);
         }
 
         for (String met : methodesAffichage) 
@@ -331,30 +336,29 @@ public class BlocClasse
             
             // On calcule la largeur basée sur ce qui sera RÉELLEMENT affiché
             String aMesurer = modeComplet ? s : limiterParametres(s);
-            maxLongueur = Math.max(maxLongueur, aMesurer.length());
+            maxLongueur     = Math.max(maxLongueur, aMesurer.length());
         }
 
-        this.largeur = Math.max(
-                200,
-                PADDING * 2 + maxLongueur * 8);
+        this.largeur = Math.max(200,PADDING * 2 + maxLongueur * 8);
 
         // Calculer hauteur en fonction du mode
         int nbLignesAtt, nbLignesMet;
-        if (modeComplet) {
+        if (modeComplet) 
+        {
             nbLignesAtt = attributsAffichage.size();
-            nbLignesMet = methodesAffichage.size();
-        } else {
+            nbLignesMet = methodesAffichage .size();
+        } 
+        else 
+        {
             // Mode condensé : max 3 attributs + ligne "..." si nécessaire
             int nbAttAffiches = Math.min(attributsAffichage.size(), 3);
-            nbLignesAtt = nbAttAffiches + (attributsAffichage.size() > 3 ? 1 : 0);
+            nbLignesAtt       = nbAttAffiches + (attributsAffichage.size() > 3 ? 1 : 0);
 
             // Mode condensé : max 3 méthodes + ligne "..." si nécessaire
             int nbMetAffichees = Math.min(methodesAffichage.size(), 3);
-            nbLignesMet = nbMetAffichees + (methodesAffichage.size() > 3 ? 1 : 0);
+            nbLignesMet        = nbMetAffichees + (methodesAffichage.size() > 3 ? 1 : 0);
         }
 
-        this.hauteur = HAUTEUR_ENTETE
-                + (nbLignesAtt + nbLignesMet) * HAUTEUR_LIGNE
-                + PADDING * 4;
+        this.hauteur = HAUTEUR_ENTETE + (nbLignesAtt + nbLignesMet) * HAUTEUR_LIGNE + PADDING * 4;
     }
 }
