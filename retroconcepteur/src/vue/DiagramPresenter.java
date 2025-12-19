@@ -2,64 +2,54 @@ package vue;
 
 import java.util.ArrayList;
 import java.util.List;
-import modele.entites.AssociationObjet;
-import modele.entites.ClasseObjet;
-import modele.entites.HeritageObjet;
-import modele.entites.InterfaceObjet;
+import modele.entites.*;
 
-/**
- * Présente les données métier sous forme de blocs et liaisons pour la vue.
- * Cette classe centralise la logique de transformation modèle->vue et permet
- * de garder le contrôleur léger.
- */
 public class DiagramPresenter {
 
     public static List<BlocClasse> buildBlocs(List<ClasseObjet> classes, boolean afficherClassesExternes,
             boolean afficherAttributs, boolean afficherMethodes, int startX, int startY) {
         List<BlocClasse> blocs = new ArrayList<>();
-
         int x = startX;
         int y = startY;
 
         for (ClasseObjet c : classes) {
-            // Filtre des classes externes
-            boolean estExterne = (c.getSpecifique() != null && c.getSpecifique().equals("externe"));
+            // Utilisation stricte du stéréotype pour le filtrage
+            boolean estExterne = "externe".equals(c.getSpecifique());
             if (!afficherClassesExternes && estExterne) continue;
 
-            // Conversion des membres selon les flags
-            List<String> attrVue = afficherAttributs ? PresentationMapper.convertirAttributs(c.getAttributs(), c, classes) : new ArrayList<>();
-            List<String> methVue = afficherMethodes ? PresentationMapper.convertirMethodes(c.getMethodes(), c) : new ArrayList<>();
+            // Préparation des membres via le PresentationMapper centralisé
+            List<String> attrVue = afficherAttributs ? 
+                PresentationMapper.convertirAttributs(c.getAttributs(), c, classes) : new ArrayList<>();
+            List<String> methVue = afficherMethodes ? 
+                PresentationMapper.convertirMethodes(c.getMethodes(), c) : new ArrayList<>();
 
             BlocClasse bloc = new BlocClasse(c.getNom(), x, y, attrVue, methVue);
 
-            if (c.getSpecifique() != null && !c.getSpecifique().isEmpty()) {
+            // Définition propre du type (interface, abstract, record) sans se fier au nom du fichier
+            if (c.getSpecifique() != null) {
                 bloc.setTypeSpecifique(c.getSpecifique());
-                if (c.getSpecifique().equals("interface")) bloc.setInterface(true);
-            } else if (c.getNom().contains("Interface")) {
-                bloc.setInterface(true);
-                bloc.setTypeSpecifique("interface");
+                if ("interface".equals(c.getSpecifique())) bloc.setInterface(true);
             }
-
-            if (estExterne) bloc.setExterne(true);
-
+            
+            bloc.setExterne(estExterne);
             blocs.add(bloc);
 
-            // classes internes affichées avec offset
-            int offsetX = 40;
-            int offsetY = 180;
+            // Gestion des classes internes (ex: TestInterne dans Disque.java)
             for (ClasseObjet inner : c.getClassesInternes()) {
-                // Réutiliser la même logique pour les internes
-                List<String> attrInner = afficherAttributs ? PresentationMapper.convertirAttributs(inner.getAttributs(), inner, classes) : new ArrayList<>();
-                List<String> methInner = afficherMethodes ? PresentationMapper.convertirMethodes(inner.getMethodes(), inner) : new ArrayList<>();
-                BlocClasse blocInner = new BlocClasse(inner.getNom(), x + offsetX, y + offsetY, attrInner, methInner);
-                if (inner.getSpecifique() != null && inner.getSpecifique().equals("externe")) blocInner.setExterne(true);
+                List<String> iAttr = afficherAttributs ? 
+                    PresentationMapper.convertirAttributs(inner.getAttributs(), inner, classes) : new ArrayList<>();
+                List<String> iMeth = afficherMethodes ? 
+                    PresentationMapper.convertirMethodes(inner.getMethodes(), inner) : new ArrayList<>();
+                
+                BlocClasse blocInner = new BlocClasse(inner.getNom(), x + 40, y + 180, iAttr, iMeth);
+                blocInner.setExterne("externe".equals(inner.getSpecifique()));
                 blocs.add(blocInner);
             }
 
-            x += 300;
-            if (x > 1200) { x = startX; y += 300; }
+            // Grille automatique pour éviter que les blocs ne se superposent
+            x += 350;
+            if (x > 1400) { x = startX; y += 400; }
         }
-
         return blocs;
     }
 
@@ -67,16 +57,17 @@ public class DiagramPresenter {
             List<InterfaceObjet> implementations, List<ClasseObjet> classes) {
         List<LiaisonVue> liaisons = new ArrayList<>();
 
+        // Utilisation des méthodes de conversion du PresentationMapper
         liaisons.addAll(PresentationMapper.convertirLiaisons(associations, LiaisonVue.TypeLiaison.ASSOCIATION_UNIDI, classes));
         liaisons.addAll(PresentationMapper.convertirLiaisons(heritages, LiaisonVue.TypeLiaison.HERITAGE, classes));
         liaisons.addAll(PresentationMapper.convertirLiaisons(implementations, LiaisonVue.TypeLiaison.IMPLEMENTATION, classes));
 
+        // Ajout automatique des liens de contenance pour les classes internes
         for (ClasseObjet c : classes) {
             for (ClasseObjet inner : c.getClassesInternes()) {
                 liaisons.add(new LiaisonVue(inner.getNom(), c.getNom(), LiaisonVue.TypeLiaison.NESTED, null, null));
             }
         }
-
         return liaisons;
     }
 }

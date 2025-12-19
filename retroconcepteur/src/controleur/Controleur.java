@@ -312,10 +312,6 @@ public class Controleur {
         }
     }
 
-    private void afficherDiagrammeAvecDonnees() 
-    {
-        // a faire cet aprem j'ai faim la
-    }
 
     public String getCheminProjetActuel() {
         return this.cheminProjetActuel;
