@@ -109,25 +109,6 @@ public class Controleur
     }
 
     /**
-     * Crée récursivement les blocs graphiques et gère l'affichage des types spécifiques.
-     * Cette méthode assure que chaque bloc (classe racine ou interne) est initialisé 
-     * avec ses membres et son stéréotype UML.
-     */
-    // bloc construction delegated to DiagramPresenter
-
-    // helper removed: use DiagramPresenter to rebuild blocs when needed
-
-    public void ajouterMethodes() 
-    {
-        reafficherAvecFiltreExternes();
-    }
-
-    public void ajouterAttributs() 
-    {
-        reafficherAvecFiltreExternes();
-    }
-
-    /**
      * Met à jour l'affichage des blocs et des liaisons.
      */
     private void majAffichage() 
@@ -184,7 +165,6 @@ public class Controleur
     /**
      * Supprime la classe actuellement sélectionnée du diagramme.
      * 
-     * @note Cette méthode est actuellement en développement
      */
     /**
      * Supprime la classe identifiée par son nom. Le nom doit provenir de la Vue
@@ -227,8 +207,9 @@ public class Controleur
         {
             boolean cur = vuePrincipale.getPanneauDiagramme().isAfficherAttributs();
             vuePrincipale.getPanneauDiagramme().setAfficherAttributs(!cur);
+            // Appel direct à la reconstruction
+            reafficherAvecFiltreExternes();
         }
-        rafraichirMembres();
     }   
 
     public void toggleMethodes() 
@@ -237,13 +218,9 @@ public class Controleur
         {
             boolean cur = vuePrincipale.getPanneauDiagramme().isAfficherMethodes();
             vuePrincipale.getPanneauDiagramme().setAfficherMethodes(!cur);
+            // Appel direct à la reconstruction
+            reafficherAvecFiltreExternes();
         }
-        rafraichirMembres();
-    }
-
-    private void rafraichirMembres() 
-    {
-        reafficherAvecFiltreExternes();
     }
 
     public void demanderOptimisationDisposition() 
