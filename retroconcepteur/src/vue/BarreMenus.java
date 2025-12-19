@@ -49,7 +49,8 @@ public class BarreMenus extends JMenuBar implements ActionListener {
      * @param controleur     contrôleur principal
      * @param panneauProjets panneau des projets ouverts
      */
-    public BarreMenus(Controleur controleur, PanneauProjets panneauProjets) {
+    public BarreMenus(Controleur controleur, PanneauProjets panneauProjets) 
+    {
         this.controleur = controleur;
         this.panneauProjets = panneauProjets;
 
@@ -58,7 +59,8 @@ public class BarreMenus extends JMenuBar implements ActionListener {
         this.add(creerMenuAide());
     }
 
-    public JMenu creerMenuFichier() {
+    public JMenu creerMenuFichier() 
+    {
         JMenu menu = new JMenu("Fichier");
 
         this.ouvrirClasse          = new JMenuItem("Ouvrir projet");
@@ -81,7 +83,8 @@ public class BarreMenus extends JMenuBar implements ActionListener {
         return menu;
     }
 
-    public JMenu creerMenuAffichage() {
+    public JMenu creerMenuAffichage() 
+    {
         JMenu menu = new JMenu("Affichage");
 
         this.alignerClasse    = new JMenuItem("Aligner les symboles");
@@ -135,17 +138,21 @@ public class BarreMenus extends JMenuBar implements ActionListener {
     public void actionExporter    () {    controleur.exporterDiagramme()     ;  }
 
 
-    public void actionOuvrirProjet() {
+    public void actionOuvrirProjet() 
+    {
         JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.dir")));
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         int retour = chooser.showOpenDialog(SwingUtilities.getWindowAncestor(this));
 
-        if (retour == JFileChooser.APPROVE_OPTION) {
+        if (retour == JFileChooser.APPROVE_OPTION) 
+        {
             File dossier = chooser.getSelectedFile();
 
-            if (dossier.exists() && dossier.isDirectory()) {
-                try {
+            if (dossier.exists() && dossier.isDirectory()) 
+            {
+                try 
+                {
                     controleur.analyserEtAfficherDiagramme(
                             dossier.getAbsolutePath());
 
@@ -154,7 +161,9 @@ public class BarreMenus extends JMenuBar implements ActionListener {
                             "Dossier chargé : " + dossier.getName());
 
                     panneauProjets.ajouterProjet(dossier.getAbsolutePath());
-                } catch (Exception ex) {
+                } 
+                catch (Exception ex) 
+                {
                     JOptionPane.showMessageDialog(
                             SwingUtilities.getWindowAncestor(this),
                             "Erreur lors de l'ouverture du dossier :\n"
@@ -162,7 +171,9 @@ public class BarreMenus extends JMenuBar implements ActionListener {
                             "Erreur",
                             JOptionPane.ERROR_MESSAGE);
                 }
-            } else {
+            } 
+            else 
+            {
                 JOptionPane.showMessageDialog(
                         SwingUtilities.getWindowAncestor(this),
                         "Impossible d'ouvrir ce dossier.",
@@ -172,18 +183,21 @@ public class BarreMenus extends JMenuBar implements ActionListener {
         }
     }
 
-    public void actionSauvegarder() {
+    public void actionSauvegarder() 
+    {
         String projet = controleur.getCheminProjetActuel();
         String dossierCible;
 
-        if (projet == null || projet.isEmpty()) {
+        if (projet == null || projet.isEmpty()) 
+        {
             int rep = JOptionPane.showConfirmDialog(
                     SwingUtilities.getWindowAncestor(this),
                     "Aucun projet ouvert. Voulez-vous choisir un dossier ?",
                     "Sauvegarder",
                     JOptionPane.YES_NO_OPTION);
 
-            if (rep != JOptionPane.YES_OPTION) {
+            if (rep != JOptionPane.YES_OPTION) 
+            {
                 return;
             }
 
@@ -191,12 +205,15 @@ public class BarreMenus extends JMenuBar implements ActionListener {
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
             if (chooser.showOpenDialog(
-                    SwingUtilities.getWindowAncestor(this)) != JFileChooser.APPROVE_OPTION) {
+                    SwingUtilities.getWindowAncestor(this)) != JFileChooser.APPROVE_OPTION) 
+            {
                 return;
             }
 
             dossierCible = chooser.getSelectedFile().getAbsolutePath();
-        } else {
+        } 
+        else 
+        {
             dossierCible = projet;
         }
 
@@ -218,15 +235,18 @@ public class BarreMenus extends JMenuBar implements ActionListener {
                 "Confirmation",
                 JOptionPane.YES_NO_OPTION);
 
-        if (rep == JOptionPane.YES_OPTION) {
+        if (rep == JOptionPane.YES_OPTION) 
+        {
             // Récupère le nom de la classe sélectionnée depuis le panneauDiagramme
             PanneauDiagramme pd = this.panneauProjets.getPanneauDiagramme();
             String nomSel = null;
-            if (pd != null) {
+            if (pd != null) 
+            {
                 nomSel = pd.getNomClasseSelectionnee();
             }
 
-            if (nomSel == null) {
+            if (nomSel == null) 
+            {
                 JOptionPane.showMessageDialog(
                     SwingUtilities.getWindowAncestor(this),
                     "Aucune classe sélectionnée.",
@@ -237,7 +257,8 @@ public class BarreMenus extends JMenuBar implements ActionListener {
             }
 
             String nomSupprime = controleur.supprimerClasseSelectionnee(nomSel);
-            if (nomSupprime != null) {
+            if (nomSupprime != null) 
+            {
                 JOptionPane.showMessageDialog(
                     SwingUtilities.getWindowAncestor(this),
                     "La classe \"" + nomSupprime + "\" a été supprimée.",
@@ -256,7 +277,8 @@ public class BarreMenus extends JMenuBar implements ActionListener {
                 "Pas fini");
     }
 
-    public void actionOptimiser() {
+    public void actionOptimiser() 
+    {
         controleur.optimiserDisposition();
 
         JOptionPane.showMessageDialog(
@@ -266,12 +288,14 @@ public class BarreMenus extends JMenuBar implements ActionListener {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public void actionToggleExternes() {
+    public void actionToggleExternes() 
+    {
         boolean afficher = afficherExternes.isSelected();
         controleur.setAfficherClassesExternes(afficher);
     }
 
-    public void actionAPropos() {
+    public void actionAPropos() 
+    {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
                 "Modélisation UML - Générateur de Diagrammes\n"

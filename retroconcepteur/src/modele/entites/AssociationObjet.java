@@ -67,7 +67,7 @@ public class AssociationObjet extends LiaisonObjet
     public boolean isRequete() { return this.requete; }
 
     /*-------------------------------------- */
-    /* Les Modificateur                      */
+    /* Les Modificateurs                     */
     /*-------------------------------------- */
     public void setMultOrig           (MultipliciteObjet multOrig       ) { this.multiOrig           = multOrig       ; }
     public void setMultDest           (MultipliciteObjet multDest       ) { this.multiDest           = multDest       ; }
