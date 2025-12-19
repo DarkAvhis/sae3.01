@@ -85,8 +85,20 @@ public class AnalyseurUML
             {
                 String ligneBrute = sc.nextLine().trim();
                 
-                if (ligneBrute.isEmpty() || ligneBrute.startsWith("//") || 
-                    ligneBrute.startsWith("package") || ligneBrute.startsWith("import")) 
+                int idxCommentaire = ligneBrute.indexOf("//");
+                if (idxCommentaire != -1) 
+                {
+                    ligneBrute = ligneBrute.substring(0, idxCommentaire).trim();
+                }
+
+                // 2. Ignorer les lignes vides ou purement package/import après nettoyage
+                if (ligneBrute.isEmpty() || ligneBrute.startsWith("package") || ligneBrute.startsWith("import")) 
+                {
+                    continue;
+                }
+
+                // 3. Ignorer les lignes qui ne sont que des commentaires Javadoc/Multi-lignes
+                if (ligneBrute.startsWith("/*") || ligneBrute.startsWith("*") || ligneBrute.endsWith("*/"))
                 {
                     continue;
                 }
