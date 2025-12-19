@@ -20,7 +20,6 @@ import modele.outil.ParsingUtil;
 
 /**
  * Classe responsable de l'analyse syntaxique (parsing) manuelle des fichiers Java.
- * Optimisée pour éviter l'usage de split() et gérer proprement les collections.
  */
 public class AnalyseurUML 
 {
@@ -67,14 +66,13 @@ public class AnalyseurUML
         this.lstInterfaces.clear();
     }
 
-    /**
-     * Analyse un fichier Java sans utiliser split() pour le parcours des données.
+        /**
+     * Analyse un fichier Java et extrait la structure (Class, Interface, Record, Enum).
+     * Correction : Gère les records sans bloquer la détection des autres types de classes.
      */
     public ClasseObjet analyserFichierUnique(String chemin) 
     {
         File file = new File(chemin);
-        String nomFichier = file.getName().replace(".java", "");
-
         Stack<ClasseObjet> pileClasses = new Stack<>();
         ClasseObjet classeRacine = null;
         int niveauAccolades = 0;
@@ -85,115 +83,115 @@ public class AnalyseurUML
             {
                 String ligneBrute = sc.nextLine().trim();
                 
+                // 1. Nettoyage des commentaires et lignes inutiles
                 int idxCommentaire = ligneBrute.indexOf("//");
-                if (idxCommentaire != -1) 
-                {
-                    ligneBrute = ligneBrute.substring(0, idxCommentaire).trim();
-                }
+                if (idxCommentaire != -1) ligneBrute = ligneBrute.substring(0, idxCommentaire).trim();
 
-                // 2. Ignorer les lignes vides ou purement package/import après nettoyage
-                if (ligneBrute.isEmpty() || ligneBrute.startsWith("package") || ligneBrute.startsWith("import")) 
+                if (ligneBrute.isEmpty() || ligneBrute.startsWith("package") || ligneBrute.startsWith("import") ||
+                    ligneBrute.startsWith("/*") || ligneBrute.startsWith("*") || ligneBrute.endsWith("*/")) 
                 {
                     continue;
                 }
 
-                // 3. Ignorer les lignes qui ne sont que des commentaires Javadoc/Multi-lignes
-                if (ligneBrute.startsWith("/*") || ligneBrute.startsWith("*") || ligneBrute.endsWith("*/"))
-                {
-                    continue;
-                }
-
-                // Dans AnalyseurUML.java
-
-                // 1. Détection de déclaration (Class, Interface, Record, Enum)
+                // 2. Détection du stéréotype (Utilise ParsingUtil pour identifier le type)
                 String stereotype = ParsingUtil.identifierStereotype(ligneBrute);
 
-                if ((ligneBrute.contains("class ") || ligneBrute.contains("interface ") || 
-                    ligneBrute.contains("record ") || ligneBrute.contains("enum ")) && !estDansGuillemets(ligneBrute, ligneBrute.indexOf("class"))) 
-                {
-                    // Au lieu de split, on cherche le mot après le mot-clé
-                    String nomEntite = extraireNomEntiteOptimise(ligneBrute);
-                    
-                    if (nomEntite.isEmpty() || nomEntite.equals("\"")) continue; // Sécurité anti-guillemet
+                // Vérifie si la ligne contient une déclaration (on cherche le mot clé + un espace)
+                boolean estDeclaration = (ligneBrute.contains("class ") || ligneBrute.contains("interface ") || 
+                                        ligneBrute.contains("record ") || ligneBrute.contains("enum "));
 
+                if (estDeclaration && !estDansGuillemets(ligneBrute, 0)) 
+                {
+                    String nomEntite = extraireNomEntiteOptimise(ligneBrute);
+                    if (nomEntite.isEmpty()) continue;
+
+                    // Création de l'objet métier
                     ClasseObjet nouvelleClasse = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nomEntite, stereotype);
 
-                    if (classeRacine == null) 
-                    {
+                    // Gestion de l'imbrication (Classes internes)
+                    if (classeRacine == null) {
                         classeRacine = nouvelleClasse;
-                    } 
-                    else if (!pileClasses.isEmpty()) 
-                    {
+                    } else if (!pileClasses.isEmpty()) {
                         pileClasses.peek().ajouterClasseInterne(nouvelleClasse);
                     }
-
                     pileClasses.push(nouvelleClasse);
 
-                    // Héritage
-                    int idxExtends = ligneBrute.indexOf("extends");
-                    if (idxExtends != -1) 
-                    {
-                        String parent = ParsingUtil.lireNom(ligneBrute.substring(idxExtends + 7).trim());
-                        this.lstIntentionHeritage.put(nomEntite, parent);
+                    // --- CAS SPÉCIFIQUE : RECORD ---
+                    if ("record".equals(stereotype)) {
+                        int startP = ligneBrute.indexOf('(');
+                        int endP = ligneBrute.lastIndexOf(')');
+                        if (startP != -1 && endP > startP) {
+                            String composants = ligneBrute.substring(startP + 1, endP);
+                            for (String comp : composants.split(",")) {
+                                String c = comp.trim();
+                                if (!c.isEmpty()) {
+                                    int lastSpace = c.lastIndexOf(' ');
+                                    if (lastSpace != -1) {
+                                        String type = c.substring(0, lastSpace).trim();
+                                        String nom = c.substring(lastSpace + 1).trim();
+                                        nouvelleClasse.getAttributs().add(new AttributObjet(nom, "instance", type, "private", false, true));
+                                    }
+                                }
+                            }
+                        }
                     }
 
-                    // Interfaces (Optimisé sans split)
+                    // Héritage et Interfaces
+                    int idxExtends = ligneBrute.indexOf("extends ");
+                    if (idxExtends != -1) {
+                        String parent = ParsingUtil.lireNom(ligneBrute.substring(idxExtends + 8).trim());
+                        this.lstIntentionHeritage.put(nomEntite, parent);
+                    }
                     int idxImplements = ligneBrute.indexOf(" implements ");
-                    if (idxImplements != -1) 
-                    {
+                    if (idxImplements != -1) {
                         extraireInterfacesSansSplit(nomEntite, ligneBrute, idxImplements);
                     }
 
-                    if (ligneBrute.contains("{")) 
-                    {
-                        niveauAccolades++;
-                    }
+                    if (ligneBrute.contains("{")) niveauAccolades++;
                     continue;
                 }
 
-                // Membres
+                // 3. Analyse des membres (Attributs et Méthodes)
                 if (!pileClasses.isEmpty() && niveauAccolades == pileClasses.size()) 
                 {
                     ClasseObjet classeCourante = pileClasses.peek();
                     boolean estStatique = ligneBrute.contains("static");
                     boolean estFinal = ligneBrute.contains("final");
 
-                    if (ligneBrute.endsWith(";") && !ligneBrute.contains("(")) 
-                    {
+                    // Cas spécial ENUM
+                    if ("enum".equals(classeCourante.getSpecifique()) && !ligneBrute.contains("(") && (ligneBrute.endsWith(",") || ligneBrute.endsWith(";"))) {
+                        String constante = ligneBrute.replace(",", "").replace(";", "").trim();
+                        if (!constante.isEmpty() && Character.isUpperCase(constante.charAt(0))) {
+                            classeCourante.getAttributs().add(new AttributObjet(constante, "static", classeCourante.getNom(), "public", true, true));
+                            continue;
+                        }
+                    }
+
+                    // Attributs classiques (finissent par ;)
+                    if (ligneBrute.endsWith(";") && !ligneBrute.contains("(")) {
                         ParsingUtil.extraireAttribut(ligneBrute, estStatique, estFinal, classeCourante.getAttributs());
                     } 
-                    else if (ligneBrute.contains("(") && !ligneBrute.contains("=")) 
-                    {
+                    // Méthodes (contiennent des parenthèses mais pas de =)
+                    else if (ligneBrute.contains("(") && !ligneBrute.contains("=")) {
                         String lignePourMethode = ligneBrute;
-                        
-                        if (!ligneBrute.contains("public") && "interface".equals(classeCourante.getSpecifique())) 
-                        {
+                        if (!ligneBrute.contains("public") && "interface".equals(classeCourante.getSpecifique())) {
                             lignePourMethode = "public " + ligneBrute;
                         }
-                        
                         ParsingUtil.extraireMethode(lignePourMethode, estStatique, classeCourante.getNom(), classeCourante.getMethodes());
                     }
                 }
 
-                if (ligneBrute.contains("{")) 
-                {
-                    niveauAccolades++;
-                }
-                
-                if (ligneBrute.contains("}")) 
-                {
-                    if (niveauAccolades == pileClasses.size() && !pileClasses.isEmpty()) 
-                    {
+                // 4. Gestion des accolades pour la pile de classes
+                if (ligneBrute.contains("{")) niveauAccolades++;
+                if (ligneBrute.contains("}")) {
+                    if (niveauAccolades == pileClasses.size() && !pileClasses.isEmpty()) {
                         pileClasses.pop();
                     }
                     niveauAccolades--;
                 }
             }
         } 
-        catch (FileNotFoundException e) 
-        {
-            return null;
-        }
+        catch (FileNotFoundException e) { return null; }
 
         return classeRacine;
     }
@@ -266,14 +264,12 @@ public class AnalyseurUML
 
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses) 
     {
-        List<AssociationObjet> unidirectionnelles = new ArrayList<>();
+        List<AssociationObjet> temporaire = new ArrayList<>();
 
+        // 1. Première passe : Extraction de toutes les relations unidirectionnelles
         for (ClasseObjet classeOrigine : classes) 
         {
-            if (classeOrigine.getAttributs() == null) 
-            {
-                continue;
-            }
+            if (classeOrigine.getAttributs() == null) continue;
 
             for (AttributObjet attribut : classeOrigine.getAttributs()) 
             {
@@ -282,21 +278,17 @@ public class AnalyseurUML
                 MultipliciteObjet multCible = new MultipliciteObjet(1, 1);
                 boolean estCollection = false;
 
-                // Gestion propre des collections (ArrayList, HashMap, Tableaux) sans split
+                // Analyse du type pour détecter les collections (sans split)
                 if (typeAttribut.contains("<") && typeAttribut.contains(">")) 
                 {
                     int idx1 = typeAttribut.indexOf('<');
-                    int idx2 = typeAttribut.lastIndexOf('>'); // On prend le dernier chevron pour les imbrications
+                    int idx2 = typeAttribut.lastIndexOf('>');
                     
                     if (idx1 != -1 && idx2 != -1) 
                     {
                         typeCible = typeAttribut.substring(idx1 + 1, idx2).trim();
-                        // Pour les HashMap, on nettoie si plusieurs types sont présents
-                        int virguleGenerique = typeCible.indexOf(',');
-                        if (virguleGenerique != -1)
-                        {
-                            typeCible = typeCible.substring(virguleGenerique + 1).trim();
-                        }
+                        int virgule = typeCible.indexOf(',');
+                        if (virgule != -1) typeCible = typeCible.substring(virgule + 1).trim();
                     }
                     estCollection = true;
                 } 
@@ -311,14 +303,59 @@ public class AnalyseurUML
                     multCible = new MultipliciteObjet(0, MULT_INDEFINIE);
                 }
 
+                // Si la cible est une classe de notre projet
                 if (mapClasses.containsKey(typeCible) && !typeCible.equals(classeOrigine.getNom())) 
                 {
-                    unidirectionnelles.add(new AssociationObjet(mapClasses.get(typeCible), classeOrigine, multCible, new MultipliciteObjet(1, 1), attribut.getNom(), true));
+                    // On crée une association avec multiplicité source à NULL par défaut pour éviter les doublons
+                    AssociationObjet asso = new AssociationObjet(
+                        mapClasses.get(typeCible), 
+                        classeOrigine, 
+                        multCible, 
+                        null, // Multiplicité source null
+                        attribut.getNom(), 
+                        true
+                    );
+                    // Le nom de l'attribut est le rôle de destination
+                    asso.setRoleDest(attribut.getNom());
+                    temporaire.add(asso);
                 }
             }
         }
-        
-        return unidirectionnelles; 
+
+        // 2. Deuxième passe : Fusion des relations inverses pour les bidirectionnelles
+        List<AssociationObjet> resultatFinal = new ArrayList<>();
+        while (!temporaire.isEmpty()) 
+        {
+            AssociationObjet a1 = temporaire.remove(0);
+            AssociationObjet inverse = null;
+
+            for (AssociationObjet a2 : temporaire) 
+            {
+                if (a1.getClasseMere().getNom().equals(a2.getClasseFille().getNom()) && 
+                    a1.getClasseFille().getNom().equals(a2.getClasseMere().getNom())) 
+                {
+                    inverse = a2;
+                    break;
+                }
+            }
+
+            if (inverse != null) 
+            {
+                temporaire.remove(inverse);
+                // On fusionne en Bidirectionnelle (false)
+                AssociationObjet bi = new AssociationObjet(a1.getClasseMere(), a1.getClasseFille(), 
+                                                        a1.getMultDest(), inverse.getMultDest(), 
+                                                        "", false);
+                bi.setRoleDest(a1.getRoleDest());
+                bi.setRoleOrig(inverse.getRoleDest());
+                resultatFinal.add(bi);
+            } 
+            else 
+            {
+                resultatFinal.add(a1);
+            }
+        }
+        return resultatFinal; 
     }
 
     public List<HeritageObjet> resoudreHeritage(HashMap<String, ClasseObjet> mapClasses) 

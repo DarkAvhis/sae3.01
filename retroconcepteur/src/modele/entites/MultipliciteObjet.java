@@ -2,13 +2,6 @@ package modele.entites;
 
 /**
  * Représente la multiplicité d'une relation UML.
- * 
- * La multiplicité indique combien d'instances d'une classe sont liées à une autre classe.
- * Par exemple :
- * 
- * 1..1 : exactement une instance</li>
- * 0..* : zéro ou plusieurs instances</li>
- * 1..* : au moins une instance</li>
  * La valeur spéciale {@code 999999999} est utilisée pour représenter "*" (infini).
  */
 public class MultipliciteObjet 
@@ -59,6 +52,9 @@ public class MultipliciteObjet
      */
     public String toString()
     {
+        // Si les valeurs sont par défaut (ex: -1), on retourne une chaîne vide ou "?"
+        if (this.debut == -1 || this.fin == -1) return ""; 
+        
         if (this.debut == 999999999) return "*";
         if (this.fin   == 999999999) return this.debut + "..*";
         
