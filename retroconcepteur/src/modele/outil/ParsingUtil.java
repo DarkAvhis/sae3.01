@@ -66,6 +66,15 @@ public final class ParsingUtil
         return -1;
     }
 
+    public static String identifierStereotype(String ligne) 
+    {
+        if (ligne.contains("interface")) return "interface";
+        if (ligne.contains("record"))    return "record";
+        if (ligne.contains("enum"))      return "enum";
+        if (ligne.contains("abstract class")) return "abstract class";
+        return ""; // Classe standard
+    }   
+
     public static boolean aModifierMotCle(String s) 
     {
         return "public"  .equals(s) || "private".equals(s) || "protected".equals(s) || 
