@@ -19,12 +19,16 @@ import modele.entites.MultipliciteObjet;
 import modele.outil.ParsingUtil;
 
 /**
- * Classe responsable de l'analyse syntaxique (parsing) des fichiers Java.
+ * Classe responsable de l'analyse syntaxique (parsing) manuelle des fichiers Java.
  */
 public class AnalyseurUML 
 {
     private HashMap<String,String           > lstIntentionHeritage;
     private HashMap<String,ArrayList<String>> lstInterfaces       ;
+
+    /* -------------------------------------------------------------------------- */
+    /* CONSTRUCTEUR                                                               */
+    /* -------------------------------------------------------------------------- */
 
     public AnalyseurUML() 
     {
@@ -41,6 +45,10 @@ public class AnalyseurUML
         this.lstInterfaces.clear();
     }
 
+        /**
+     * Analyse un fichier Java et extrait la structure (Class, Interface, Record, Enum).
+     * Correction : Gère les records sans bloquer la détection des autres types de classes.
+     */
     public ClasseObjet analyserFichierUnique(String chemin) 
     {
         File        file            = new File(chemin);
@@ -53,8 +61,11 @@ public class AnalyseurUML
         {
             while (sc.hasNextLine()) 
             {
-                // ÉTAPE 1 : Nettoyage centralisé (Commentaires + Strings neutralisés)
-                String ligneBrute = ParsingUtil.nettoyer(sc.nextLine());
+                String ligneBrute = sc.nextLine().trim();
+                
+                // 1. Nettoyage des commentaires et lignes inutiles
+                int idxCommentaire = ligneBrute.indexOf("//");
+                if (idxCommentaire != -1) ligneBrute = ligneBrute.substring(0, idxCommentaire).trim();
 
                 // Filtrage des lignes sans intérêt structurel
                 if (ligneBrute.isEmpty()                   || ligneBrute.startsWith("package") || 
@@ -64,18 +75,19 @@ public class AnalyseurUML
                     continue;
                 }
 
-                // ÉTAPE 2 : Détection des déclarations (uniquement hors Strings)
+                // 2. Détection du stéréotype (Utilise ParsingUtil pour identifier le type)
                 String stereotype = ParsingUtil.identifierStereotype(ligneBrute);
 
                 boolean estDeclaration = (ligneBrute.contains("class ")  || ligneBrute.contains("interface ") || 
                                           ligneBrute.contains("record ") || ligneBrute.contains("enum ")         );
 
-                if (estDeclaration) 
+                if (estDeclaration && !estDansGuillemets(ligneBrute, 0)) 
                 {
                     String nomEntite = extraireNomEntite(ligneBrute);
 
                     if (nomEntite.isEmpty()) continue;
 
+                    // Création de l'objet métier
                     ClasseObjet nouvelleClasse = new ClasseObjet(new ArrayList<>(), new ArrayList<>(), nomEntite, stereotype);
 
                     // Gestion de la hiérarchie (classes internes)
@@ -123,80 +135,75 @@ public class AnalyseurUML
                         this.lstIntentionHeritage.put(nomEntite, ParsingUtil.lireNom
                         (ligneBrute.substring(idxExtends + 8)));
                     }
-
                     int idxImplements = ligneBrute.indexOf(" implements ");
-
-                    if (idxImplements != -1)  
+                    if (idxImplements != -1) {
                         extraireInterfacesSansSplit(nomEntite, ligneBrute, idxImplements);
 
-                    // On incrémente si l'accolade est sur la ligne de déclaration
-                    if (ligneBrute.contains("{")) niveauAccolades++; continue;
+                    if (ligneBrute.contains("{")) niveauAccolades++;
+                    continue;
                 }
 
-                // ÉTAPE 3 : Analyse des membres (Attributs/Méthodes)
+                // 3. Analyse des membres (Attributs et Méthodes)
                 if (!pileClasses.isEmpty() && niveauAccolades == pileClasses.size()) 
                 {
                     ClasseObjet classeCourante = pileClasses.peek();
-                    boolean     estStatique    = ligneBrute .contains("static");
-                    boolean     estFinal       = ligneBrute .contains("final" );
+                    boolean estStatique = ligneBrute.contains("static");
+                    boolean estFinal = ligneBrute.contains("final");
 
-                    // Constantes Enum
-                    if ("enum".equals(classeCourante.getSpecifique())) 
-                    {
-                        if (!ligneBrute.contains("(") && !ligneBrute.contains("class") && 
-                           (ligneBrute.endsWith(",") || ligneBrute.endsWith(";"))) 
-                        {
-                            String constante = ligneBrute.replace(",", "").replace(";", "").trim();
-                            if (!constante.isEmpty() && !constante.contains(" ")) 
-                            {
-                                classeCourante.getAttributs().add(new AttributObjet(constante, "static", 
-                                                            classeCourante.getNom(), "public", true, true));
-                                continue;
-                            }
+                    // Cas spécial ENUM
+                    if ("enum".equals(classeCourante.getSpecifique()) && !ligneBrute.contains("(") && (ligneBrute.endsWith(",") || ligneBrute.endsWith(";"))) {
+                        String constante = ligneBrute.replace(",", "").replace(";", "").trim();
+                        if (!constante.isEmpty() && Character.isUpperCase(constante.charAt(0))) {
+                            classeCourante.getAttributs().add(new AttributObjet(constante, "static", classeCourante.getNom(), "public", true, true));
+                            continue;
                         }
                     }
 
-                    // Attributs et Méthodes classiques
-                    if (ligneBrute.endsWith(";") && !ligneBrute.contains("(")) 
+                    // Attributs classiques (finissent par ;)
+                    if (ligneBrute.endsWith(";") && !ligneBrute.contains("(")) {
                         ParsingUtil.extraireAttribut(ligneBrute, estStatique, estFinal, classeCourante.getAttributs());
-
-                    else if (ligneBrute.contains("(") && !ligneBrute.contains("=")) 
-                    {
-                        String l = ligneBrute;
-
-                        if (!l.contains("public") && "interface".equals(classeCourante.getSpecifique())) l = "public " + l;
-
-                        ParsingUtil.extraireMethode(l, estStatique, classeCourante.getNom(), classeCourante.getMethodes());
+                    } 
+                    // Méthodes (contiennent des parenthèses mais pas de =)
+                    else if (ligneBrute.contains("(") && !ligneBrute.contains("=")) {
+                        String lignePourMethode = ligneBrute;
+                        if (!ligneBrute.contains("public") && "interface".equals(classeCourante.getSpecifique())) {
+                            lignePourMethode = "public " + ligneBrute;
+                        }
+                        ParsingUtil.extraireMethode(lignePourMethode, estStatique, classeCourante.getNom(), classeCourante.getMethodes());
                     }
                 }
 
-                // ÉTAPE 4 : Gestion précise de la profondeur
+                // 4. Gestion des accolades pour la pile de classes
                 if (ligneBrute.contains("{")) niveauAccolades++;
-
-                if (ligneBrute.contains("}")) 
-                {
-                    if (niveauAccolades == pileClasses.size() && !pileClasses.isEmpty()) pileClasses.pop();
-                        niveauAccolades--;
+                if (ligneBrute.contains("}")) {
+                    if (niveauAccolades == pileClasses.size() && !pileClasses.isEmpty()) {
+                        pileClasses.pop();
+                    }
+                    niveauAccolades--;
                 }
             }
-        } catch (FileNotFoundException e) { return null; }
+        } 
+        catch (FileNotFoundException e) { return null; }
 
         return classeRacine;
     }
 
-    /**
-     * Correction : Harmonisation du nom de la méthode utilisée par analyserFichierUnique
-     */
     private String extraireNomEntite(String ligne) 
     {
         String[] motsCles = {"class", "interface", "record", "enum"};
-
+        
         for (String mc : motsCles) 
         {
             int idx = ligne.indexOf(mc + " ");
 
             if (idx != -1) 
-                return ParsingUtil.lireNom(ligne.substring(idx + mc.length() + 1).trim());
+            {
+                // Correction : On s'assure de ne pas prendre ce qui précède (comme une parenthèse)
+                String apresMotCle = ligne.substring(idx + mc.length() + 1).trim();
+                
+                // On utilise lireNom qui doit ignorer les caractères spéciaux
+                return ParsingUtil.lireNom(apresMotCle);
+            }
         }
         return "";
     }
@@ -204,121 +211,226 @@ public class AnalyseurUML
     private void extraireInterfacesSansSplit(String nomEntite, String ligne, int idxImplements) 
     {
         int start = idxImplements + 12;
-        int end   = ligne.indexOf('{', start);
-
-        if (end == -1) end = ligne.length();
+        int end = ligne.indexOf('{', start);
+        
+        if (end == -1) 
+        {
+            end = ligne.length();
+        }
 
         String segment = ligne.substring(start, end);
         ArrayList<String> interfaces = new ArrayList<>();
+        int currentPos = 0;
+        int nextComma;
 
-        for (String s : ParsingUtil.decoupage(segment)) 
+        while ((nextComma = segment.indexOf(',', currentPos)) != -1) 
         {
-            String inter = s.trim();
-
-            if (inter.contains("<")) inter = inter.substring(0, inter.indexOf('<')).trim();
-
-            if (!inter.isEmpty()) interfaces.add(inter);
+            String inter = segment.substring(currentPos, nextComma).trim();
+            ajouterInterfaceNettoyee(interfaces, inter);
+            currentPos = nextComma + 1;
         }
+        
+        ajouterInterfaceNettoyee(interfaces, segment.substring(currentPos).trim());
+
         this.lstInterfaces.put(nomEntite, interfaces);
     }
+
+    private void ajouterInterfaceNettoyee(ArrayList<String> liste, String nomRaw) 
+    {
+        if (nomRaw.isEmpty()) 
+        {
+            return;
+        }
+        
+        int idxChevron = nomRaw.indexOf('<');
+        String nomPropre = (idxChevron != -1) ? nomRaw.substring(0, idxChevron).trim() : nomRaw;
+        
+        if (!nomPropre.isEmpty()) 
+        {
+            liste.add(nomPropre);
+        }
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /* RÉSOLUTION DES RELATIONS ET COLLECTIONS                                    */
+    /* -------------------------------------------------------------------------- */
 
     public List<AssociationObjet> detecterAssociations(List<ClasseObjet> classes, HashMap<String, ClasseObjet> mapClasses) 
     {
         List<AssociationObjet> temporaire = new ArrayList<>();
-        
-        for (ClasseObjet origine : classes) 
+
+        // 1. Première passe : Extraction de toutes les relations unidirectionnelles
+        for (ClasseObjet classeOrigine : classes) 
         {
-            if (origine.getAttributs() == null) continue;
-            
-            for (AttributObjet att : origine.getAttributs()) 
+            if (classeOrigine.getAttributs() == null) continue;
+
+            for (AttributObjet attribut : classeOrigine.getAttributs()) 
             {
-                // Utilisation de la méthode centralisée
-                String  typeCible = ParsingUtil.extraireTypeSimple(att.getType());
-                boolean estColl   = att.getType().contains("<") || att.getType().endsWith("[]");
+                String typeAttribut = attribut.getType();
+                String typeCible = typeAttribut;
+                MultipliciteObjet multCible = new MultipliciteObjet(1, 1);
+                boolean estCollection = false;
 
-                if (mapClasses.containsKey(typeCible) && !typeCible.equals(origine.getNom())) 
+                // Analyse du type pour détecter les collections (sans split)
+                if (typeAttribut.contains("<") && typeAttribut.contains(">")) 
                 {
-                    AssociationObjet asso = new AssociationObjet( mapClasses.get(typeCible), origine, 
-                                            new MultipliciteObjet(estColl ? 0 : 1, estColl ? 999999999 : 1), 
-                                            null, att.getNom(), true );
+                    int idx1 = typeAttribut.indexOf('<');
+                    int idx2 = typeAttribut.lastIndexOf('>');
+                    
+                    if (idx1 != -1 && idx2 != -1) 
+                    {
+                        typeCible = typeAttribut.substring(idx1 + 1, idx2).trim();
+                        int virgule = typeCible.indexOf(',');
+                        if (virgule != -1) typeCible = typeCible.substring(virgule + 1).trim();
+                    }
+                    estCollection = true;
+                } 
+                else if (typeAttribut.endsWith("[]")) 
+                {
+                    typeCible = typeAttribut.replace("[]", "").trim();
+                    estCollection = true;
+                }
 
-                    asso.setRoleDest(att.getNom());
+                if (estCollection) 
+                {
+                    multCible = new MultipliciteObjet(0, MULT_INDEFINIE);
+                }
+
+                // Si la cible est une classe de notre projet
+                if (mapClasses.containsKey(typeCible) && !typeCible.equals(classeOrigine.getNom())) 
+                {
+                    // On crée une association avec multiplicité source à NULL par défaut pour éviter les doublons
+                    AssociationObjet asso = new AssociationObjet(
+                        mapClasses.get(typeCible), 
+                        classeOrigine, 
+                        multCible, 
+                        null, // Multiplicité source null
+                        attribut.getNom(), 
+                        true
+                    );
+                    // Le nom de l'attribut est le rôle de destination
+                    asso.setRoleDest(attribut.getNom());
                     temporaire.add(asso);
                 }
             }
         }
-        
-        // Fusion bidirectionnelle (reste inchangé mais fiabilisé)
-        List<AssociationObjet> resultat = new ArrayList<>();
 
+        // 2. Deuxième passe : Fusion des relations inverses pour les bidirectionnelles
+        List<AssociationObjet> resultatFinal = new ArrayList<>();
         while (!temporaire.isEmpty()) 
         {
-            AssociationObjet a1  = temporaire.remove(0);
-            AssociationObjet inv = null;
+            AssociationObjet a1 = temporaire.remove(0);
+            AssociationObjet inverse = null;
 
             for (AssociationObjet a2 : temporaire) 
             {
                 if (a1.getClasseMere ().getNom().equals(a2.getClasseFille().getNom()) && 
                     a1.getClasseFille().getNom().equals(a2.getClasseMere ().getNom())     ) 
                 {
-                    inv = a2; break;
+                    inverse = a2;
+                    break;
                 }
             }
-            if (inv != null) 
+
+            if (inverse != null) 
             {
-                temporaire.remove(inv);
-                AssociationObjet bi = new AssociationObjet(a1.getClasseMere(), a1.getClasseFille(),
-                                      a1.getMultDest(), inv.getMultDest(), "", false);
-
-                bi.setRoleDest(a1.getRoleDest()); bi.setRoleOrig(inv.getRoleDest());
-
-                resultat.add(bi);
+                temporaire.remove(inverse);
+                // On fusionne en Bidirectionnelle (false)
+                AssociationObjet bi = new AssociationObjet(a1.getClasseMere(), a1.getClasseFille(), 
+                                                        a1.getMultDest(), inverse.getMultDest(), 
+                                                        "", false);
+                bi.setRoleDest(a1.getRoleDest());
+                bi.setRoleOrig(inverse.getRoleDest());
+                resultatFinal.add(bi);
             } 
-            else resultat.add(a1);
+            else 
+            {
+                resultatFinal.add(a1);
+            }
         }
-        return resultat;
+        return resultatFinal; 
     }
 
     public List<HeritageObjet> resoudreHeritage(HashMap<String, ClasseObjet> mapClasses) 
     {
-        List<HeritageObjet> res = new ArrayList<>();
-        for (Map.Entry<String, String> e : this.lstIntentionHeritage.entrySet()) 
+        List<HeritageObjet> resultat = new ArrayList<>();
+        
+        // Parcours propre de la Map d'intentions
+        for (Map.Entry<String, String> entree : this.lstIntentionHeritage.entrySet()) 
         {
-            if (mapClasses.containsKey(e.getKey()) && mapClasses.containsKey(e.getValue()))
-                res.add(new HeritageObjet(mapClasses.get(e.getKey()), mapClasses.get(e.getValue())));
+            String enfant = entree.getKey();
+            String parent = entree.getValue();
+            
+            if (mapClasses.containsKey(enfant) && mapClasses.containsKey(parent)) 
+            {
+                resultat.add(new HeritageObjet(mapClasses.get(enfant), mapClasses.get(parent)));
+            }
         }
-        return res;
+        return resultat;
     }
 
     public List<InterfaceObjet> resoudreImplementation(HashMap<String, ClasseObjet> mapClasses) 
     {
-        List<InterfaceObjet> res = new ArrayList<>();
-        for (Map.Entry<String, ArrayList<String>> e : this.lstInterfaces.entrySet()) 
+        HashMap<String, InterfaceObjet> regroupement = new HashMap<>();
+        
+        for (Map.Entry<String, ArrayList<String>> entree : this.lstInterfaces.entrySet()) 
         {
-            if (!mapClasses.containsKey(e.getKey())) continue;
-
-            InterfaceObjet io = new InterfaceObjet(mapClasses.get(e.getKey()));
-
-            for (String i : e.getValue()) if (mapClasses.containsKey(i)) io.ajouterInterface(mapClasses.get(i));
-            res.add(io);
+            String nomClasse = entree.getKey();
+            if (!mapClasses.containsKey(nomClasse)) continue;
+            
+            ClasseObjet classeConcrète = mapClasses.get(nomClasse);
+            InterfaceObjet io = new InterfaceObjet(classeConcrète);
+            
+            for (String nomI : entree.getValue()) 
+            {
+                if (mapClasses.containsKey(nomI)) 
+                {
+                    io.ajouterInterface(mapClasses.get(nomI));
+                }
+            }
+            regroupement.put(nomClasse, io);
         }
-        return res;
+        return new ArrayList<>(regroupement.values());
     }
 
-    public List<File> ClassesDuDossier(String chemin) 
-    {
-        File   d     = new File(chemin);
-        File[] files = d.listFiles();
-
-        List<File> res = new ArrayList<>();
-
-        if (files != null) for (File f : files) if (f.isFile() && f.getName().endsWith(".java")) res.add(f);
-            return res;
-    }
+    /* -------------------------------------------------------------------------- */
+    /* OUTILS                                                                     */
+    /* -------------------------------------------------------------------------- */
 
     public void renumeroterLiaisonsFinales(List<LiaisonObjet> toutes) 
     {
         LiaisonObjet.reinitialiserCompteur();
-        int i = 1; for (LiaisonObjet l : toutes) l.setNum(i++);
+        int i = 1;
+        
+        for (LiaisonObjet l : toutes) 
+        {
+            l.setNum(i++);
+        }
+    }
+
+    private boolean estDansGuillemets(String ligne, int idx) 
+    {
+        if (ligne == null || idx <= 0) return false;
+        int count = 0;
+        for (int i = 0; i < Math.min(idx, ligne.length()); i++) 
+        {
+            if (ligne.charAt(i) == '"') count++;
+        }
+        return (count % 2) == 1; // Si le nombre est impair, on est dans un String
+    }
+
+    private String extraireNomEntiteOptimise(String ligne) 
+    {
+        String[] motsCles = {"class", "interface", "record", "enum"};
+        for (String mc : motsCles) 
+        {
+            int idx = ligne.indexOf(mc + " ");
+            if (idx != -1) 
+            {
+                // On prend ce qui suit le mot-clé et on délègue le nettoyage à lireNom
+                return ParsingUtil.lireNom(ligne.substring(idx + mc.length() + 1).trim());
+            }
+        }
+        return "";
     }
 }
