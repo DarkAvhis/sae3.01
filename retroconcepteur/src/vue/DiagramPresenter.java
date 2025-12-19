@@ -23,7 +23,7 @@ public class DiagramPresenter
             // Préparation des membres via le PresentationMapper centralisé
             List<String> attrVue = afficherAttributs ? 
                 PresentationMapper.convertirAttributs(c.getAttributs(), c, classes) : new ArrayList<>();
-            List<String> methVue = afficherMethodes ? 
+            List<String> methVue = afficherMethodes ?
                 PresentationMapper.convertirMethodes(c.getMethodes(), c) : new ArrayList<>();
 
             BlocClasse bloc = new BlocClasse(c.getNom(), x, y, attrVue, methVue);
@@ -34,7 +34,7 @@ public class DiagramPresenter
                 bloc.setTypeSpecifique(c.getSpecifique());
                 if ("interface".equals(c.getSpecifique())) bloc.setInterface(true);
             }
-            
+
             bloc.setExterne(estExterne);
             blocs.add(bloc);
 
@@ -43,9 +43,9 @@ public class DiagramPresenter
             {
                 List<String> iAttr = afficherAttributs ? 
                     PresentationMapper.convertirAttributs(inner.getAttributs(), inner, classes) : new ArrayList<>();
-                List<String> iMeth = afficherMethodes ? 
+                List<String> iMeth = afficherMethodes ?
                     PresentationMapper.convertirMethodes(inner.getMethodes(), inner) : new ArrayList<>();
-                
+
                 BlocClasse blocInner = new BlocClasse(inner.getNom(), x + 40, y + 180, iAttr, iMeth);
                 blocInner.setExterne("externe".equals(inner.getSpecifique()));
                 blocs.add(blocInner);
@@ -64,9 +64,12 @@ public class DiagramPresenter
         List<LiaisonVue> liaisons = new ArrayList<>();
 
         // Utilisation des méthodes de conversion du PresentationMapper
-        liaisons.addAll(PresentationMapper.convertirLiaisons(associations, LiaisonVue.TypeLiaison.ASSOCIATION_UNIDI, classes));
-        liaisons.addAll(PresentationMapper.convertirLiaisons(heritages, LiaisonVue.TypeLiaison.HERITAGE, classes));
-        liaisons.addAll(PresentationMapper.convertirLiaisons(implementations, LiaisonVue.TypeLiaison.IMPLEMENTATION, classes));
+        liaisons.addAll(PresentationMapper.convertirLiaisons(associations,
+                LiaisonVue.TypeLiaison.ASSOCIATION_UNIDI, classes));
+        liaisons.addAll(PresentationMapper.convertirLiaisons(heritages,
+                LiaisonVue.TypeLiaison.HERITAGE, classes));
+        liaisons.addAll(PresentationMapper.convertirLiaisons(implementations,
+                LiaisonVue.TypeLiaison.IMPLEMENTATION, classes));
 
         // Ajout automatique des liens de contenance pour les classes internes
         for (ClasseObjet c : classes) 

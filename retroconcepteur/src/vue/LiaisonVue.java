@@ -73,26 +73,20 @@ public class LiaisonVue
     /**
      * Constructeur enrichi pour les associations avec rôles.
      */
-    public LiaisonVue(String nomClasseOrig, String nomClasseDest, TypeLiaison type, String multOrig, String multDest,
-            String roleOrig, String roleDest, Integer roleOrigOffsetAlong, Integer roleOrigOffsetPerp,
-            Integer roleDestOffsetAlong, Integer roleDestOffsetPerp, String proprietes, String contrainte) 
+    public LiaisonVue(String nomClasseOrig, String nomClasseDest, TypeLiaison type, String multOrig, 
+                      String multDest, String roleOrig, String roleDest , Integer roleOrigOffsetAlong, 
+                      Integer roleOrigOffsetPerp,Integer roleDestOffsetAlong, 
+                      Integer roleDestOffsetPerp, String proprietes, String contrainte) 
     {
         this(nomClasseOrig, nomClasseDest, type, multOrig, multDest);
 
         this.roleOrig = (roleOrig != null) ? roleOrig : "";
         this.roleDest = (roleDest != null) ? roleDest : "";
 
-        if (roleOrigOffsetAlong != null)
-            this.roleOrigOffsetAlong = roleOrigOffsetAlong;
-
-        if (roleOrigOffsetPerp != null)
-            this.roleOrigOffsetPerp = roleOrigOffsetPerp;
-
-        if (roleDestOffsetAlong != null)
-            this.roleDestOffsetAlong = roleDestOffsetAlong;
-
-        if (roleDestOffsetPerp != null)
-            this.roleDestOffsetPerp = roleDestOffsetPerp;
+        if (roleOrigOffsetAlong != null) this.roleOrigOffsetAlong = roleOrigOffsetAlong;
+        if (roleOrigOffsetPerp  != null) this.roleOrigOffsetPerp  = roleOrigOffsetPerp ;
+        if (roleDestOffsetAlong != null) this.roleDestOffsetAlong = roleDestOffsetAlong;
+        if (roleDestOffsetPerp  != null) this.roleDestOffsetPerp  = roleDestOffsetPerp ;
         
         this.proprietes = (proprietes != null) ? proprietes : "";
         this.contrainte = (contrainte != null) ? contrainte : "";

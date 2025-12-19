@@ -12,7 +12,7 @@ import java.util.List;
 public class ClasseObjet 
 {
 	/*-------------------------------------- */
-	/* Attributs */
+	/* Attributs                             */
 	/*-------------------------------------- */
 
 	private String                   nom             ;
@@ -26,7 +26,7 @@ public class ClasseObjet
 	private static final String ANSI_RESET     = "\u001B[0m";
 
 	/*-------------------------------------- */
-	/* Constructeur */
+	/* Constructeur                          */
 	/*-------------------------------------- */
 	public ClasseObjet(ArrayList<AttributObjet> attributs, ArrayList<MethodeObjet> methodes, String nom, 
 		String specifique)
@@ -129,7 +129,7 @@ public class ClasseObjet
 	}
 
 	/*-------------------------------------- */
-	/* toString */
+	/* toString                              */
 	/*-------------------------------------- */
 
 	/**

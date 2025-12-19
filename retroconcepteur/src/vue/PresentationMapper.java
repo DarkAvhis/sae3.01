@@ -15,9 +15,9 @@ import modele.entites.MethodeObjet;
  */
 public class PresentationMapper
 {
-    public static List<LiaisonVue> convertirLiaisons( List<? extends LiaisonObjet> liaisons,
-                                                      LiaisonVue.TypeLiaison       type    ,
-                                                      List<ClasseObjet>            classes )
+    public static List<LiaisonVue> convertirLiaisons(List<? extends LiaisonObjet> liaisons,
+                                                 LiaisonVue.TypeLiaison type,
+                                                 List<ClasseObjet> classes)
     {
         List<LiaisonVue> liaisonsVue = new ArrayList<>();
 
@@ -26,107 +26,61 @@ public class PresentationMapper
             if (liaison instanceof InterfaceObjet)
             {
                 InterfaceObjet interfaceLiaison = (InterfaceObjet) liaison;
-
-                if (interfaceLiaison.getClasseFille() == null) { continue; }
+                if (interfaceLiaison.getClasseFille() == null) continue;
 
                 String nomClasseConcrete = interfaceLiaison.getClasseFille().getNom();
-
                 for (ClasseObjet interfaceClass : interfaceLiaison.getLstInterfaces())
                 {
                     if (interfaceClass != null)
                     {
-                        liaisonsVue.add( new LiaisonVue( nomClasseConcrete, interfaceClass.getNom(),
-                                                         type, null,null));
+                        liaisonsVue.add(new LiaisonVue(nomClasseConcrete, interfaceClass.getNom(),
+                                                    type, null, null));
                     }
                 }
             }
             else
             {
-                if (liaison.getClasseFille() == null || liaison.getClasseMere() == null) { continue; }
+                if (liaison.getClasseFille() == null || liaison.getClasseMere() == null) continue;
 
-                String nomOrig  = liaison.getClasseFille().getNom();
-                String nomDest  = liaison.getClasseMere ().getNom();
-                String multOrig = null;
-                String multDest = null;
+                String nomOrig = liaison.getClasseFille().getNom();
+                String nomDest = liaison.getClasseMere().getNom();
+                String multOrig = "";
+                String multDest = "";
 
                 if (liaison instanceof AssociationObjet)
                 {
                     AssociationObjet asso = (AssociationObjet) liaison;
 
-                    multOrig = asso.getMultOrig() != null ? asso.getMultOrig().toString() : "1..1";
-                    multDest = asso.getMultDest() != null ? asso.getMultDest().toString() : "1..1";
+                    // On récupère les multiplicités (chaîne vide si null pour ne pas afficher "1..1" partout)
+                    multOrig = (asso.getMultOrig() != null) ? asso.getMultOrig().toString() : "";
+                    multDest = (asso.getMultDest() != null) ? asso.getMultDest().toString() : "";
+
+                    // On détermine le type exact (UNI ou BIDI)
+                    LiaisonVue.TypeLiaison typeActuel = asso.getUnidirectionnel() ? 
+                                                    LiaisonVue.TypeLiaison.ASSOCIATION_UNIDI : 
+                                                    LiaisonVue.TypeLiaison.ASSOCIATION_BIDI;
 
                     List<String> props = new ArrayList<>();
-
-                    if (asso.isFrozen ())  props.add("frozen" );
-                    if (asso.isAddOnly())  props.add("addOnly");
-                    if (asso.isRequete())  props.add("requête");
+                    if (asso.isFrozen())  props.add("frozen");
+                    if (asso.isAddOnly()) props.add("addOnly");
+                    if (asso.isRequete()) props.add("requête");
 
                     String propsStr = props.isEmpty() ? "" : "{" + String.join(", ", props) + "}";
 
-                    liaisonsVue.add(new LiaisonVue(nomOrig,nomDest,type,multOrig,multDest,asso.getRoleOrig(),
-                                                  asso.getRoleDest(), asso.getRoleOrigOffsetAlong(),
-                                                  asso.getRoleOrigOffsetPerp(),asso.getRoleDestOffsetAlong(),
-                                                  asso.getRoleDestOffsetPerp(),propsStr,""));
+                    // On transmet les rôles (noms d'attributs) pour qu'ils s'affichent sur la ligne
+                    liaisonsVue.add(new LiaisonVue(nomOrig, nomDest, typeActuel, multOrig, multDest, 
+                                                asso.getRoleOrig(), asso.getRoleDest(), 
+                                                asso.getRoleOrigOffsetAlong(), asso.getRoleOrigOffsetPerp(),
+                                                asso.getRoleDestOffsetAlong(), asso.getRoleDestOffsetPerp(),
+                                                propsStr, ""));
                 }
                 else
                 {
-                    liaisonsVue.add( new LiaisonVue(nomOrig, nomDest,type,multOrig,multDest ));
+                    // Héritage ou autres liens simples
+                    liaisonsVue.add(new LiaisonVue(nomOrig, nomDest, type, multOrig, multDest));
                 }
             }
         }
-
-        // Liaisons issues des attributs
-        for (ClasseObjet c : classes) {
-            for (AttributObjet att : c.getAttributs()) {
-                String typeAtt = att.getType();
-                String typeSimple = typeAtt;
-                if (typeAtt.endsWith("[]"))
-                    typeSimple = typeAtt.replace("[]", "");
-                else if (typeAtt.contains("<") && typeAtt.contains(">"))
-                    typeSimple = typeAtt.substring(typeAtt.indexOf("<") + 1, typeAtt.indexOf(">"));
-
-                if (typeAtt.endsWith("[]"))
-                {
-                    typeSimple = typeAtt.replace("[]", "");
-                }
-                else if (typeAtt.contains("<") && typeAtt.contains(">"))
-                {
-                    typeSimple = typeAtt.substring( typeAtt.indexOf("<") + 1, typeAtt.indexOf(">"));
-                }
-
-                for (ClasseObjet cible : classes)
-                {
-                    if (cible.getNom().equals(typeSimple) && !cible.getNom().equals(c.getNom()))
-                    {
-                        boolean existe = false;
-
-                        for (LiaisonVue lv : liaisonsVue)
-                        {
-                            if ((lv.getNomClasseOrig().equals(c.getNom    ())  && 
-                                 lv.getNomClasseDest().equals(cible.getNom())) || 
-                                (lv.getNomClasseOrig().equals(cible.getNom())  && 
-                                 lv.getNomClasseDest().equals(c.getNom    ()))  )
-                            {
-                                existe = true;
-                                break;
-                            }
-                        }
-
-                        if (existe)
-                        {
-                            continue;
-                        }
-
-                        liaisonsVue.add( new LiaisonVue( c.getNom(),cible.getNom(), 
-                                                        LiaisonVue.TypeLiaison.ASSOCIATION_UNIDI,null,
-                                                        null,att.getNom(),null,0,
-                                                        0,  0,0,"","") );
-                    }
-                }
-            }
-        }
-
         return liaisonsVue;
     }
 
@@ -189,7 +143,7 @@ public class PresentationMapper
         }
         return liste;
     }
-    
+
     public static BlocClasse creerBlocComplet(ClasseObjet c, int x,int y)
     {
         BlocClasse bloc = new BlocClasse(c.getNom(),x ,y ,new ArrayList<>() ,new ArrayList<>());

@@ -758,7 +758,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
      * Met à jour la taille du panneau et red essine le diagramme.
      */
     public void optimiserDisposition() {
-        if (blocsClasses.isEmpty()) {
+        if (blocsClasses.isEmpty()) 
+        {
             return;
         }
 

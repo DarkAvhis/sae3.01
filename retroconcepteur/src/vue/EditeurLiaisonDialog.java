@@ -1,8 +1,8 @@
 package vue;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -22,7 +22,7 @@ public class EditeurLiaisonDialog extends JDialog
 	private final JTextField tfRoleOrig = new JTextField(12);
 	private final JTextField tfRoleDest = new JTextField(12);
 
-	private JButton btnOK;
+	private JButton btnOK    ;
 	private JButton btnCancel;
 
 	public EditeurLiaisonDialog(Frame owner, LiaisonVue liaison) 
@@ -60,10 +60,13 @@ public class EditeurLiaisonDialog extends JDialog
 		this.btnCancel.addActionListener((ActionEvent e) -> dispose());
 
 		JPanel panelAction = new JPanel();
+
 		panelAction.add(this.btnOK);
 		panelAction.add(this.btnCancel);
+
 		getContentPane().add(panelDisposition, BorderLayout.CENTER);
 		getContentPane().add(panelAction, BorderLayout.SOUTH);
+		
 		pack();
 		setLocationRelativeTo(owner);
 	}

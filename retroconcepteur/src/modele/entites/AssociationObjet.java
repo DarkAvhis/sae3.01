@@ -92,8 +92,8 @@ public class AssociationObjet extends LiaisonObjet
         String origine = (this.getClasseFille() != null) ? this.getClasseFille().getNom() : "?";
         String dest    = (this.getClasseMere () != null) ? this.getClasseMere ().getNom() : "?";
 
-        String multO = (this.multiOrig != null) ? this.multiOrig.toString() : "?";
-        String multD = (this.multiDest != null) ? this.multiDest.toString() : "?";
+        String multO = (this.multiOrig != null) ? this.multiOrig.toString() : ""; 
+        String multD = (this.multiDest != null) ? this.multiDest.toString() : "";
 
         return String.format("Association %d : %s de %s(%s) vers %s(%s)",
                 this.getNum(), sens, origine, multD, dest, multO);
