@@ -1,23 +1,20 @@
 package controleur;
 
-import java.awt.Point;
-import java.util.HashMap;
+import java.awt.*;
+
 import java.util.List;
+import java.util.Map;
+
 import modele.Sauvegarde;
 import modele.entites.AssociationObjet;
-import modele.entites.AttributObjet;
 import modele.entites.ClasseObjet;
 import modele.entites.HeritageObjet;
 import modele.entites.InterfaceObjet;
-import modele.entites.LiaisonObjet;
-import modele.entites.MethodeObjet;
-import modele.outil.DispositionOptimiseur;
 import vue.BlocClasse;
 import vue.ExportHelper;
 import vue.FenetrePrincipale;
 import vue.LiaisonVue;
-import vue.LiaisonVue.TypeLiaison;
-import vue.PresentationMapper;
+
 
 /**
  * Contrôleur principal de l'application de génération de diagrammes UML.
@@ -46,11 +43,9 @@ public class Controleur
     {
         this.metierComplet = new modele.AnalyseMetier();
         this.vuePrincipale = new FenetrePrincipale(this);
-        this.cheminProjetActuel = null;
     }
 
-    // nouveau (permettre l'exportation)
-    public void exporterDiagramme()
+    public void exporterDiagramme() 
     {
         ExportHelper.exportDiagram(this.vuePrincipale);
     }
@@ -249,6 +244,28 @@ public class Controleur
     private void rafraichirMembres() 
     {
         reafficherAvecFiltreExternes();
+    }
+
+    public void demanderOptimisationDisposition() 
+    {
+        // 1. Récupérer les données
+        List<ClasseObjet> classes = metierComplet.getClasses();
+        List<LiaisonVue> liaisons = vuePrincipale.getPanneauDiagramme().getLiaisonsVue();
+
+        // 2. Calculer via le modèle centralisé
+        Map<String, Point> nouvellesPositions = modele.outil.DispositionOptimiseur.calculerPositions(classes, liaisons);
+
+        // 3. Mettre à jour les blocs dans la vue
+        for (BlocClasse bloc : vuePrincipale.getPanneauDiagramme().getBlocsClasses()) {
+            Point p = nouvellesPositions.get(bloc.getNom());
+            if (p != null) {
+                bloc.setX(p.x);
+                bloc.setY(p.y);
+            }
+        }
+        
+        // 4. Rafraîchir l'affichage
+        vuePrincipale.getPanneauDiagramme().repaint();
     }
 
     public static void main(String[] args) 

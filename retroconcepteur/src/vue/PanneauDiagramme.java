@@ -47,6 +47,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
     private boolean afficherClassesExternes = true;
     private boolean afficherAttributs       = true;
     private boolean afficherMethodes        = true;
+    private Controleur controleur;
 
     /**
      * Constructeur du panneau de diagramme.
@@ -68,6 +69,7 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
 
         this.ajouterListenersInteraction();
         this.addMouseWheelListener(this);
+        this.controleur = controleur ;
 
     }
 
@@ -771,14 +773,18 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
      * liaisons.
      * Met à jour la taille du panneau et red essine le diagramme.
      */
-    public void optimiserDisposition() {
+    public void optimiserDisposition() 
+    {
         if (blocsClasses.isEmpty()) 
         {
             return;
         }
 
         // Appliquer l'algorithme hiérarchique (Sugiyama-style)
-        OptimisateurDisposition.appliquerLayoutHierarchique(blocsClasses, liaisonsVue);
+    // On délègue au contrôleur car lui seul a accès aux données métier (classes) 
+    // nécessaires au calcul correct
+        controleur.demanderOptimisationDisposition();
+
 
         // Mettre à jour la taille du panneau et redessiner
         calculerTailleDynamique();
