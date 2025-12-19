@@ -11,15 +11,9 @@ public class Chien extends Animal implements Capacte , Parler
         this.race = race;
     }
 
-    public String getRace()
-    {
-        return this.race;
-    }
+    public String getRace(){return this.race;}
 
-    public void setRace(String race)
-    {
-        this.race = race;
-    }
+    public void setRace(String race){this.race = race;}
 
     @Override
     public String parler()

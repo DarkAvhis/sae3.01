@@ -21,13 +21,37 @@ public class Disque
         compteur++;
     }
 
-    public double getRayon() { return this.rayon; }
-    public Point getCentre() { return this.centre; }
+    public double  getRayon () { return this.rayon ; }
+    public Point   getCentre() { return this.centre; }
     public Point[] getPoints() { return this.points; }
+    public String getCouleur     (){return this.couleur;}
+    public static int getCompteur(){return compteur    ;}
 
-    public void setRayon(double rayon)  { this.rayon  = rayon; }
-    public void setCentre(Point centre) { this.centre = centre; }
+    public int getNombrePoints()
+    {
+        return this.points.length;
+    }
+
+    public char getCategorie()
+    {
+        if (this.rayon < 2) return 'P';
+        if (this.rayon < 5) return 'M';
+        return 'G';
+    }
+
+    public void setRayon (double rayon  ) { this.rayon  = rayon ; }
+    public void setCentre(Point centre  ) { this.centre = centre; }
     public void setPoints(Point[] points) { this.points = points; }
+
+    public synchronized void setActif(boolean actif)
+    {
+        this.actif = actif;
+    }
+
+    public void setCouleur(String couleur)
+    {
+        this.couleur = couleur;
+    }
 
     public void ajouterPoint(Point point)
     {
@@ -55,11 +79,6 @@ public class Disque
         this.points = nouveauTableau;
     }
 
-    public int getNombrePoints()
-    {
-        return this.points.length;
-    }
-
     public Point obtenirPoint(int index)
     {
         if (index < 0 || index >= this.points.length) return null;
@@ -76,30 +95,9 @@ public class Disque
         return 2 * Math.PI * this.rayon;           
     }
 
-    // Méthodes supplémentaires avec différents types
-    public synchronized void setActif(boolean actif)
-    {
-        this.actif = actif;
-    }
-
     public synchronized boolean isActif()
     {
         return this.actif;
-    }
-
-    public String getCouleur()
-    {
-        return this.couleur;
-    }
-
-    public void setCouleur(String couleur)
-    {
-        this.couleur = couleur;
-    }
-
-    public static int getCompteur()
-    {
-        return compteur;
     }
 
     public static synchronized void reinitialiserCompteur()
@@ -137,13 +135,6 @@ public class Disque
     public static Disque creerDisqueAleatoire(Point centre)
     {
         return new Disque(Math.random() * 10, centre);
-    }
-
-    public char getCategorie()
-    {
-        if (this.rayon < 2) return 'P';
-        if (this.rayon < 5) return 'M';
-        return 'G';
     }
 
     public byte obtenirNiveauRemplissage()
@@ -197,18 +188,6 @@ public class Disque
     }
 
     @Override
-    public String toString()
-    {
-        return "Disque{" +
-                "rayon=" + this.rayon +
-                ", centre=" + this.centre +
-                ", couleur='" + this.couleur + '\'' +
-                ", actif=" + this.actif +
-                ", points=" + java.util.Arrays.toString(this.points) +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o)
     {
         if (this == o) return true;
@@ -222,5 +201,17 @@ public class Disque
     public int hashCode()
     {
         return Double.hashCode(this.rayon) * 31 + this.centre.hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Disque{" +
+                "rayon=" + this.rayon +
+                ", centre=" + this.centre +
+                ", couleur='" + this.couleur + '\'' +
+                ", actif=" + this.actif +
+                ", points=" + java.util.Arrays.toString(this.points) +
+                '}';
     }
 }

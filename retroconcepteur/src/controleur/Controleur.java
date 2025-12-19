@@ -31,9 +31,10 @@ import vue.LiaisonVue;
  */
 public class Controleur
 {
-    private modele.AnalyseMetier  metierComplet;
-    private FenetrePrincipale     vuePrincipale;
+    private modele.AnalyseMetier  metierComplet     ;
+    private FenetrePrincipale     vuePrincipale     ;
     private String                cheminProjetActuel;
+
     /**
      * Constructeur du contrôleur.
      * Initialise le modèle d'analyse et crée la fenêtre principale de
@@ -49,7 +50,6 @@ public class Controleur
     {
         ExportHelper.exportDiagram(this.vuePrincipale);
     }
-
 
     /**
      * Analyse un projet Java et affiche le diagramme UML correspondant.
@@ -84,9 +84,8 @@ public class Controleur
     public void setAfficherClassesExternes(boolean afficher)
     {
         if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null)
-        {
             vuePrincipale.getPanneauDiagramme().setAfficherClassesExternes(afficher);
-        }
+
         reafficherAvecFiltreExternes();
     }
 
@@ -97,6 +96,7 @@ public class Controleur
     private void reafficherAvecFiltreExternes() 
     {
         List<ClasseObjet> classes = this.metierComplet.getClasses();
+
         boolean afficherExternes = true;
         boolean afficherAttr     = true;
         boolean afficherMeth     = true;
@@ -104,15 +104,15 @@ public class Controleur
         if (vuePrincipale != null && vuePrincipale.getPanneauDiagramme() != null)
         {
             afficherExternes = vuePrincipale.getPanneauDiagramme().isAfficherClassesExternes();
-            afficherAttr = vuePrincipale.getPanneauDiagramme().isAfficherAttributs();
-            afficherMeth = vuePrincipale.getPanneauDiagramme().isAfficherMethodes();
+            afficherAttr     = vuePrincipale.getPanneauDiagramme().isAfficherAttributs      ();
+            afficherMeth     = vuePrincipale.getPanneauDiagramme().isAfficherMethodes       ();
         }
+
         List<BlocClasse> blocs = vue.DiagramPresenter.buildBlocs(classes, afficherExternes, afficherAttr, afficherMeth, 50, 50);
 
         if (vuePrincipale != null) 
-        {
             vuePrincipale.getPanneauDiagramme().setBlocsClasses(blocs);
-        }
+
         majAffichage();
     }
 
@@ -122,8 +122,8 @@ public class Controleur
     private void majAffichage() 
     {
         List<AssociationObjet> associations    = this.metierComplet.getAssociations   ();
-        List<HeritageObjet>    heritages       = this.metierComplet.getHeritages      ();
-        List<InterfaceObjet>   implementations = this.metierComplet.getImplementations();
+        List<HeritageObjet   > heritages       = this.metierComplet.getHeritages      ();
+        List<InterfaceObjet  > implementations = this.metierComplet.getImplementations();
 
         List<LiaisonVue> liaisonsVue = vue.DiagramPresenter.buildLiaisons(associations,
                 heritages, implementations, this.metierComplet.getClasses());
@@ -131,7 +131,6 @@ public class Controleur
         if (vuePrincipale != null) vuePrincipale.getPanneauDiagramme().setLiaisonsVue(liaisonsVue);
         
     }
-
 
     /**
      * Sauvegarde les positions actuelles des blocs du diagramme.
@@ -141,13 +140,11 @@ public class Controleur
     public void sauvegarde()
     {
         if (this.cheminProjetActuel == null || this.cheminProjetActuel.isEmpty())
-        {
             // Pas de projet courant : sauvegarde dans fichier local par défaut
             Sauvegarde.sauvegarder(".", "diagramme.txt");
-        } else
-        {
+
+        else
             Sauvegarde.sauvegarder(this.cheminProjetActuel, this.cheminProjetActuel + "/DiagrammeUML.txt");
-        }
     }
 
     public void sauvegarde(String dossier, String fichier) 
@@ -182,11 +179,8 @@ public class Controleur
     public void optimiserDisposition() 
     {
         if (this.vuePrincipale != null) 
-        {
             this.vuePrincipale.getPanneauDiagramme().optimiserDisposition();
-        }
     }
-
 
     public String getCheminProjetActuel() { return this.cheminProjetActuel; }
 
@@ -215,16 +209,19 @@ public class Controleur
     public void demanderOptimisationDisposition() 
     {
         // 1. Récupérer les données
-        List<ClasseObjet> classes = metierComplet.getClasses();
-        List<LiaisonVue> liaisons = vuePrincipale.getPanneauDiagramme().getLiaisonsVue();
+        List<ClasseObjet> classes  = metierComplet.getClasses();
+        List<LiaisonVue > liaisons = vuePrincipale.getPanneauDiagramme().getLiaisonsVue();
 
         // 2. Calculer via le modèle centralisé
         Map<String, Point> nouvellesPositions = modele.outil.DispositionOptimiseur.calculerPositions(classes, liaisons);
 
         // 3. Mettre à jour les blocs dans la vue
-        for (BlocClasse bloc : vuePrincipale.getPanneauDiagramme().getBlocsClasses()) {
+        for (BlocClasse bloc : vuePrincipale.getPanneauDiagramme().getBlocsClasses()) 
+        {
             Point p = nouvellesPositions.get(bloc.getNom());
-            if (p != null) {
+
+            if (p != null) 
+            {
                 bloc.setX(p.x);
                 bloc.setY(p.y);
             }
@@ -246,6 +243,7 @@ public class Controleur
         if ("gui".equals(mode) || "graphique".equals(mode)) 
         {
             Controleur ctrl = new Controleur();
+
             if (args.length > 1) ctrl.analyserEtAfficherDiagramme(args[1]);
             return;
         }
@@ -260,18 +258,19 @@ public class Controleur
             }
 
             String chemin = args[1];
-                modele.AnalyseMetier metier = new modele.AnalyseMetier();
+            modele.AnalyseMetier metier = new modele.AnalyseMetier();
             boolean ok = metier.analyserDossier(chemin);
             vue.ConsoleVue vue = new vue.ConsoleVue();
+
             if (!ok) 
             {
                 vue.afficherMessage("Erreur : impossible d'analyser le dossier '" + chemin + "'.");
                 return;
             }
 
-            vue.afficherClasses(metier.getClasses());
-            vue.afficherAssociations(metier.getAssociations());
-            vue.afficherHeritages(metier.getHeritages());
+            vue.afficherClasses        (metier.getClasses        ());
+            vue.afficherAssociations   (metier.getAssociations   ());
+            vue.afficherHeritages      (metier.getHeritages      ());
             vue.afficherImplementations(metier.getImplementations());
             return;
         }

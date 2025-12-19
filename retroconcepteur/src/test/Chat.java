@@ -13,15 +13,9 @@ public class Chat extends Animal
         this.race = race;
     }
 
-    public String getRace()
-    {
-        return this.race;
-    }
+    public String getRace()         {return this.race;}
 
-    public void setRace(String race)
-    {
-        this.race = race;
-    }
+    public void setRace(String race){this.race = race;}
 
     @Override
     public synchronized String parler()
