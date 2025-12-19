@@ -26,16 +26,17 @@ import javax.swing.SwingUtilities;
  *         Yassine EL MAADI
  * @date 12 décembre 2025
  */
-public class BarreMenus extends JMenuBar implements ActionListener {
+public class BarreMenus extends JMenuBar implements ActionListener 
+{
     // Références aux items de menu
     private JMenuItem ouvrirClasse;
     private JMenuItem sauvegarderClasse;
     private JMenuItem quitterClasse;
-
     private JMenuItem alignerClasse;
     private JMenuItem optimiserClasse;
     private JMenuItem itemExporter;
     private JMenuItem supprimerClasse;
+
     private JCheckBoxMenuItem afficherExternes;
 
     private JMenuItem aProposClasse;
@@ -49,16 +50,18 @@ public class BarreMenus extends JMenuBar implements ActionListener {
      * @param controleur     contrôleur principal
      * @param panneauProjets panneau des projets ouverts
      */
-    public BarreMenus(Controleur controleur, PanneauProjets panneauProjets) {
-        this.controleur = controleur;
+    public BarreMenus(Controleur controleur, PanneauProjets panneauProjets) 
+    {
+        this.controleur     = controleur;
         this.panneauProjets = panneauProjets;
 
-        this.add(creerMenuFichier());
+        this.add(creerMenuFichier  ());
         this.add(creerMenuAffichage());
-        this.add(creerMenuAide());
+        this.add(creerMenuAide     ());
     }
 
-    public JMenu creerMenuFichier() {
+    public JMenu creerMenuFichier() 
+    {
         JMenu menu = new JMenu("Fichier");
 
         this.ouvrirClasse          = new JMenuItem("Ouvrir projet");
@@ -66,10 +69,10 @@ public class BarreMenus extends JMenuBar implements ActionListener {
         this.itemExporter          = new JMenuItem("Exporter le diagramme (PNG)");
         this.quitterClasse         = new JMenuItem("Quitter");
 
-        ouvrirClasse.addActionListener(this);
+        ouvrirClasse     .addActionListener(this);
         sauvegarderClasse.addActionListener(this);
-        itemExporter.addActionListener(this);
-        quitterClasse.addActionListener(this);
+        itemExporter     .addActionListener(this);
+        quitterClasse    .addActionListener(this);
 
         menu.add(ouvrirClasse);
         menu.addSeparator();
@@ -81,7 +84,8 @@ public class BarreMenus extends JMenuBar implements ActionListener {
         return menu;
     }
 
-    public JMenu creerMenuAffichage() {
+    public JMenu creerMenuAffichage() 
+    {
         JMenu menu = new JMenu("Affichage");
 
         this.alignerClasse    = new JMenuItem("Aligner les symboles");
@@ -89,9 +93,9 @@ public class BarreMenus extends JMenuBar implements ActionListener {
         this.supprimerClasse  = new JMenuItem("Supprimer");
         this.afficherExternes = new JCheckBoxMenuItem("Afficher les classes externes", true);
 
-        alignerClasse.addActionListener(this);
-        optimiserClasse.addActionListener(this);
-        supprimerClasse.addActionListener(this);
+        alignerClasse   .addActionListener(this);
+        optimiserClasse .addActionListener(this);
+        supprimerClasse .addActionListener(this);
         afficherExternes.addActionListener(this);
 
         menu.add(alignerClasse);
@@ -134,116 +138,105 @@ public class BarreMenus extends JMenuBar implements ActionListener {
 
     public void actionExporter    () {    controleur.exporterDiagramme()     ;  }
 
-
-    public void actionOuvrirProjet() {
+    public void actionOuvrirProjet() 
+    {
         JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.dir")));
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         int retour = chooser.showOpenDialog(SwingUtilities.getWindowAncestor(this));
 
-        if (retour == JFileChooser.APPROVE_OPTION) {
+        if (retour == JFileChooser.APPROVE_OPTION) 
+        {
             File dossier = chooser.getSelectedFile();
 
-            if (dossier.exists() && dossier.isDirectory()) {
-                try {
-                    controleur.analyserEtAfficherDiagramme(
-                            dossier.getAbsolutePath());
+            if (dossier.exists() && dossier.isDirectory()) 
+            {
+                try 
+                {
+                    controleur.analyserEtAfficherDiagramme( dossier.getAbsolutePath());
 
-                    JOptionPane.showMessageDialog(
-                            SwingUtilities.getWindowAncestor(this),
-                            "Dossier chargé : " + dossier.getName());
-
+                    JOptionPane.showMessageDialog( SwingUtilities.getWindowAncestor(this),
+                                                   "Dossier chargé : " + dossier.getName());
                     panneauProjets.ajouterProjet(dossier.getAbsolutePath());
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(
-                            SwingUtilities.getWindowAncestor(this),
-                            "Erreur lors de l'ouverture du dossier :\n"
-                                    + ex.getMessage(),
-                            "Erreur",
-                            JOptionPane.ERROR_MESSAGE);
+                } 
+                catch (Exception ex) 
+                {
+                    JOptionPane.showMessageDialog( SwingUtilities.getWindowAncestor(this),
+                                                   "Erreur lors de l'ouverture du dossier :\n"
+                                                   + ex.getMessage(),"Erreur", JOptionPane.ERROR_MESSAGE);
                 }
-            } else {
-                JOptionPane.showMessageDialog(
-                        SwingUtilities.getWindowAncestor(this),
-                        "Impossible d'ouvrir ce dossier.",
-                        "Erreur",
-                        JOptionPane.ERROR_MESSAGE);
+            } 
+            else 
+            {
+                JOptionPane.showMessageDialog( SwingUtilities.getWindowAncestor(this),
+                                      "Impossible d'ouvrir ce dossier.","Erreur",JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    public void actionSauvegarder() {
+    public void actionSauvegarder() 
+    {
         String projet = controleur.getCheminProjetActuel();
         String dossierCible;
 
-        if (projet == null || projet.isEmpty()) {
-            int rep = JOptionPane.showConfirmDialog(
-                    SwingUtilities.getWindowAncestor(this),
-                    "Aucun projet ouvert. Voulez-vous choisir un dossier ?",
-                    "Sauvegarder",
-                    JOptionPane.YES_NO_OPTION);
-
-            if (rep != JOptionPane.YES_OPTION) {
-                return;
-            }
+        if (projet == null || projet.isEmpty()) 
+        {
+            int rep = JOptionPane.showConfirmDialog( SwingUtilities.getWindowAncestor(this),
+                                                     "Aucun projet ouvert. Voulez-vous choisir un dossier ?",
+                                                     "Sauvegarder", JOptionPane.YES_NO_OPTION);
+            if (rep != JOptionPane.YES_OPTION) return;
 
             JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.dir")));
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-            if (chooser.showOpenDialog(
-                    SwingUtilities.getWindowAncestor(this)) != JFileChooser.APPROVE_OPTION) {
+            if (chooser.showOpenDialog(SwingUtilities.getWindowAncestor(this))!= JFileChooser.APPROVE_OPTION) 
+            {
                 return;
             }
 
             dossierCible = chooser.getSelectedFile().getAbsolutePath();
-        } else {
+        } 
+        else 
+        {
             dossierCible = projet;
         }
 
         File sortie = new File(dossierCible, "DiagrammeUML.txt");
         controleur.sauvegarde(dossierCible, sortie.getAbsolutePath());
 
-        JOptionPane.showMessageDialog(
-                SwingUtilities.getWindowAncestor(this),
-                "Diagramme sauvegardé dans " + sortie.getAbsolutePath(),
-                "Sauvegarde réussie",
-                JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog( SwingUtilities.getWindowAncestor(this),
+                                       "Diagramme sauvegardé dans " + sortie.getAbsolutePath(),
+                                       "Sauvegarde réussie", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void actionSupprimer() 
     {
-        int rep = JOptionPane.showConfirmDialog(
-                SwingUtilities.getWindowAncestor(this),
-                "Voulez-vous vraiment supprimer la classe sélectionnée ?",
-                "Confirmation",
-                JOptionPane.YES_NO_OPTION);
+        int rep = JOptionPane.showConfirmDialog( SwingUtilities.getWindowAncestor(this),
+                                                 "Voulez-vous vraiment supprimer la classe sélectionnée ?",
+                                                 "Confirmation", JOptionPane.YES_NO_OPTION);
 
-        if (rep == JOptionPane.YES_OPTION) {
+        if (rep == JOptionPane.YES_OPTION) 
+        {
             // Récupère le nom de la classe sélectionnée depuis le panneauDiagramme
             PanneauDiagramme pd = this.panneauProjets.getPanneauDiagramme();
-            String nomSel = null;
-            if (pd != null) {
-                nomSel = pd.getNomClasseSelectionnee();
-            }
 
-            if (nomSel == null) {
-                JOptionPane.showMessageDialog(
-                    SwingUtilities.getWindowAncestor(this),
-                    "Aucune classe sélectionnée.",
-                    "Suppression",
-                    JOptionPane.WARNING_MESSAGE
-                );
+            String nomSel = null;
+            if (pd != null) nomSel = pd.getNomClasseSelectionnee();
+
+            if (nomSel == null) 
+            {
+                JOptionPane.showMessageDialog( SwingUtilities.getWindowAncestor(this),
+                                               "Aucune classe sélectionnée.","Suppression",
+                                               JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
             String nomSupprime = controleur.supprimerClasseSelectionnee(nomSel);
-            if (nomSupprime != null) {
-                JOptionPane.showMessageDialog(
-                    SwingUtilities.getWindowAncestor(this),
-                    "La classe \"" + nomSupprime + "\" a été supprimée.",
-                    "Suppression",
-                    JOptionPane.INFORMATION_MESSAGE
-                );
+            if (nomSupprime != null) 
+            {
+                JOptionPane.showMessageDialog( SwingUtilities.getWindowAncestor(this),
+                                               "La classe \"" + nomSupprime + "\" a été supprimée.",
+                                               "Suppression", JOptionPane.INFORMATION_MESSAGE );
             }
         }
     }
@@ -251,37 +244,30 @@ public class BarreMenus extends JMenuBar implements ActionListener {
 
     public void actionAligner()
     {
-        JOptionPane.showMessageDialog(
-                SwingUtilities.getWindowAncestor(this),
-                "Pas fini");
+        JOptionPane.showMessageDialog( SwingUtilities.getWindowAncestor(this),"Pas fini");
     }
 
-    public void actionOptimiser() {
+    public void actionOptimiser() 
+    {
         controleur.optimiserDisposition();
 
-        JOptionPane.showMessageDialog(
-                SwingUtilities.getWindowAncestor(this),
-                "Positions optimisées !",
-                "Succès",
-                JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog( SwingUtilities.getWindowAncestor(this),"Positions optimisées !",
+                                       "Succès",JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public void actionToggleExternes() {
+    public void actionToggleExternes() 
+    {
         boolean afficher = afficherExternes.isSelected();
         controleur.setAfficherClassesExternes(afficher);
     }
 
-    public void actionAPropos() {
-        JOptionPane.showMessageDialog(
-                SwingUtilities.getWindowAncestor(this),
-                "Modélisation UML - Générateur de Diagrammes\n"
-                        + "par Quentin MORVAN,\n"
-                        + "Valentin LEROY,\n"
-                        + "Celim CHAOU,\n"
-                        + "Enzo DUMONT,\n"
-                        + "Ariunbayar BUYANBADRAKH,\n"
-                        + "Yassine EL MAADI",
-                "À propos",
-                JOptionPane.INFORMATION_MESSAGE);
+    public void actionAPropos() 
+    {
+        JOptionPane.showMessageDialog( SwingUtilities.getWindowAncestor(this),
+                                       "Modélisation UML - Générateur de Diagrammes\n" + 
+                                       "par Quentin MORVAN,\n"     + "Valentin LEROY,\n"   + 
+                                       "Celim CHAOU,\n"            + "Enzo DUMONT,\n"      + 
+                                       "Ariunbayar BUYANBADRAKH,\n"+ "Yassine EL MAADI",
+                                       "À propos",JOptionPane.INFORMATION_MESSAGE);
     }
 }

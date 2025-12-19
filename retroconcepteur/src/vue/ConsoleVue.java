@@ -17,24 +17,17 @@ public class ConsoleVue
 
     public void afficherUsage()
     {
-        System.out.println(
-            "Usage: java AnalyseMetier <chemin_du_repertoire>"
-        );
+        System.out.println("Usage: java AnalyseMetier <chemin_du_repertoire>");
     }
 
     public void afficherMessage(String msg)
     {
-        if (msg != null)
-        {
-            System.out.println(msg);
-        }
+        if (msg != null) System.out.println(msg);
     }
 
     public void afficherClasses(List<ClasseObjet> classes)
     {
-        System.out.println(
-            "\n=== DIAGRAMMES DE CLASSES (ETAPE 2 & 3) ==="
-        );
+        System.out.println("\n=== DIAGRAMMES DE CLASSES (ETAPE 2 & 3) ===");
 
         if (classes == null || classes.isEmpty())
         {
@@ -42,19 +35,12 @@ public class ConsoleVue
             return;
         }
 
-        for (ClasseObjet c : classes)
-        {
-            System.out.println(c);
-        }
+        for (ClasseObjet c : classes) System.out.println(c);
     }
 
-    public void afficherAssociations(
-        List<AssociationObjet> associations
-    )
+    public void afficherAssociations(List<AssociationObjet> associations)
     {
-        System.out.println(
-            "\n=== LIAISONS D'ASSOCIATION (ETAPE 3) ==="
-        );
+        System.out.println("\n=== LIAISONS D'ASSOCIATION (ETAPE 3) ===");
 
         if (associations == null || associations.isEmpty())
         {
@@ -62,17 +48,12 @@ public class ConsoleVue
             return;
         }
 
-        for (AssociationObjet a : associations)
-        {
-            System.out.println(a);
-        }
+        for (AssociationObjet a : associations) System.out.println(a);
     }
 
     public void afficherHeritages(List<HeritageObjet> heritages)
     {
-        System.out.println(
-            "\n=== HERITAGE (ETAPE 4) ==="
-        );
+        System.out.println("\n=== HERITAGE (ETAPE 4) ===");
 
         if (heritages == null || heritages.isEmpty())
         {
@@ -80,19 +61,12 @@ public class ConsoleVue
             return;
         }
 
-        for (HeritageObjet h : heritages)
-        {
-            System.out.println(h);
-        }
+        for (HeritageObjet h : heritages) System.out.println(h);
     }
 
-    public void afficherImplementations(
-        List<InterfaceObjet> implementations
-    )
+    public void afficherImplementations(List<InterfaceObjet> implementations)
     {
-        System.out.println(
-            "\n=== IMPLEMENTATION (ETAPE 4) ==="
-        );
+        System.out.println("\n=== IMPLEMENTATION (ETAPE 4) ===");
 
         if (implementations == null || implementations.isEmpty())
         {
@@ -100,9 +74,6 @@ public class ConsoleVue
             return;
         }
 
-        for (InterfaceObjet i : implementations)
-        {
-            System.out.println(i);
-        }
+        for (InterfaceObjet i : implementations) System.out.println(i);
     }
 }

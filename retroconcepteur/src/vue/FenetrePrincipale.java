@@ -26,11 +26,11 @@ import javax.swing.JSplitPane;
  */
 public class FenetrePrincipale extends JFrame
 {
-    private Controleur controleur;
-    private PanneauProjets panneauProjets;
-    private PanneauDiagramme panneauDiagramme;
+    private Controleur       controleur      ;
+    private PanneauProjets   panneauProjets  ;
+    private PanneauDiagramme panneauDiagramme ;
 
-    private BarreMenus barreMenus;
+    private BarreMenus barreMenus            ;
 
     /**
      * Constructeur de la fenêtre principale.
@@ -45,8 +45,7 @@ public class FenetrePrincipale extends JFrame
     {
         this.controleur = controleur;
 
-        Dimension tailleEcran =
-            Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension tailleEcran = Toolkit.getDefaultToolkit().getScreenSize();
 
         this.setTitle("Générateur de diagramme UML");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,27 +53,16 @@ public class FenetrePrincipale extends JFrame
         this.setLocationRelativeTo(null);
         this.setResizable(true);
 
-        this.panneauDiagramme =
-            new PanneauDiagramme(controleur);
+        this.panneauDiagramme = new PanneauDiagramme(controleur);
+        this.panneauProjets   = new PanneauProjets(this, controleur, this.panneauDiagramme);
+        this.barreMenus       = new BarreMenus(controleur, panneauProjets);
 
-        this.panneauProjets =
-            new PanneauProjets(this, controleur, this.panneauDiagramme);
-
-        this.barreMenus =
-            new BarreMenus(controleur, panneauProjets);
-
-        JScrollPane scrollDiagramme =
-            new JScrollPane(this.panneauDiagramme);
+        JScrollPane scrollDiagramme = new JScrollPane(this.panneauDiagramme);
 
         this.setLayout(new BorderLayout());
 
-        JSplitPane splitPane =
-            new JSplitPane(
-                JSplitPane.HORIZONTAL_SPLIT,
-                true,
-                this.panneauProjets,
-                scrollDiagramme
-            );
+        JSplitPane splitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT,true, 
+                                               this.panneauProjets, scrollDiagramme);
 
         splitPane.setDividerLocation(250);
         splitPane.setOneTouchExpandable(true);
@@ -86,6 +74,15 @@ public class FenetrePrincipale extends JFrame
     }
 
     /**
+     * Retourne le panneau de diagramme de la fenêtre.
+     *
+     * @return Le panneau de diagramme permettant d'accéder
+     *         aux blocs et liaisons affichés
+     */
+    public PanneauDiagramme getPanneauDiagramme() { return this.panneauDiagramme; }
+    public PanneauProjets getPanneauProjets    () { return this.panneauProjets  ; }
+
+    /**
      * Charge et affiche un projet Java dans le diagramme.
      *
      * Délègue l'analyse et l'affichage au contrôleur.
@@ -95,21 +92,5 @@ public class FenetrePrincipale extends JFrame
     public void chargerProjet(String cheminProjet)
     {
         this.controleur.analyserEtAfficherDiagramme(cheminProjet);
-    }
-
-    /**
-     * Retourne le panneau de diagramme de la fenêtre.
-     *
-     * @return Le panneau de diagramme permettant d'accéder
-     *         aux blocs et liaisons affichés
-     */
-    public PanneauDiagramme getPanneauDiagramme()
-    {
-        return this.panneauDiagramme;
-    }
-
-    public PanneauProjets getPanneauProjets()
-    {
-        return this.panneauProjets;
     }
 }
