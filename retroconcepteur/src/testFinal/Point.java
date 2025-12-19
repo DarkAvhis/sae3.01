@@ -28,60 +28,16 @@ public class Point
     // ------------------------------------------------
     // Méthodes d'accès (Getters)
     // ------------------------------------------------
-    /**
-     * Retourne la coordonnée x du point.
-     * @return La valeur de x.
-     */
-    public int getX()
-    {
-        return x;
-    }
 
-    /**
-     * Retourne la coordonnée y du point.
-     * @return La valeur de y.
-     */
-    public int getY()
-    {
-        return y;
-    }
-    
-    /**
-     * Retourne le nom du point.
-     * @return Le nom du point.
-     */
-    public String getNom()
-    {
-        return nom;
-    }
+    public int getX     (){return x  ;}
+    public int getY     (){return y  ;}
+    public String getNom(){return nom;}
 
     // ------------------------------------------------
     // Méthodes de modification (Setters)
     // ------------------------------------------------
-    /**
-     * Modifie la coordonnée x du point.
-     * @param x La nouvelle valeur de x.
-     */
-    public void setX(int x)
-    {
-        this.x = x;
-    }
 
-    /**
-     * Modifie la coordonnée y du point.
-     * @param y La nouvelle valeur de y.
-     */
-    public void setY(int y)
-    {
-        this.y = y;
-    }
-    
-    /**
-     * Modifie le nom du point.
-     * @param nom Le nouveau nom du point.
-     */
-    public void setNom(String nom)
-    {
-        this.nom = nom;
-    }
+    public void setX  (int x)     {this.x = x    ;}
+    public void setY  (int y)     {this.y = y    ;}
+    public void setNom(String nom){this.nom = nom;}
 }
