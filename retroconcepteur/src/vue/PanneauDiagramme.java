@@ -45,8 +45,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
     private double zoom;
     // Flags d'affichage (gérés par la vue)
     private boolean afficherClassesExternes = true;
-    private boolean afficherAttributs = true;
-    private boolean afficherMethodes = true;
+    private boolean afficherAttributs       = true;
+    private boolean afficherMethodes        = true;
 
     /**
      * Constructeur du panneau de diagramme.
@@ -54,7 +54,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
      * pour l'interaction utilisateur (déplacement des blocs).
      * * @param controleur Le contrôleur principal de l'application
      */
-    public PanneauDiagramme(Controleur controleur) {
+    public PanneauDiagramme(Controleur controleur) 
+    {
         this.blocsClasses = new ArrayList<>();
         this.liaisonsVue = new ArrayList<>();
         this.zoom = 1.0;
@@ -71,12 +72,17 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
     }
 
     @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {
-        if (e.isControlDown()) {
+    public void mouseWheelMoved(MouseWheelEvent e) 
+    {
+        if (e.isControlDown()) 
+        {
             double delta = 0.1;
-            if (e.getWheelRotation() < 0) {
+            if (e.getWheelRotation() < 0) 
+            {
                 setZoom(zoom + delta); // Zoom avant
-            } else {
+            } 
+            else 
+            {
                 setZoom(zoom - delta); // Zoom arrière
             }
         }
@@ -84,7 +90,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
         if (e.isShiftDown()) // Shift + molette => décalage horizontal
         {
 
-            if (getParent() instanceof JViewport viewport) {
+            if (getParent() instanceof JViewport viewport) 
+            {
                 Point pos = viewport.getViewPosition();
                 pos.x += e.getWheelRotation() * 100; // 20 pixels par "tick"
                 pos.x = Math.max(0, pos.x);
@@ -95,7 +102,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
         // Molette normale => défilement vertical
 
         {
-            if (getParent() instanceof JViewport viewport) {
+            if (getParent() instanceof JViewport viewport) 
+            {
                 Point pos = viewport.getViewPosition();
                 pos.y += e.getWheelRotation() * 100; // 20 pixels par "tick"
                 pos.y = Math.max(0, pos.y);
@@ -111,17 +119,17 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
      * lorque l'on appuie sur le bouton actualiser cela actualise
      * aussi panneauDiagramme
      */
-    public void clearDiagram() {
+    public void clearDiagram() 
+    {
         this.blocsClasses.clear(); // permet de nettoyer les blocs de classe
         this.liaisonsVue.clear(); // permet de nettoyer les liaisons des classes
         this.repaint();
     }
 
-    public double getZoom() {
-        return this.zoom;
-    }
+    public double getZoom() {return this.zoom;}
 
-    public void setZoom(double zoom) {
+    public void setZoom(double zoom) 
+    {
         // Limiter le zoom entre 0.2x et 5x
         this.zoom = Math.max(0.2, Math.min(zoom, 5.0));
         calculerTailleDynamique(); // Ajuste la taille du panneau selon le zoom
@@ -132,20 +140,25 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
      * Gestionnaire d'événements souris pour l'interaction avec les blocs.
      * * Permet de sélectionner et déplacer les blocs de classes dans le diagramme.
      */
-    private class GereSourisInteraction extends MouseAdapter {
+    private class GereSourisInteraction extends MouseAdapter 
+    {
         private BlocClasse blocSelectionne = null;
         private int offsetX = 0;
         private int offsetY = 0;
 
         @Override
-        public void mousePressed(MouseEvent e) {
+        public void mousePressed(MouseEvent e) 
+        {
             blocSelectionne = null;
             int mouseX = (int) (e.getX() / zoom);
             int mouseY = (int) (e.getY() / zoom);
-            for (int i = blocsClasses.size() - 1; i >= 0; i--) {
+            for (int i = blocsClasses.size() - 1; i >= 0; i--) 
+            {
                 BlocClasse bloc = blocsClasses.get(i);
-                if (bloc.contient(mouseX, mouseY)) {
-                    if (e.getButton() == MouseEvent.BUTTON3) {
+                if (bloc.contient(mouseX, mouseY)) 
+                {
+                    if (e.getButton() == MouseEvent.BUTTON3) 
+                    {
                         bloc.setModeComplet(true);
                         bloc.setSelectionne(true);
 
@@ -157,9 +170,8 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
                     offsetX = mouseX - bloc.getX();
                     offsetY = mouseY - bloc.getY();
 
-                    for (BlocClasse b : blocsClasses) {
-                        b.setSelectionne(false);
-                    }
+                    for (BlocClasse b : blocsClasses) b.setSelectionne(false);
+
 
                     bloc.setSelectionne(true);
                     repaint();
@@ -167,12 +179,13 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
                 }
             }
             // Si clic droit mais pas sur un bloc -> tenter d'éditer une liaison
-            if (blocSelectionne == null && e.getButton() == MouseEvent.BUTTON3) {
+            if (blocSelectionne == null && e.getButton() == MouseEvent.BUTTON3) 
+            {
                 LiaisonVue liaison = trouverLiaisonProche(mouseX, mouseY);
-                if (liaison != null) {
+                if (liaison != null) 
+                {
                     Frame frame = SwingUtilities.getWindowAncestor(PanneauDiagramme.this) instanceof Frame
-                            ? (Frame) SwingUtilities.getWindowAncestor(PanneauDiagramme.this)
-                            : null;
+                            ? (Frame) SwingUtilities.getWindowAncestor(PanneauDiagramme.this) : null;
 
                     EditeurLiaisonDialog dlg = new EditeurLiaisonDialog(frame, liaison);
                     dlg.setVisible(true);
@@ -184,28 +197,29 @@ public class PanneauDiagramme extends JPanel implements MouseWheelListener {
 
         // Methodes pour gérer le calcul de la distance point-segment en cas de
         // déplacement des classes
-        private LiaisonVue trouverLiaisonProche(int x, int y) {
-            if (liaisonsVue == null || blocsClasses == null)
-                return null;
+        private LiaisonVue trouverLiaisonProche(int x, int y) 
+        {
+            if (liaisonsVue == null || blocsClasses == null) return null;
 
             LiaisonVue candidate = null;
             double bestDist = 12.0; // seuil en pixels
 
-            for (LiaisonVue liaison : liaisonsVue) {
+            for (LiaisonVue liaison : liaisonsVue) 
+            {
                 Optional<BlocClasse> blocOrig = blocsClasses.stream()
                         .filter(b -> b.getNom().equals(liaison.getNomClasseOrig())).findFirst();
 
                 Optional<BlocClasse> blocDest = blocsClasses.stream()
                         .filter(b -> b.getNom().equals(liaison.getNomClasseDest())).findFirst();
 
-                if (!(blocOrig.isPresent() && blocDest.isPresent()))
-                    continue;
+                if (!(blocOrig.isPresent() && blocDest.isPresent())) continue;
 
                 Point p1 = calculerPointConnexion(blocOrig.get(), blocDest.get());
                 Point p2 = calculerPointConnexion(blocDest.get(), blocOrig.get());
                 double d = distancePointSegment(x, y, p1.x, p1.y, p2.x, p2.y);
 
-                if (d < bestDist) {
+                if (d < bestDist) 
+                { 
                     bestDist = d;
                     candidate = liaison;
                 }
