@@ -144,20 +144,31 @@ public class PresentationMapper
         return liste;
     }
 
-    public static BlocClasse creerBlocComplet(ClasseObjet c, int x,int y)
+    public static BlocClasse creerBlocComplet(ClasseObjet c, int x, int y)
     {
-        BlocClasse bloc = new BlocClasse(c.getNom(),x ,y ,new ArrayList<>() ,new ArrayList<>());
+        // On initialise le bloc avec le nom de la classe
+        BlocClasse bloc = new BlocClasse(c.getNom(), x, y, new ArrayList<>(), new ArrayList<>());
 
-        if (c.getNom().contains("Interface") || ("interface".equals(c.getSpecifique())))
+        // Gestion des stéréotypes pour l'affichage (en dessous du nom)
+        if ("interface".equals(c.getSpecifique())) 
         {
-            bloc.setInterface(true)    ;
+            bloc.setInterface(true);
             bloc.setTypeSpecifique("interface");
         }
-        else if ("record".equals(c.getSpecifique()) || "abstract class".equals(c.getSpecifique()))
+        else if ("record".equals(c.getSpecifique())) 
         {
-            bloc.setTypeSpecifique(c.getSpecifique());
+            bloc.setTypeSpecifique("record");
+        }
+        else if ("enum".equals(c.getSpecifique())) // <-- AJOUTER CE BLOC
+        {
+            bloc.setTypeSpecifique("enum");
+        }
+        else if ("abstract class".equals(c.getSpecifique()))
+        {
+            bloc.setTypeSpecifique("abstract class");
         }
 
+        // Gestion du flag pour les classes externes
         if ("externe".equals(c.getSpecifique()))
         {
             bloc.setExterne(true);

@@ -341,16 +341,8 @@ public class Controleur {
         reafficherAvecFiltreExternes();
     }
 
-    /**
-     * Point d'entrée principal de l'application.
-     * 
-     * Crée une instance du contrôleur qui initialise l'interface graphique.
-     * 
-     * @param args Arguments de la ligne de commande (non utilisés)
-     */
     public static void main(String[] args) 
     {
-        // If no args -> launch GUI
         if (args == null || args.length == 0) {
             new Controleur();
             return;
@@ -388,7 +380,6 @@ public class Controleur {
             return;
         }
 
-        // Unknown mode -> show usage
         new vue.ConsoleVue().afficherUsage();
         System.out.println("Modes supportés: (aucun)=GUI | gui | console <chemin_du_repertoire>");
     }
