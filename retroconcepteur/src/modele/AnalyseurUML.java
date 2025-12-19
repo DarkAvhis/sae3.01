@@ -23,7 +23,6 @@ import modele.outil.ParsingUtil;
  */
 public class AnalyseurUML 
 {
-    private static final int MULT_INDEFINIE = 999999999;
     private HashMap<String,String> lstIntentionHeritage;
     private HashMap<String,ArrayList<String>> lstInterfaces;
 
@@ -300,13 +299,6 @@ public class AnalyseurUML
     {
         LiaisonObjet.reinitialiserCompteur();
         int i = 1; for (LiaisonObjet l : toutes) l.setNum(i++);
-    }
-
-    private boolean estDansGuillemets(String l, int idx) 
-    {
-        int c = 0;
-        for (int i = 0; i < Math.min(idx, l.length()); i++) if (l.charAt(i) == '"') c++;
-        return (c % 2) == 1;
     }
 
     public HashMap<String,String> getIntentionsHeritage() { return lstIntentionHeritage; }
