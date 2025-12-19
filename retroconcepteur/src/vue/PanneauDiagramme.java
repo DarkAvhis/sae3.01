@@ -156,7 +156,7 @@ public class PanneauDiagramme extends JPanel
     /*
      * nouvelle méthode permettant de netoyer le panneauDiagramme
      * et qui est ensuite appeler dans panneauProjet pour que
-     * lorque l'on appuie sur le bouton actualiser cela actualise
+     * lorque l'on appuie sur le bouton reinitialiser cela reinitialise
      * aussi panneauDiagramme
      */
     public void clearDiagram() 

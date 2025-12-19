@@ -16,30 +16,12 @@ public abstract class Animal
         }
     }
 
-    public String getNom()
-    {
-        return this.nom;
-    }
+    public String getNom                      (){return this.nom;}
+    public int    getAge                      (){return this.age;}
+    public static synchronized int getCompteur(){return compteur;}
 
-    public int getAge()
-    {
-        return this.age;
-    }
-
-    public void setNom(String nom)
-    {
-        this.nom = nom;
-    }
-
-    public synchronized void setAge(int age)
-    {
-        this.age = age;
-    }
-
-    public static synchronized int getCompteur()
-    {
-        return compteur;
-    }
+    public              void setNom(String nom){this.nom = nom;}
+    public synchronized void setAge(int age   ){this.age = age;}
 
     public abstract String parler();
 
@@ -63,8 +45,8 @@ public abstract class Animal
     public int hashCode()
     {
         int result = 17;
-        result = 31 * result + (nom == null ? 0 : nom.hashCode());
-        result = 31 * result + age;
+        result     = 31 * result + (nom == null ? 0 : nom.hashCode());
+        result     = 31 * result + age;
         return result;
     }
 }

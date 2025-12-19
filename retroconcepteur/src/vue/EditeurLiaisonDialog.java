@@ -15,7 +15,6 @@ import javax.swing.JTextField;
  */
 public class EditeurLiaisonDialog extends JDialog 
 {
-	private final LiaisonVue liaison;
 
 	private final JTextField tfMultOrig = new JTextField(10);
 	private final JTextField tfMultDest = new JTextField(10);
@@ -28,7 +27,6 @@ public class EditeurLiaisonDialog extends JDialog
 	public EditeurLiaisonDialog(Frame owner, LiaisonVue liaison) 
 	{
 		super(owner, "Éditer la liaison", true);
-		this.liaison = liaison;
 
 		tfMultOrig.setText(liaison.getMultipliciteOrig());
 		tfMultDest.setText(liaison.getMultipliciteDest());
