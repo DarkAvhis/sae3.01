@@ -16,7 +16,6 @@
 ./src/vue/BarreMenus.java
 ./src/vue/BlocClasse.java
 ./src/vue/ConsoleVue.java
-./src/vue/ExportIHM.java
 ./src/vue/ExportHelper.java
 ./src/vue/PresentationMapper.java
 ./src/vue/DiagramPresenter.java
