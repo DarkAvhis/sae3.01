@@ -393,36 +393,6 @@ public class AnalyseurUML
         return new ArrayList<>(regroupement.values());
     }
 
-
-    public List<File> ClassesDuDossier(String cheminDossier) 
-    {
-        List<File> fichiersJava = new ArrayList<>();
-        File dossier = new File(cheminDossier);
-        if (!dossier.isDirectory()) 
-        {
-            return fichiersJava;
-        }
-
-        File[] fichiers = dossier.listFiles();
-        if (fichiers == null) 
-        {
-            return fichiersJava;
-        }
-
-        for (File f : fichiers) 
-        {
-            if (f.isDirectory()) 
-            {
-                fichiersJava.addAll(ClassesDuDossier(f.getAbsolutePath()));
-            } 
-            else if (f.isFile() && f.getName().endsWith(".java")) 
-            {
-                fichiersJava.add(f);
-            }
-        }
-        return fichiersJava;    
-    }
-
     /* -------------------------------------------------------------------------- */
     /* OUTILS                                                                     */
     /* -------------------------------------------------------------------------- */
